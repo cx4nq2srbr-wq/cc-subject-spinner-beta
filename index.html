@@ -102,6 +102,7 @@ h1 {
   display: flex; 
   align-items: center;
   justify-content: center;
+  text-align: center;
   width: 95%;          
   max-width: 600px !important; 
   min-height: 80px; 
@@ -429,6 +430,16 @@ h1 {
   text-align: center;
 }
 
+#cyclePicker {
+  appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234a90e2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right .7em top 50%;
+  background-size: .65em auto;
+  padding-right: 1.5em;
+}
+
 </style>
 </head>
 <body>
@@ -492,20 +503,33 @@ h1 {
       <button class="closeGridBtn" onclick="toggleGrid()">←</button>
       <h2>Lesson Grid</h2>
     </div>
-    <div class="gridControls" style="display: flex; justify-content: space-between; align-items: center;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div>Max Week:</div>
-        <div class="maxWeekControl">
-          <button class="maxWeekBtn" id="decreaseWeek">−</button>
-          <div id="maxWeekDisplay">24</div>
-          <button class="maxWeekBtn" id="increaseWeek">+</button>
-        </div>
-      </div>
-      <button onclick="resetGrid()" style="background: #eee; color: #666; border: 1px solid #ccc; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
-        Reset Progress
-      </button>
+<div class="gridControls" style="display: flex; flex-direction: column; gap: 10px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div>Cycle:</div>
+      <select id="cyclePicker" onchange="changeCycle(this.value)" style="padding: 8px; border-radius: 10px; font-weight: 700; border: 1px solid var(--secondary);">
+        <option value="1">Cycle 1</option>
+        <option value="2">Cycle 2</option>
+        <option value="3">Cycle 3</option>
+      </select>
     </div>
-    <div id="grid"></div>
+
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div>Max Week:</div>
+      <div class="maxWeekControl">
+        <button class="maxWeekBtn" id="decreaseWeek">−</button>
+        <div id="maxWeekDisplay">24</div>
+        <button class="maxWeekBtn" id="increaseWeek">+</button>
+      </div>
+    </div>
+  </div>
+  
+  <button onclick="resetGrid()" style="background: #eee; color: #666; border: 1px solid #ccc; padding: 10px; cursor: pointer; border-radius: 10px; font-weight: 700;">
+    Reset Progress
+  </button>
+</div>    
+  <div id="grid"></div>
   </div>
 </div>
 
@@ -526,214 +550,638 @@ const subjectIcons = {
 const weeks = Array.from({length: 24}, (_, i) => i + 1);
 
 /* --- LESSON DATA --- */
-const lessonData = {
-  "Math": {
-    1: { p: "1s and 2s", a: "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15; 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30" },
-    2: { p: "3s and 4s", a: "3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45; 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60" },
-    3: { p: "5s and 6s", a: "5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75; 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90" },
-    4: { p: "7s and 8s", a: "7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 91, 98, 105; 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120" },
-    5: { p: "9s and 10s", a: "9, 18, 27, 36, 45, 54, 63, 72, 81, 90, 99, 108, 117, 126, 135; 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150" },
-    6: { p: "11s and 12s", a: "11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 132, 143, 154, 165; 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 168, 180" },
-    7: { p: "13s", a: "13, 26, 39, 52, 65, 78, 91, 104, 117, 130, 143, 156, 169, 182, 195" },
-    8: { p: "14s", a: "14, 28, 42, 56, 70, 84, 98, 112, 126, 140, 154, 168, 182, 196, 210" },
-    9: { p: "15s", a: "15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225" },
-    10: { p: "Squares", a: "1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225" },
-    11: { p: "Cubes", a: "1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375" },
-    12: { p: "Teaspoons and Tablespoons", a: "3 teaspoons equals 1 tablespoon; 2 tablespoons equals 1 fluid ounce" },
-    13: { p: "Liquid Equivalents", a: "8 fluid ounces = 1 cup; 2 cups = 1 pint; 2 pints = 1 quart; 4 quarts = 1 gallon" },
-    14: { p: "Linear Equivalents", a: "2.54 centimeters = 1 inch; 12 inches = 1 foot; 5,280 feet = 1 mile" },
-    15: { p: "Metric Measurements", a: "10 millimeters = 1 centimeter; 100 centimeters = 1 meter; 1,000 meters = 1 kilometer" },
-    16: { p: "Area of a Rectangle", a: "The area of a rectangle equals length times width" },
-    17: { p: "Area of a Square", a: "The area of a square equals length of its side squared" },
-    18: { p: "Area of a Triangle", a: "The area of a triangle equals one-half base times height" },
-    19: { p: "Area of a Circle", a: "The area of a circle equals pi (3.14) times the radius squared" },
-    20: { p: "Circumference of a Circle", a: "The circumference of a circle equals 2 times pi (3.14) times the radius" },
-    21: { p: "The Associative Law", a: "Addition: (a+b)+c = a+(b+c); Multiplication: (a*b)*c = a*(b*c)" },
-    22: { p: "The Commutative Law", a: "Addition: a+b = b+a; Multiplication: a*b = b*a" },
-    23: { p: "The Distributive Law", a: "a(b+c) = ab + ac" },
-    24: { p: "The Identity Law", a: "Addition: a+0 = a; Multiplication: a*1 = a" }
+const cycleData = {
+  1: {
+    "Math": {
+      1: { p: "1s and 2s", a: "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15; 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30" },
+      2: { p: "3s and 4s", a: "3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45; 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60" },
+      3: { p: "5s and 6s", a: "5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75; 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90" },
+      4: { p: "7s and 8s", a: "7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 91, 98, 105; 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120" },
+      5: { p: "9s and 10s", a: "9, 18, 27, 36, 45, 54, 63, 72, 81, 90, 99, 108, 117, 126, 135; 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150" },
+      6: { p: "11s and 12s", a: "11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 132, 143, 154, 165; 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 168, 180" },
+      7: { p: "13s", a: "13, 26, 39, 52, 65, 78, 91, 104, 117, 130, 143, 156, 169, 182, 195" },
+      8: { p: "14s", a: "14, 28, 42, 56, 70, 84, 98, 112, 126, 140, 154, 168, 182, 196, 210" },
+      9: { p: "15s", a: "15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225" },
+      10: { p: "Squares", a: "1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225" },
+      11: { p: "Cubes", a: "1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375" },
+      12: { p: "Teaspoons and Tablespoons", a: "3 teaspoons = 1 tablespoon; 2 tablespoons = 1 fluid ounce" },
+      13: { p: "Liquid Equivalents", a: "8 fluid ounces = 1 cup; 2 cups = 1 pint; 2 pints = 1 quart; 4 quarts = 1 gallon" },
+      14: { p: "Linear Equivalents", a: "2.54 centimeters = 1 inch; 12 inches = 1 foot; 5,280 feet = 1 mile" },
+      15: { p: "Metric Measurements", a: "10 millimeters = 1 centimeter; 100 centimeters = 1 meter; 1,000 meters = 1 kilometer" },
+      16: { p: "Area of a Rectangle", a: "length times width" },
+      17: { p: "Area of a Square", a: "length of its side squared" },
+      18: { p: "Area of a Triangle", a: "one-half base times height" },
+      19: { p: "Area of a Circle", a: "pi (3.14) times the radius squared" },
+      20: { p: "Circumference of a Circle", a: "2 times pi (3.14) times the radius" },
+      21: { p: "The Associative Law", a: "Addition: (a+b)+c = a+(b+c); Multiplication: (a*b)*c = a*(b*c)" },
+      22: { p: "The Commutative Law", a: "Addition: a+b = b+a; Multiplication: a*b = b*a" },
+      23: { p: "The Distributive Law", a: "a(b+c) = ab + ac" },
+      24: { p: "The Identity Law", a: "Addition: a+0 = a; Multiplication: a*1 = a" }
+    },
+    "Latin": {
+      1: { p: "Noun Cases", a: "nominative-subject, genitive-possessive, dative-indirect object, accusative-direct object, ablative-object of the prep." },
+      2: { p: "Noun Cases", a: "nominative-subject, genitive-possessive, dative-indirect object, accusative-direct object, ablative-object of the prep." },
+      3: { p: "1st Declension Noun Endings (Singular)", a: "-a, -ae, -ae, -am, -ā" },
+      4: { p: "1st Declension Noun Endings (Plural)", a: "-ae, -ārum, -is, -ās, -is" },
+      5: { p: "2nd Declension Noun Endings (Singular)", a: "-us, -i, -o, -um, -o" },
+      6: { p: "2nd Declension Noun Endings (Plural)", a: "-i, -ōrum, -is, -ōs, -is" },
+      7: { p: "3rd Declension Noun Endings (Singular)", a: "various, -is, -i, -em, -e" },
+      8: { p: "3rd Declension Noun Endings (Plural)", a: "-ēs, -um, -ibus, -ēs, -ibus" },
+      9: { p: "4th Declension Noun Endings (Singular)", a: "-us, -ūs, -ui, -um, -ū" },
+      10: { p: "4th Declension Noun Endings (Plural)", a: "-ūs, -uum, -ibus, -ūs, -ibus" },
+      11: { p: "5th Declension Noun Endings (Singular)", a: "-ēs, -ēi, -ēi, -em, -ē" },
+      12: { p: "5th Declension Noun Endings (Plural)", a: "-ēs, -ērum, -ēbus, -ēs, -ēbus" },
+      13: { p: "Noun Cases (Review)", a: "nominative-subject, genitive-possessive, dative-indirect object, accusative-direct object, ablative-object of the prep." },
+      14: { p: "Noun Cases (Review)", a: "nominative-subject, genitive-possessive, dative-indirect object, accusative-direct object, ablative-object of the prep." },
+      15: { p: "1st Declension Endings Review", a: "-a, -ae, -ae, -am, -ā; -ae, -ārum, -is, -ās, -is" },
+      16: { p: "1st Declension Endings Review", a: "-a, -ae, -ae, -am, -ā; -ae, -ārum, -is, -ās, -is" },
+      17: { p: "2nd Declension Endings Review", a: "-us, -i, -o, -um, -o; -i, -ōrum, -is, -ōs, -is" },
+      18: { p: "2nd Declension Endings Review", a: "-us, -i, -o, -um, -o; -i, -ōrum, -is, -ōs, -is" },
+      19: { p: "3rd Declension Endings Review", a: "various, -is, -i, -em, -e; -ēs, -um, -ibus, -ēs, -ibus" },
+      20: { p: "3rd Declension Endings Review", a: "various, -is, -i, -em, -e; -ēs, -um, -ibus, -ēs, -ibus" },
+      21: { p: "4th Declension Endings Review", a: "-us, -ūs, -ui, -um, -ū; -ūs, -uum, -ibus, -ūs, -ibus" },
+      22: { p: "4th Declension Endings Review", a: "-us, -ūs, -ui, -um, -ū; -ūs, -uum, -ibus, -ūs, -ibus" },
+      23: { p: "5th Declension Endings Review", a: "-ēs, -ēi, -ēi, -em, -ē; -ēs, -ērum, -ēbus, -ēs, -ēbus" },
+      24: { p: "5th Declension Endings Review", a: "-ēs, -ēi, -ēi, -em, -ē; -ēs, -ērum, -ēbus, -ēs, -ēbus" }
+    },
+    "Science": {
+      1: { p: "What are the classifications of living things?", a: "domain, kingdom, phylum, class, order, family, genus, species" },
+      2: { p: "What are the kingdoms of living things?", a: "animalia, plantae, protista, fungi, archaea, bacteria" },
+      3: { p: "What are some parts of an animal cell?", a: "nucleus, cytoplasm, vacuole, mitochondria, cell membrane, Golgi bodies" },
+      4: { p: "What are some parts of a plant cell?", a: "nucleus, cytoplasm, vacuole, mitochondria, cell membrane, cell wall, chloroplasts, Golgi bodies" },
+      5: { p: "What are the major groups of invertebrates?", a: "sponges, stinging-cell animals, flatworms, roundworms, segmented worms, mollusks, sea stars, arthropods" },
+      6: { p: "What are the major groups of vertebrates?", a: "fish, amphibians, reptiles, birds, mammals" },
+      7: { p: "What are some ways animals reproduce?", a: "live birth, eggs, fragmentation, budding" },
+      8: { p: "What are some plant systems?", a: "photosynthesis, respiration, transpiration" },
+      9: { p: "What are some parts of a plant?", a: "leaves, stems, roots" },
+      10: { p: "What are some leaf shapes?", a: "linear, oval, lobed, cleft, scalelike, needlelike" },
+      11: { p: "What are some parts of a flower?", a: "stamen, anther, pistil, sepal, petal" },
+      12: { p: "What are some types of seed plants?", a: "monocot, dicot, conifer" },
+      13: { p: "What are some parts of the geosphere?", a: "core, mantle, crust" },
+      14: { p: "What are three kinds of rock?", a: "sedimentary, metamorphic, igneous" },
+      15: { p: "Continent's highest mountains?", a: "Everest (Asia), Aconcagua (S. Am), Denali (N. Am), Kilimanjaro (Africa), Elbrus (Europe), Kosciuszko (Australia), Vinson Massif (Antarctica)" },
+      16: { p: "What are four kinds of volcanoes?", a: "active, intermittent, dormant, extinct" },
+      17: { p: "What are some parts of a volcano?", a: "vents, magma, lava, crater, gases" },
+      18: { p: "What are four types of ocean floor?", a: "continental shelf, abyssal plain, mid-ocean ridge, trench" },
+      19: { p: "What are some ocean zones?", a: "epipelagic, mesopelagic, bathypelagic, abyssalpelagic" },
+      20: { p: "What are some parts of the atmosphere?", a: "troposphere, stratosphere, mesosphere, thermosphere, exosphere" },
+      21: { p: "What are five circles of latitude?", a: "Arctic Circle, Tropic of Cancer, Equator, Tropic of Capricorn, Antarctic Circle" },
+      22: { p: "What are some kinds of weather fronts?", a: "cold, warm, stationary, occluded" },
+      23: { p: "What are some types of clouds?", a: "cumulonimbus, cirrus, stratus, cumulus, stratocumulus" },
+      24: { p: "What are some markings on the globe?", a: "latitude, longitude, Prime Meridian, degrees, Northern/Southern Hemispheres" }
+    },
+    "English": {
+      1: { p: "A Preposition", a: "A preposition relates a noun or pronoun to another word." },
+      2: { p: "Prepositions: about - along", a: "about, above, across, after, against, along" },
+      3: { p: "Prepositions: amid - atop", a: "amid, among, around, at, atop" },
+      4: { p: "Prepositions: before - between", a: "before, behind, below, beneath, beside, between" },
+      5: { p: "Prepositions: beyond - down", a: "beyond, but, by, concerning, down" },
+      6: { p: "Prepositions: during - from", a: "during, except, for, from" },
+      7: { p: "Prepositions: in - into", a: "in, inside, into, like" },
+      8: { p: "Prepositions: near - onto", a: "near, of, off, on, onto" },
+      9: { p: "Prepositions: out - past", a: "out, outside, over, past" },
+      10: { p: "Prepositions: regarding - toward", a: "regarding, since, through, throughout, toward" },
+      11: { p: "Prepositions: under - upon", a: "under, underneath, until, up, upon" },
+      12: { p: "Prepositions: with - without", a: "with, within, without" },
+      13: { p: "Compound Prepositions", a: "according to, in addition to, except for, in front of, out of, instead of" },
+      14: { p: "A Helping Verb", a: "A helping verb helps another verb assert action, being, or existence." },
+      15: { p: "Helping Verbs: do, does, did", a: "do, does, did" },
+      16: { p: "Helping Verbs: has, have, had", a: "has, have, had" },
+      17: { p: "Helping Verbs: may, might, must", a: "may, might, must" },
+      18: { p: "Helping Verbs: should, could, would", a: "should, could, would" },
+      19: { p: "Helping Verbs: shall, will, can", a: "shall, will, can" },
+      20: { p: "A Linking Verb", a: "A linking verb makes an assertion by joining two words." },
+      21: { p: "Linking Verb: To Be", a: "be, am, is, are, was, were, being, been" },
+      22: { p: "Linking Verbs: feel - taste", a: "feel, become, remain, taste" },
+      23: { p: "Linking Verbs: seem - sound", a: "seem, appear, look, sound" },
+      24: { p: "Linking Verbs: stay - grow", a: "stay, smell, grow" }
+    },
+    "History": {
+      1: { p: "Commandments 1-5", a: "1. No other gods, 2. No idols, 3. No misuse of Name, 4. Sabbath, 5. Honor parents" },
+      2: { p: "Commandments 6-10", a: "6. No murder, 7. No adultery, 8. No stealing, 9. No lying, 10. No coveting" },
+      3: { p: "Greek and Roman gods", a: "Gk: Zeus, Hera, Ares, Aphrodite, Hermes, Athena, Poseidon; Rm: Jupiter, Juno, Mars, Venus, Mercury, Minerva, Neptune" },
+      4: { p: "Seven Wonders of the Ancient World", a: "Pyramids, Hanging Gardens, Temple of Artemis, Statue of Zeus, Mausoleum, Pharos Lighthouse, Colossus" },
+      5: { p: "The Romans", a: "Republic became Empire 27 BC; Pax Romana; divided AD 286; West fell AD 476" },
+      6: { p: "Ancient Greeks", a: "Homer (poet), Pythagoras (math), Socrates (philosophy), Archimedes (inventor)" },
+      7: { p: "India: Hinduism/Buddhism", a: "Hinduism (karma, reincarnation, caste); Buddhism (self-denial for enlightenment)" },
+      8: { p: "Age of Imperialism", a: "British rule over India (1858); Victoria Empress (1877); Gandhi led independence" },
+      9: { p: "China: Lao-Tzu and Confucius", a: "Taoism (harmony with nature); Confucius (compassion and obedience)" },
+      10: { p: "Japan's Heian period", a: "Capital to Kyoto 794; Shoguns took control; Samurai protected landowners" },
+      11: { p: "Constantine and Byzantine Empire", a: "Legalized Christianity; Constantinople AD 330; Justinian's Code; fell 1453" },
+      12: { p: "The Muslim Empire", a: "Founded 622 by Muhammad; Mecca holy city; Turks expanded empire 1400s" },
+      13: { p: "The Kush", a: "Gold mining along Nile; Berbers traded gold, iron, salt in desert" },
+      14: { p: "Trade in Africa", a: "Ghana (land of gold 700); Mali trade 1240 (Timbuktu); Songhai empire 1400s" },
+      15: { p: "Prince Henry of Portugal", a: "School of navigation 1400s; advanced exploration and slave trade" },
+      16: { p: "Civilizations of Mesoamerica", a: "Olmecs, Mayans, Aztecs (1200 BC - AD 1500)" },
+      17: { p: "The Aztecs", a: "Pyramids for human sacrifice; fell to Cortés in 1519" },
+      18: { p: "Mound Builders", a: "Adena, Hopewell, Mississippians (1000 BC - AD 1450)" },
+      19: { p: "The Anasazi", a: "Adobe villages in caves and on cliffs (500 BC - AD 1200)" },
+      20: { p: "Mexican Revolution", a: "Circa 1910: Pancho Villa and Emiliano Zapata fought for 'Land and Liberty'" },
+      21: { p: "Exploration of Canada", a: "John Cabot and Samuel de Champlain; Hudson's Bay Company 1670" },
+      22: { p: "British North America Act 1867", a: "Established Dominion of Canada; independent 1982; French in Quebec" },
+      23: { p: "Liberation of South America", a: "San Martín, O'Higgins, Bolívar fought Spain early 1800s" },
+      24: { p: "Portuguese Empire", a: "King John VI fled to Brazil; Dom Pedro I declared independence 1822" }
+    },
+    "Geography": {
+      1: { p: "Fertile Crescent", a: "Mediterranean Sea, Mesopotamia, Euphrates, Tigris, Sumer" },
+      2: { p: "Assyrian Empire", a: "Red Sea, Persian Gulf, Caspian Sea, Black Sea, Babylon" },
+      3: { p: "Hebrew Empire", a: "Judah, Israel, Jordan River, Dead Sea, Phoenicia, Sea of Galilee" },
+      4: { p: "Hittite Empire", a: "Hattusa, Asia Minor, Cyprus, Arabian Desert" },
+      5: { p: "Egyptian Empire", a: "Nile River, Upper/Lower Egypt, Nile Delta" },
+      6: { p: "Ancient Greece", a: "Aegean Sea, Macedonia, Crete, Rhodes" },
+      7: { p: "Roman Empire", a: "Hispania, Gaul, Germania, Rome, Carthage" },
+      8: { p: "Indus River Valley", a: "Ganges River, Arabian Sea, Himalayas, Bay of Bengal, Great Indian Desert" },
+      9: { p: "China", a: "Mongolia, Yellow Sea, Yellow River, Yangtze River, Beijing" },
+      10: { p: "Japan", a: "Kyoto, Tokyo, Mt. Fuji, Pacific Ocean, Sea of Japan" },
+      11: { p: "Byzantine Empire", a: "Constantinople, Rome, Athens, Alexandria, Antioch" },
+      12: { p: "Muslim Empire", a: "Mecca, Medina, Baghdad, Damascus, Tours" },
+      13: { p: "Western Africa", a: "Senegal River, Niger River, Sahara Desert, Ivory Coast" },
+      14: { p: "Ancient Africa", a: "Ancient Ghana, Ancient Mali, Songhai Empire, Western Sahara, Fez" },
+      15: { p: "Middle East", a: "Israel, Sinai Peninsula, Suez Canal, Cairo, Gaza Strip" },
+      16: { p: "African Waters", a: "Congo River, Lake Victoria, Zambezi River, Orange River" },
+      17: { p: "African Countries", a: "Ethiopia, Mozambique, Zimbabwe, South Africa, Madagascar" },
+      18: { p: "Mesoamerica Regions", a: "Gulf of Mexico, Yucatan, Olmec, Maya, Aztec" },
+      19: { p: "Mesoamerica Cities", a: "Mexico City, Chichen Itza, Mayapan, Oaxaca, Lake Texcoco" },
+      20: { p: "Dominion of Canada", a: "Ontario, Quebec, New Brunswick, Nova Scotia" },
+      21: { p: "Canadian Waters", a: "Great Bear/Slave Lakes, Hudson Bay, Baffin Bay, Labrador Sea" },
+      22: { p: "South America (West)", a: "Venezuela, Colombia, Ecuador, Peru, Bolivia, Chile" },
+      23: { p: "South America (East)", a: "Guyana, Suriname, French Guiana, Brazil, Uruguay, Paraguay, Argentina" },
+      24: { p: "North Atlantic", a: "Greenland, Iceland, Denmark Strait, Davis Strait" }
+    },
+    "Bible": {
+      1: { p: "Creation Days 1-3", a: "1: Earth/Space/Time/Light; 2: Atmosphere; 3: Dry land/Plants" },
+      2: { p: "Creation Days 4-6", a: "4: Sun/Moon/Stars; 5: Fish/Sea creatures/Birds; 6: Land animals/Man/Woman" },
+      3: { p: "Covenant with Adam", a: "To send a Redeemer to the world" },
+      4: { p: "Noah", a: "Built an ark at God's command to save his family from the Great Flood." },
+      5: { p: "Covenant with Noah", a: "Save family; be fruitful; never destroy human race by flood again" },
+      6: { p: "Tower of Babel", a: "Event that caused people to speak different languages." },
+      7: { p: "Covenant with Abraham", a: "Promise of land, descendants, blessing, and redemption." },
+      8: { p: "Job", a: "God-fearing man who endured loss as God demonstrated His authority." },
+      9: { p: "Ishmael", a: "Son of Abraham through whom the Arab people came." },
+      10: { p: "Isaac", a: "Son of Abraham through whom the Jewish people came." },
+      11: { p: "Isaac's sons", a: "Esau and Jacob (Israel)" },
+      12: { p: "Sons of Israel (1-6)", a: "Reuben, Simeon, Levi, Judah, Dan, Naphtali" },
+      13: { p: "Sons of Israel (7-12)", a: "Gad, Asher, Issachar, Zebulun, Joseph, Benjamin" },
+      14: { p: "Joseph", a: "Betrayed by brothers; sold into slavery; saved family from famine in Egypt." },
+      15: { p: "Moses' Job", a: "Deliver the Israelites from Egyptian slavery." },
+      16: { p: "Aaron", a: "Moses' older brother and right-hand man." },
+      17: { p: "Plagues of Egypt (1-5)", a: "1. Blood, 2. Frogs, 3. Gnats/Lice, 4. Flies, 5. Death of cattle" },
+      18: { p: "Plagues of Egypt (6-10)", a: "6. Boils, 7. Hail, 8. Locusts, 9. Darkness, 10. Death of firstborn" },
+      19: { p: "Covenant with Moses", a: "Blessings and curses; Israel a kingdom of priests and holy nation" },
+      20: { p: "Jewish Feasts (1-5)", a: "1. Passover, 2. Unleavened Bread, 3. First Fruits, 4. Pentecost, 5. Trumpets" },
+      21: { p: "Jewish Feasts (6-10)", a: "6. Atonement, 7. Booths, 8. Rejoicing Law, 9. Dedication, 10. Lots" },
+      22: { p: "The Tabernacle", a: "A portable tent of meeting with God." },
+      23: { p: "Five Sacrifices", a: "Sin, Guilt, Burnt, Grain, and Fellowship offerings." },
+      24: { p: "Seven parts of Tabernacle", a: "Brazen altar, Laver, Lampstand, Showbread, Incense, Veil, Ark" }
+    },
+    "Timeline": {
+      1: { p: "Age of Ancient Empires", a: "Creation, Fall, Flood, Tower of Babel, Mesopotamia, Sumer, Egyptians, Indus Valley" },
+      2: { p: "Ancient World - Shang", a: "Seven Wonders, Patriarchs, Hittites, Canaanites, Kush, Assyrians, Babylonians, Shang Dynasty" },
+      3: { p: "Hinduism - Israel Divides", a: "Hinduism, Phoenicians, Olmecs, Exodus, Judges, Greek Dark Ages, United Kingdom, Israel Divides" },
+      4: { p: "Homer - Lao-Tzu", a: "Homer, Rome Founded, Israel falls to Assyria, Assyria falls to Babylon, Lao-Tzu, Confucius, Buddha" },
+      5: { p: "Judah falls - Alexander", a: "Judah falls to Babylon, Temple destroyed, Return/Rebuild, Roman Republic, Golden Age of Greece, Alexander the Great" },
+      6: { p: "Mauryans - Jesus", a: "Mauryans, Mayans, Punic Wars, Rome conquers Greece, Julius Caesar, Caesar Augustus, John the Baptist, Jesus the Messiah" },
+      7: { p: "Pentecost - Barbarians", a: "Early Church, Persecution, Temple destroyed, Diocletian, Constantine, Gupta Dynasty, Council of Nicea, Western Roman Empire falls" },
+      8: { p: "Chalcedon - Muhammad", a: "Council of Chalcedon, Justinian, Benedict, Muhammad founds Islam" },
+      9: { p: "Early Ghana - Charlemagne", a: "Zanj/Ghana, Franks defeat Muslims, Golden Age of Islam, Vikings, Heian Period, Charlemagne crowned" },
+      10: { p: "Alfred - Feudalism", a: "Alfred the Great, Explorers, Vladimir I, Basil II, East-West Schism, Norman Conquest" },
+      11: { p: "Crusades - Magna Carta", a: "Crusades, Mali, Aztecs, Francis of Assisi, Shoguns, Incas, Genghis Khan, Magna Carta" },
+      12: { p: "Ottomans - Ming", a: "Ottoman Empire, Marco Polo, 100 Years' War, Renaissance, Ming Dynasty" },
+      13: { p: "Age of Exploration", a: "Prince Henry, Slave Trade, Gutenberg, Songhai, Ivan the Great" },
+      14: { p: "Inquisition - Hudson", a: "Inquisition, Columbus, Absolute Monarchs, Reformation, Conquistadors, Jamestown, Hudson's Bay Co." },
+      15: { p: "Awakening - Bill of Rights", a: "First Great Awakening, Seven Years' War, Age of Industry, American Revolution, Bill of Rights" },
+      16: { p: "Fr Revolution - 1812", a: "French Revolution, Second Great Awakening, Louisiana Purchase, Napoleon, South America, War of 1812" },
+      17: { p: "Compromise - Darwin", a: "Missouri Compromise, Immigrants, Monroe Doctrine, Trail of Tears, Marx, Dred Scott, Trade with Japan, Queen Victoria, Darwin" },
+      18: { p: "War between States", a: "Lincoln's War, Reconstruction, Dominion of Canada, Otto von Bismarck, Boer Wars, Spanish-American War" },
+      19: { p: "Progressive - Bolshevik", a: "Progressive Era, Australia, Mexican Revolution, World War I, Lenin and Bolshevik Revolution" },
+      20: { p: "Depression - UN", a: "Billy Graham, Great Depression, World War II, Stalin, United Nations" },
+      21: { p: "Cold War - Vietnam", a: "Cold War, Gandhi, Jewish State, Mao, NATO, Korean War, MLK Jr., Elliots, Antarctic Treaty, Vietnam War" },
+      22: { p: "Moon - 9/11", a: "Astronauts walk on moon, Age of Information, Watergate, Fall of Communism, European Union, Apartheid abolished, 9/11" },
+      23: { p: "Globalization", a: "Age of Information and Globalization, European Union Formed" },
+      24: { p: "U.S. Presidents", a: "Washington to Biden (all 46 presidents)" }
+    }
   },
+
+  2: {
+    "Math": {
+      1: { p: "1s and 2s", a: "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15; 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30" },
+      2: { p: "3s and 4s", a: "3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45; 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60" },
+      3: { p: "5s and 6s", a: "5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75; 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90" },
+      4: { p: "7s and 8s", a: "7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 91, 98, 105; 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120" },
+      5: { p: "9s and 10s", a: "9, 18, 27, 36, 45, 54, 63, 72, 81, 90, 99, 108, 117, 126, 135; 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150" },
+      6: { p: "11s and 12s", a: "11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 132, 143, 154, 165; 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 168, 180" },
+      7: { p: "13s", a: "13, 26, 39, 52, 65, 78, 91, 104, 117, 130, 143, 156, 169, 182, 195" },
+      8: { p: "14s", a: "14, 28, 42, 56, 70, 84, 98, 112, 126, 140, 154, 168, 182, 196, 210" },
+      9: { p: "15s", a: "15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225" },
+      10: { p: "Squares", a: "1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225" },
+      11: { p: "Cubes", a: "1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375" },
+      12: { p: "Teaspoons and Tablespoons", a: "3 teaspoons equals 1 tablespoon; 2 tablespoons equals 1 fluid ounce" },
+      13: { p: "Liquid Equivalents", a: "8 fluid ounces = 1 cup; 2 cups = 1 pint; 2 pints = 1 quart; 4 quarts = 1 gallon" },
+      14: { p: "Linear Equivalents", a: "2.54 centimeters = 1 inch; 12 inches = 1 foot; 5,280 feet = 1 mile" },
+      15: { p: "Metric Measurements", a: "10 millimeters = 1 centimeter; 100 centimeters = 1 meter; 1,000 meters = 1 kilometer" },
+      16: { p: "Area of a Rectangle", a: "The area of a rectangle equals length times width" },
+      17: { p: "Area of a Square", a: "The area of a square equals length of its side squared" },
+      18: { p: "Area of a Triangle", a: "The area of a triangle equals one-half base times height" },
+      19: { p: "Area of a Circle", a: "The area of a circle equals pi (3.14) times the radius squared" },
+      20: { p: "Circumference of a Circle", a: "The circumference of a circle equals 2 times pi (3.14) times the radius" },
+      21: { p: "The Associative Law", a: "Addition: (a+b)+c = a+(b+c); Multiplication: (a*b)*c = a*(b*c)" },
+      22: { p: "The Commutative Law", a: "Addition: a+b = b+a; Multiplication: a*b = b*a" },
+      23: { p: "The Distributive Law", a: "a(b+c) = ab + ac" },
+      24: { p: "The Identity Law", a: "Addition: a+0 = a; Multiplication: a*1 = a" }
+    },
+    "Latin": {
+      1: { p: "1st Conjugation Endings: Present Tense", a: "-o, -s, -t, -mus, -tis, -nt" },
+      2: { p: "1st Conjugation Endings: Present Tense", a: "-o, -s, -t, -mus, -tis, -nt" },
+      3: { p: "1st Conjugation Endings: Imperfect Tense", a: "-bam, -bas, -bat, -bamus, -batis, -bant" },
+      4: { p: "1st Conjugation Endings: Imperfect Tense", a: "-bam, -bas, -bat, -bamus, -batis, -bant" },
+      5: { p: "1st Conjugation Endings: Future Tense", a: "-bo, -bis, -bit, -bimus, -bitis, -bunt" },
+      6: { p: "1st Conjugation Endings: Future Tense", a: "-bo, -bis, -bit, -bimus, -bitis, -bunt" },
+      7: { p: "1st Conjugation Endings: Perfect Tense", a: "-i, -isti, -it, -imus, -istis, -erunt" },
+      8: { p: "1st Conjugation Endings: Perfect Tense", a: "-i, -isti, -it, -imus, -istis, -erunt" },
+      9: { p: "1st Conjugation Endings: Pluperfect Tense", a: "-eram, -eras, -erat, -eramus, -eratis, -erant" },
+      10: { p: "1st Conjugation Endings: Pluperfect Tense", a: "-eram, -eras, -erat, -eramus, -eratis, -erant" },
+      11: { p: "1st Conjugation Endings: Future Perfect Tense", a: "-ero, -eris, -erit, -erimus, -eritis, -erint" },
+      12: { p: "1st Conjugation Endings: Future Perfect Tense", a: "-ero, -eris, -erit, -erimus, -eritis, -erint" },
+      13: { p: "1st Conjugation Endings: Present Tense", a: "-o, -s, -t, -mus, -tis, -nt" },
+      14: { p: "1st Conjugation Endings: Present Tense", a: "-o, -s, -t, -mus, -tis, -nt" },
+      15: { p: "1st Conjugation Endings: Imperfect Tense", a: "-bam, -bas, -bat, -bamus, -batis, -bant" },
+      16: { p: "1st Conjugation Endings: Imperfect Tense", a: "-bam, -bas, -bat, -bamus, -batis, -bant" },
+      17: { p: "1st Conjugation Endings: Future Tense", a: "-bo, -bis, -bit, -bimus, -bitis, -bunt" },
+      18: { p: "1st Conjugation Endings: Future Tense", a: "-bo, -bis, -bit, -bimus, -bitis, -bunt" },
+      19: { p: "1st Conjugation Endings: Perfect Tense", a: "-i, -isti, -it, -imus, -istis, -erunt" },
+      20: { p: "1st Conjugation Endings: Perfect Tense", a: "-i, -isti, -it, -imus, -istis, -erunt" },
+      21: { p: "1st Conjugation Endings: Pluperfect Tense", a: "-eram, -eras, -erat, -eramus, -eratis, -erant" },
+      22: { p: "1st Conjugation Endings: Pluperfect Tense", a: "-eram, -eras, -erat, -eramus, -eratis, -erant" },
+      23: { p: "1st Conjugation Endings: Future Perfect Tense", a: "-ero, -eris, -erit, -erimus, -eritis, -erint" },
+      24: { p: "1st Conjugation Endings: Future Perfect Tense", a: "-ero, -eris, -erit, -erimus, -eritis, -erint" }
+    },
+      "Science": {
+      1: { p: "What occurred on each day of creation?", a: "1: earth, space, time, light; 2: atmosphere; 3: dry land, plants; 4: sun, moon, stars; 5: fish, sea creatures, birds; 6: land animals, Adam, Eve" },
+      2: { p: "What are some land biomes?", a: "grassland, desert, scrubland, tundra, deciduous forest, coniferous forest, tropical rainforest" },
+      3: { p: "What are three types of consumers?", a: "herbivore, carnivore, omnivore" },
+      4: { p: "What are some parts of the food chain?", a: "producer, consumer, decomposer" },
+      5: { p: "What are some cycles in nature?", a: "water cycle, carbon and oxygen cycle, nitrogen cycle" },
+      6: { p: "How do animals react to environmental change?", a: "adapt, migrate, hibernate" },
+      7: { p: "What are six forms of pollution?", a: "noise, air, water, land, thermal, radioactive" },
+      8: { p: "What are some aquatic biomes?", a: "ponds and lakes, streams and rivers, wetlands and estuaries, oceans and seas" },
+      9: { p: "What are some parts of the sun?", a: "core, radiative zone, convective zone, sunspots, photosphere, solar flare, corona" },
+      10: { p: "What are the names of the planets?", a: "Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune" },
+      11: { p: "What are the phases of the moon?", a: "new, crescent, quarter, gibbous, full" },
+      12: { p: "What are some other bodies in our solar system?", a: "asteroids, meteroids, meteorites, comets" },
+      13: { p: "What are some names of U.S. space missions?", a: "Mercury, Gemini, Apollo, Shuttle" },
+      14: { p: "What are the states of matter?", a: "solid, liquid, gas, plasma" },
+      15: { p: "What are two forms of energy?", a: "kinetic, potential" },
+      16: { p: "What is Newton's first law of motion?", a: "Newton's first law of motion states that an object at rest tends to remain at rest and an object in motion tends to continue moving in a straight line at constant speed unless an outside force acts upon it." },
+      17: { p: "What is Newton's second law of motion?", a: "Newton's second law of motion states that force equals mass times acceleration ($F=ma$)." },
+      18: { p: "What is Newton's third law of motion?", a: "Newton's third law of motion states that for every action, there is an equal and opposite reaction." },
+      19: { p: "What is the first law of thermodynamics?", a: "The first law of thermodynamics states that energy cannot be created or destroyed." },
+      20: { p: "What is the second law of thermodynamics?", a: "Often called the law of entropy, the second law of thermodynamics explains why heat flows from an area of higher temperature to an area of lower temperature." },
+      21: { p: "What is the third law of thermodynamics?", a: "The third law of thermodynamics explains that it is impossible to reach the state of absolute zero temperature." },
+      22: { p: "What are some ways light is observed?", a: "reflection, refraction, spectrum, wave, particle" },
+      23: { p: "How does heat flow?", a: "radiation, conduction, convection" },
+      24: { p: "What units are used to measure electricity?", a: "ohms measure resistance, volts measure voltage, amps measure current, watts measure power" }
+    },
+    "English": {
+      1: { p: "Parts of Speech", a: "noun, pronoun, verb, adverb, conjunction, interjection, preposition, adjective" },
+      2: { p: "A Pronoun", a: "A pronoun replaces a noun in order to avoid repetition." },
+      3: { p: "Pronoun Order", a: "1st person singular, 2nd person singular, 3rd person singular, 1st person plural, 2nd person plural, 3rd person plural" },
+      4: { p: "Nominative Pronouns", a: "I, you, he/she/it, we, you, they" },
+      5: { p: "Objective Pronouns", a: "me, you, him/her/it, us, you, them" },
+      6: { p: "Possessive Pronouns", a: "mine, yours, his/hers/its, ours, yours, theirs" },
+      7: { p: "Possessive Pronoun Adjectives", a: "my, your, his/her/its, our, your, their" },
+      8: { p: "Reflexive Pronouns", a: "myself, yourself, himself/herself/itself, ourselves, yourselves, themselves" },
+      9: { p: "Interrogative Pronouns", a: "who, whom, whose, which, what" },
+      10: { p: "Demonstrative Pronouns", a: "this, that, these, those" },
+      11: { p: "Indefinite Pronouns", a: "all, another, any, anybody, anyone, anything, both, each, either" },
+      12: { p: "Indefinite Pronouns", a: "everybody, everyone, everything, few, many, more, most, neither" },
+      13: { p: "Indefinite Pronouns", a: "nobody, none, one, other, several, some, somebody, someone, such" },
+      14: { p: "An Adverb", a: "An adverb modifies a verb, adjective, or another adverb—and answers the questions: How? When? Where? and Why?" },
+      15: { p: "Four Purposes of Sentences", a: "declarative, exclamatory, interrogative, imperative" },
+      16: { p: "A Verb", a: "A verb is a word that asserts an action, shows a state of being, links two words together, or helps another verb." },
+      17: { p: "A Noun", a: "A noun names a person, place, thing, activity, or idea." },
+      18: { p: "Five Cases of Nouns", a: "subject, direct object, indirect object, object of the preposition, possessive" },
+      19: { p: "A Gerund", a: "A gerund is a present participle verb form used as a noun." },
+      20: { p: "An Appositive", a: "An appositive is a noun or pronoun directly beside another noun that explains or identifies it." },
+      21: { p: "A Conjunction", a: "A conjunction is a word used to connect words, phrases, or clauses together." },
+      22: { p: "Coordinating Conjunctions", a: "For, And, Nor, But, Or, Yet, So (FANBOYS)" },
+      23: { p: "An Adjective", a: "An adjective modifies a noun or pronoun by describing, qualifying, or limiting—and answers the questions: What kind? How many? Which? Whose?" },
+      24: { p: "An Interjection", a: "An interjection is a word or phrase used as a strong expression of feeling or emotion." }
+    },
+    "History": {
+      1: { p: "Tell me about Charlemagne.", a: "In 800, during the medieval period, Pope Leo III crowned Charlemagne Holy Roman Emperor of Europe." },
+      2: { p: "Tell me about William the Conqueror.", a: "In 1054,the church split into Roman Catholic and Eastern Orthodox. William the Conqueror defeated King Harold of England in 1066 and started feudalism." },
+      3: { p: "Tell me about the Crusades.", a: "Richard the Lion-Hearted, son of Eleanor of Aquitaine, fought the Turks for Jerusalem during the time of the Crusades, from 1095 to 1291." },
+      4: { p: "Tell me about the Magna Carta.", a: "English King John signed the Magna Carta in 1215, limiting the king's power. Later, England's King Edward III claimed to be king of France and began the Hundred Years' War in 1337." },
+      5: { p: "Tell me about the Hundred Years' War.", a: "During the Hundred Years' War, Joan of Arc and King Charles VII led the French to defeat the English at the Siege of Orleans. In the late 1340s fleas on rats carried the plague, which killed one of out three Europeans" },
+      6: { p: "Tell me about the Renaissance.", a: "During the Renaissance period, from 1350 to 1600, Leonardo da Vinci was a famous inventor, Shakespeare was a famous playwright, Michelangelo was a famous artist, and Copernicus was a famous scientist." },
+      7: { p: "Tell me about the Reformation.", a: "In 1517, Martin Luther began the Protestant Reformation by printing the Ninety-Five Theses that made Pope Leo X excommunicate him. Later John Clavin joined the Reformation." },
+      8: { p: "Tell me about European explorers.", a: "Between the late 1400s and the mid-1500s, Dias rounded the Cape of Good Hope, Amerigo Vespucci sailed the the Americas, Balboa crossed Central America to the Pacific, Magellan's crew sailed around the globe, and Coronado explored the American Southwest." },
+      9: { p: "Tell me about some absolute monarchs.", a: "Between the 1500s and 1800s, Henry VIII of England, Louis XIV of France, Philip II of Spain, Peter the Great of Russia, and Frederick the Great of Prussia ruled during the age of absolute monarchs." },
+      10: { p: "Tell me about the history of Russia.", a: "Vladimir I brought Christianity to Russia in the 900s. In the 1500s, Czar Ivan the Terrible unified Russia, Peter the Great and Catherine the Great expanded and Westernized Russia in the 1700s." },
+      11: { p: "Tell me about the French Revolution.", a: "In 1789, the French Revolution began when citizens stormed the Bastille and fought for the Declaration of the Rights of Man. Later, during the Reign of Terror, the aristocrats' heads were removed by the guillotine." },
+      12: { p: "Tell me about the Battle of Waterloo.", a: "Napoleon Bonaparte of the French Empire was defeated at the Battle of Waterloo by British General Wellington and his allies soon after the War of 1812 in the United States." },
+      13: { p: "Tell me about the Industrial Revolution.", a: "Watt's steam engine, Cartwright's power loom, and Whitney's cotton gin spurred the Industrial Revolution that began in the 1760s." },
+      14: { p: "Tell me about World War I leaders.", a: "Clemenceau of France, Lloyd George of England, Nicholas II of Russia, Wilhelm II of Germany, and Wilson of the United States were leaders during World War I, which started in 1914 and ended in 1918." },
+      15: { p: "Tell me about World War I countries.", a: "During World War I, Great Britain, France and Russia were Allies and fought against Austria-Hungary and Germany, which were called the Central Powers. In 1917, the United States entered the war, assisting the Allies" },
+      16: { p: "Tell me about how World War II began.", a: "World War II began in 1939 when Hitler invaded Poland. Two engagements that helped the United States win the Pacific front were defeating Japan at the Battle of Midway dropping atomic bombs on Hiroshima and Nagasaki in 1945." },
+      17: { p: "Tell me about World War II leaders.", a: "World War II Axis leaders were: Hitler of Germany, Tojo of Japan, and Mussolini of Italy. World War II Allied leaders were: Churchill of England, Roosevelt, Eisenhower and MacArthur of the United States and Stalin of the USSR." },
+      18: { p: "Tell me about the United Nations.", a: "In 1945, after the League of Nations failed to prevent World War II, American President Roosevelt, British Prime Minister Churchill, and Soviet Premier Stalin began the United Nations." },
+      19: { p: "Tell me about the Korean War.", a: "In 1950, General Douglas MacArthur led United Nations forces to stop communist North Korea from capturing all of South Korea during the Korean War." },
+      20: { p: "Tell me about the Vietnam War.", a: "In 1965, President Johnson sent U.S. troops to stop communist North Vietnam from capturing all of South Vietnam during the Vietnam War." },
+      21: { p: "Tell me about the end of the Cold War.", a: "In the 1980s, British Prime Minister Margaret Thatcher and American President Ronald Reagan worked together to end the Cold War, lessen big government, and strengthen the conservative movement." },
+      22: { p: "Tell me about the fall of communism.", a: "In 1989, the communist dictators began to fall in Eastern Europe when Soviet General Secretary Gorbachev refused to send military aid." },
+      23: { p: "Tell me about the Gulf War.", a: "In 1990, President George H. W. Bush sent troops to the Persian Gulf to expel Iraqi leader Saddam Hussein from Kuwait during the Gulf War." },
+      24: { p: "Tell me about the end of apartheid.", a: "In 1994, South African President de Klerk allowed free elections. Nelson Mandela became South Africa's first black president, demonstrating apartheid was ending." }
+    },
+    "Geography": {
+      1: { p: "Continents/Oceans", a: "Continents: North America, South America, Europe, Asia, Africa, Australia, Antarctica; Oceans: Indian Ocean, Arctic Ocean, Atlantic Ocean, Pacific Ocean, Southern Ocean" },
+      2: { p: "European Waters", a: "North Sea, Baltic Sea, English Channel, Mediterranean Sea, Adriatic Sea" },
+      3: { p: "Western European Countries", a: "Ireland, England, Portugal, Spain, France" },
+      4: { p: "European Rivers", a: "Seine River, Rhine River, Elbe River, Po River, Danube River, Volga River" },
+      5: { p: "European Cities", a: "London, Paris, Rome, Barcelona, Orleans" },
+      6: { p: "European Mountains", a: "Pyrenees, Alps, Carpathians, Caucasus, Ural, Matterhorn" },
+      7: { p: "European Peninsulas", a: "Iberian, Scandinavian, Balkan, Apennine" },
+      8: { p: "Mid-Atlantic World", a: "Cape of Good Hope, Strait of Magellan, Canary Islands, Treaty of Tordesillas" },
+      9: { p: "The Caribbean", a: "Cuba, Jamaica, Haiti, Dominican Republic, Puerto Rico" },
+      10: { p: "Southwest Asia", a: "Arabian Sea, India, Kolkata, Pakistan, Afghanistan" },
+      11: { p: "Europe and Asia", a: "Russia, Moscow, Ukraine, Kiev, Siberia" },
+      12: { p: "Eastern European Seas", a: "Barents Sea, White Sea, Black Sea, Caspian Sea, Aral Sea" },
+      13: { p: "Northern European Countries", a: "Norway, Sweden, Finland, Denmark" },
+      14: { p: "Baltic Europe", a: "Estonia, Latvia, Lithuania, Poland, Belarus" },
+      15: { p: "The Levant", a: "Turkey, Cyprus, Syria, Iraq, Iran" },
+      16: { p: "The Balkans", a: "Slovenia, Albania, Romania, Bulgaria, Greece" },
+      17: { p: "Central European Countries", a: "Netherlands, Belgium, Luxembourg, Germany, Switzerland" },
+      18: { p: "More European Countries", a: "Italy, Austria, Hungary, Czechia, Slovakia" },
+      19: { p: "Southeastern Asia", a: "North Korea, South Korea, Taiwan, Philippines, Guam" },
+      20: { p: "South Central Asia", a: "Laos, Thailand, Cambodia, North Vietnam, South Vietnam" },
+      21: { p: "Central America", a: "Guatemala, Belize, El Salvador, Honduras, Nicaragua" },
+      22: { p: "Oceania", a: "Indonesia, Papua New Guinea, Australia, Great Barrier Reef, New Zealand" },
+      23: { p: "Central Asia", a: "Kazakhstan, Uzbekistan, Turkmenistan, Tajikistan, Kyrgyzstan" },
+      24: { p: "Southern Africa", a: "Namibia, Botswana, Mozambique, South Africa, Lesotho.                       " }
+    },
+    "Bible": {
+      1: { p: "What are the names of eight significant judges of Israel? (1-4)", a: "1. Othniel, 2. Ehud, 3. Deborah, 4. Gideon" },
+      2: { p: "What are the names of eight significant judges of Israel? (5-8)", a: "5. Jephthah, 6. Samson, 7. Eli, 8. Samuel" },
+      3: { p: "Who are the three kings of united Israel?", a: "1. Saul, 2. David, 3. Solomon" },
+      4: { p: "Who was David?", a: "Warrior, hero, musician, poet, king; fell greatly in sin, yet rose again to love and serve God" },
+      5: { p: "What is God's covenant with David?", a: "That the Messiah would come from the family of David; The tribe of Judah would establish an unending kingdom" },
+      6: { p: "Who oversaw the building of the first Jewish temple?", a: "King Solomon" },
+      7: { p: "What was the consequence of King Solomon's building worship temples to false gods for his pagen wives to worship?", a: "Israel divided into two kingdoms" },
+      8: { p: "Who was the first king of Israel, the northern kingdom?", a: "Jeroboam I" },
+      9: { p: "Who was the first king of Judah, the southern kingdom?", a: "Rehoboam, son of Solomon" },
+      10: { p: "Who are eighteen significant prophets of Israel? (1-6)", a: "1. Elijah, 2. Elisha, 3. Obadiah, 4. Joel, 5. Jonah, 6. Amos" },
+      11: { p: "Who are eighteen significant prophets of Israel? (7-12)", a: "7. Hosea, 8. Isaiah, 9. Micah, 10. Jeremiah, 11. Zephaniah, 12. Habakkuk" },
+      12: { p: "Who are eighteen significant prophets of Israel? (13-18)", a: "13. Nahum, 14. Ezekiel, 15. Daniel, 16. Haggai, 17. Malachi, 18. Zechariah" },
+      13: { p: "What two nations took the Jewish people into captivity?", a: "Assyria (722 BC); Babylon (586 BC)" },
+      14: { p: "Old Testament prophesy about the New Covenant?", a: "Jeremiah" },
+      15: { p: "Destruction of the first Jewish temple in 586 BC?", a: "Babylonian invasion under King Nebuchadnezzar" },
+      16: { p: "Destruction of the second Jewish temple in 70 AD?", a: "Roman soldiers during the first Jewish revolt" },
+      17: { p: "Prophecies in the Old Testament pertain to...", a: "Israel and other nations, The Messiah, End Times" },
+      18: { p: "What are the five main types of Psalms?", a: "Hymns of praise, Songs of thanksgiving, Royal psalms, Wisdom psalms, Laments" },
+      19: { p: "Book of wise instruction for godly life?", a: "Proverbs" },
+      20: { p: "Three Hebrew names of God?", a: "YHWH (Yahweh), 'I am'; Adonai, 'The Lord'; Elohim, 'The all-powerful God'" },
+      21: { p: "Original languages of the Old Testament?", a: "Hebrew and Aramaic" },
+      22: { p: "Emperor of Rome when Jesus was born?", a: "Caesar Augustus" },
+      23: { p: "Age of Jesus teaching in the temple?", a: "12 years old" },
+      24: { p: "How many OT prophecies did Jesus fulfill?", a: "Over 100!" }
+    },
+    "Timeline": {
+      1: { p: "Age of Ancient Empires - Minoans and Mycenaeans", a: "AGE OF ANCIENT EMPIRES (Creation to circa 450 AD), Creation and the Fall, The Flood and the Tower of Babel, Mesopotamia and Sumer, Egyptians, (3000 BC) Indus River Valley Civilization, Minoans and Mycenaeans" },
+      2: { p: "Seven Wonders of the Ancient World - China's Shang Dynasty", a: "Seven Wonders of the Ancient World, Patriarchs of Israel, (2000 BC) Hittites and Canaanites, Kush, Assyrians, Babylonians, China's Shang Dynasty" },
+      3: { p: "Hinduism in India - Israel's United Kingdom", a: "Hinduism in India, Phoenicians and the Alphabet, Olmecs of Mesoamerica, Israelite Exodus and Desert Wandering, Israelite Conquest and Judges, Greek Dark Ages, Israel's United Kingdom" },
+      4: { p: "Early Native Americans - Lao-Tzu, Confucius, Buddha", a: "(1000 BC) Early Native Americans, Israel Divides into Two Kingdoms, Homer and Hesiod, Rome Founded by Romulus and Remus, Israel Falls to Assyria, Assyria Falls to Babylon, Lao-Tzu, Confucius, Buddha" },
+      5: { p: "Judah Falls to Babylon - Persia Falls to Alexander the Great", a: "Judah Falls to Babylon, Temple Destroyed, Babylon Falls to Persia, Jews Return and Rebuild the Temple, Roman Republic, Golden Age of Greece, Peloponnesian Wars, Persia Falls to Alexander the Great" },
+      6: { p: "India's Mauryan Empire - John the Baptist", a: "India's Mauryan Empire, Mayans of Mesoamerica, Punic Wars, Rome Conquers Greece, Roman Dictator Julius Caesar, Caesar Augustus and the Pax Romana, John the Baptist" },
+      7: { p: "Jesus the Messiah - India's Gupta Dynasty", a: "Jesus the Messiah, (Year 1 AD) Pentecost and the Early Church, Persecution Spreads the Gospel, Herod's Temple Destroyed by Titus, Diocletian Divides the Roman Empire, Constantine Legalizes Christianity, India's Gupta Dynasty" },
+      8: { p: "Council of Nicea - Western Roman Empire Falls to Barbarians", a: "Council of Nicea, Augustine of Hippo, Jerome Completes the Vulgate, Visigoths Sack Rome, THE MIDDLE AGES (circa 450-1500) Council of Chalcedon, Western Roman Empire Falls to Barbarians" },
+      9: { p: "Byzantine Emperor Justinian - Vikings Raid and Trade", a: "(500 AD) Byzantine Emperor Justinian, Benedict and Monasticism, Muhammad Founds Islam, Zanj and Early Ghana, Franks Defeat Muslims at the Battle of Tours, Golden Age of Islam, Vikings Raid and Trade" },
+      10: { p: "Japan's Heian Period - East-West Schism of the Church", a: "Japan's Heian Period, Charlemagne Crowned Emperor of Europe, Alfred the Great, Erik the Red and Leif Eriksson, Vladimir I of Kiev, Byzantine Emperor Basil II, (1000 AD) East-West Schism of the Church" },
+      11: { p: "Norman Conquest and Feudalism in Europe - Incas of South America", a: "Norman Conquest and Feudalism in Europe, The Crusades, Zimbabwe and Early Mali in Africa, Aztecs of Mesoamerica, Francis of Assisi and Thomas Aquinas, Japan's Shoguns, Incas of South America" },
+      12: { p: "Genghis Khan Rules the Mongols - China's Ming Dynasty", a: "Genghis Khan Rules the Mongols, England's Magna Carta, Ottoman Empire, Marco Polo's Journey to China, The Hundred Years' War and Black Death, The Renaissance, China's Ming Dynasty" },
+      13: { p: "Age of Exploration - The Spanish Inquisition", a: "AGE OF EXPLORATION (c. 1400-1600), Prince Henry Founds School of Navigation, Slave Trade in Africa, Gutenberg's Printing Press, Songhai in Africa, Czar Ivan the Great of Russia, The Spanish Inquisition" },
+      14: { p: "Columbus Sails to the Caribbean - Baroque Period of the Arts", a: "Columbus Sails to the Caribbean, (1500 AD) AGE OF ABSOLUTE MONARCHS (c. 1500-1800), Protestant Reformation, Spanish Conquistadors in the Americas, Calvin's Institutes of the Christian Religion, Council of Trent, Baroque Period of the Arts" },
+      15: { p: "Japan's Isolation - The Seven Years' War", a: "Japan's Isolation, Jamestown and Plymouth Colony Founded, AGE OF ENLIGHTENMENT (c. 1650-1800), Hudson's Bay Company, First Great Awakening, Classical Period of the Arts, The Seven Years' War" },
+      16: { p: "Age of Industry - Louisiana Purchase and Lewis and Clark Expidition", a: "AGE OF INDUSTRY (c. 1760-1969), James Cook Sails to Australia, American Revolution and General George Washington, Madison's Constitution and the Bill of Rights, French Revolution, Second Great Awakening, Louisiana Purchase and Lewis and Clark Expedition" },
+      17: { p: "Napoleon to Romantic Period of the Arts", a: "Napoleon Crowned Emperor of France, Liberation of South America, The War of 1812, The Missouri Compromise, Immigrants Flock to America, The Monroe Doctrine, Romantic Period of the Arts" },
+      18: { p: "Cherokee Trail of Tears to Darwin Publishes The Origin of Species", a: "Cherokee Trail of Tears, U.S. Westward Expansion, Marx Publishes The Communist Manifesto, The Compromise of 1850 and Dred Scott Decision, U.S. Restores Trade with Japan, British Queen Victoria's Rule Over India, Darwin Publishes The Origin of Species" },
+      19: { p: "Lincoln's War Between the States to The Progressive Era", a: "Lincoln's War Between the States, Reconstruction of the Southen States, Dominion of Canada, Otto von Bismarck Unifies Germany, Boer Wars in Africa, The Spanish-American War, The Progressive Era" },
+      20: { p: "Australia Becomes a Commonwealth to The Great Depression and the New Deal", a: "Australia Becomes a Commonwealth, Mexican Revolution, World War I and President Wilson, Lenin and the Bolshevik Revolution in Russia, U.S. Evangelist Billy Graham, Modern Period of the Arts, The Great Depression and the New Deal" },
+      21: { p: "World War II to Mao and Communist Victory in China", a: "World War II and President Franklin D. Roosevelt, Stalin of the USSR and the Katyn Massacre, The United Nations Formed, The Cold War, Gandhi and India's Independence, Jewish State Established, Mao and Communist Victory in China" },
+      22: { p: "North Atlantic Treaty Organization to U.S. Astronauts Walk on the Moon", a: "North Atlantic Treaty Organization, The Korean War, Martin Luther King, Jr. and the Civil Rights Movement, Jim and Elisabeth Elliot - Missionaries to Ecuador, The Antarctic Treaty, The Vietnam War, U.S. Astronauts Walk on the Moon, " },
+      23: { p: "Age of Information and Globalization to Rising Tide of Freedom", a: "AGE OF INFORMATION AND GLOBALIZATION (c. 1970-present), Watergate and President Nixon Resigns, Fall of Communism in Eastern Europe, European Union Formed, Apartheid Abolished in South Africa, (2000 AD) September 11, 2001, Rising Tide of Freedom" },
+      24: { p: "Canadian Prime Ministers", a: "Macdonald, Mackenzie, Macdonald, Abbott, Thompson, Bowell, Tupper, Laurier, Borden, Meighen, King, Meighen, King, Bennett, King, St. Laurent, Diefenbaker, Pearson, Trudeau, Clark, Trudeau, Turner, Mulroney, Campbell, Chrétien, Martin, Harper, Trudeau, Carney" }
+    }
+  },
+
+  3: {
+    "Math": {
+      1: { p: "1s and 2s", a: "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15; 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30" },
+      2: { p: "3s and 4s", a: "3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45; 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60" },
+      3: { p: "5s and 6s", a: "5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75; 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90" },
+      4: { p: "7s and 8s", a: "7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 91, 98, 105; 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120" },
+      5: { p: "9s and 10s", a: "9, 18, 27, 36, 45, 54, 63, 72, 81, 90, 99, 108, 117, 126, 135; 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150" },
+      6: { p: "11s and 12s", a: "11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 132, 143, 154, 165; 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 168, 180" },
+      7: { p: "13s", a: "13, 26, 39, 52, 65, 78, 91, 104, 117, 130, 143, 156, 169, 182, 195" },
+      8: { p: "14s", a: "14, 28, 42, 56, 70, 84, 98, 112, 126, 140, 154, 168, 182, 196, 210" },
+      9: { p: "15s", a: "15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225" },
+      10: { p: "Squares", a: "1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225" },
+      11: { p: "Cubes", a: "1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375" },
+      12: { p: "Teaspoons and Tablespoons", a: "3 teaspoons equals 1 tablespoon; 2 tablespoons equals 1 fluid ounce" },
+      13: { p: "Liquid Equivalents", a: "8 fluid ounces = 1 cup; 2 cups = 1 pint; 2 pints = 1 quart; 4 quarts = 1 gallon" },
+      14: { p: "Linear Equivalents", a: "2.54 centimeters = 1 inch; 12 inches = 1 foot; 5,280 feet = 1 mile" },
+      15: { p: "Metric Measurements", a: "10 millimeters = 1 centimeter; 100 centimeters = 1 meter; 1,000 meters = 1 kilometer" },
+      16: { p: "Area of a Rectangle", a: "The area of a rectangle equals length times width" },
+      17: { p: "Area of a Square", a: "The area of a square equals length of its side squared" },
+      18: { p: "Area of a Triangle", a: "The area of a triangle equals one-half base times height" },
+      19: { p: "Area of a Circle", a: "The area of a circle equals pi (3.14) times the radius squared" },
+      20: { p: "Circumference of a Circle", a: "The circumference of a circle equals 2 times pi (3.14) times the radius" },
+      21: { p: "The Associative Law", a: "Addition: (a+b)+c = a+(b+c); Multiplication: (a*b)*c = a*(b*c)" },
+      22: { p: "The Commutative Law", a: "Addition: a+b = b+a; Multiplication: a*b = b*a" },
+      23: { p: "The Distributive Law", a: "a(b+c) = ab + ac" },
+      24: { p: "The Identity Law", a: "Addition: a+0 = a; Multiplication: a*1 = a" }
+    },
   "Latin": {
-    1: { p: "1st Conjugation Endings: Present Tense", a: "-o, -s, -t, -mus, -tis, -nt" },
-    2: { p: "1st Conjugation Endings: Present Tense", a: "-o, -s, -t, -mus, -tis, -nt" },
-    3: { p: "1st Conjugation Endings: Imperfect Tense", a: "-bam, -bas, -bat, -bamus, -batis, -bant" },
-    4: { p: "1st Conjugation Endings: Imperfect Tense", a: "-bam, -bas, -bat, -bamus, -batis, -bant" },
-    5: { p: "1st Conjugation Endings: Future Tense", a: "-bo, -bis, -bit, -bimus, -bitis, -bunt" },
-    6: { p: "1st Conjugation Endings: Future Tense", a: "-bo, -bis, -bit, -bimus, -bitis, -bunt" },
-    7: { p: "1st Conjugation Endings: Perfect Tense", a: "-i, -isti, -it, -imus, -istis, -erunt" },
-    8: { p: "1st Conjugation Endings: Perfect Tense", a: "-i, -isti, -it, -imus, -istis, -erunt" },
-    9: { p: "1st Conjugation Endings: Pluperfect Tense", a: "-eram, -eras, -erat, -eramus, -eratis, -erant" },
-    10: { p: "1st Conjugation Endings: Pluperfect Tense", a: "-eram, -eras, -erat, -eramus, -eratis, -erant" },
-    11: { p: "1st Conjugation Endings: Future Perfect Tense", a: "-ero, -eris, -erit, -erimus, -eritis, -erint" },
-    12: { p: "1st Conjugation Endings: Future Perfect Tense", a: "-ero, -eris, -erit, -erimus, -eritis, -erint" },
-    13: { p: "1st Conjugation Endings: Present Tense", a: "-o, -s, -t, -mus, -tis, -nt" },
-    14: { p: "1st Conjugation Endings: Present Tense", a: "-o, -s, -t, -mus, -tis, -nt" },
-    15: { p: "1st Conjugation Endings: Imperfect Tense", a: "-bam, -bas, -bat, -bamus, -batis, -bant" },
-    16: { p: "1st Conjugation Endings: Imperfect Tense", a: "-bam, -bas, -bat, -bamus, -batis, -bant" },
-    17: { p: "1st Conjugation Endings: Future Tense", a: "-bo, -bis, -bit, -bimus, -bitis, -bunt" },
-    18: { p: "1st Conjugation Endings: Future Tense", a: "-bo, -bis, -bit, -bimus, -bitis, -bunt" },
-    19: { p: "1st Conjugation Endings: Perfect Tense", a: "-i, -isti, -it, -imus, -istis, -erunt" },
-    20: { p: "1st Conjugation Endings: Perfect Tense", a: "-i, -isti, -it, -imus, -istis, -erunt" },
-    21: { p: "1st Conjugation Endings: Pluperfect Tense", a: "-eram, -eras, -erat, -eramus, -eratis, -erant" },
-    22: { p: "1st Conjugation Endings: Pluperfect Tense", a: "-eram, -eras, -erat, -eramus, -eratis, -erant" },
-    23: { p: "1st Conjugation Endings: Future Perfect Tense", a: "-ero, -eris, -erit, -erimus, -eritis, -erint" },
-    24: { p: "1st Conjugation Endings: Future Perfect Tense", a: "-ero, -eris, -erit, -erimus, -eritis, -erint" }
-  },
-  "Science": {
-    1: { p: "What occurred on each day of creation?", a: "1: earth, space, time, light; 2: atmosphere; 3: dry land, plants; 4: sun, moon, stars; 5: fish, sea creatures, birds; 6: land animals, Adam, Eve" },
-    2: { p: "What are some land biomes?", a: "grassland, desert, scrubland, tundra, deciduous forest, coniferous forest, tropical rainforest" },
-    3: { p: "What are three types of consumers?", a: "herbivore, carnivore, omnivore" },
-    4: { p: "What are some parts of the food chain?", a: "producer, consumer, decomposer" },
-    5: { p: "What are some cycles in nature?", a: "water cycle, carbon and oxygen cycle, nitrogen cycle" },
-    6: { p: "How do animals react to environmental change?", a: "adapt, migrate, hibernate" },
-    7: { p: "What are six forms of pollution?", a: "noise, air, water, land, thermal, radioactive" },
-    8: { p: "What are some aquatic biomes?", a: "ponds and lakes, streams and rivers, wetlands and estuaries, oceans and seas" },
-    9: { p: "What are some parts of the sun?", a: "core, radiative zone, convective zone, sunspots, photosphere, solar flare, corona" },
-    10: { p: "What are the names of the planets?", a: "Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune" },
-    11: { p: "What are the phases of the moon?", a: "new, crescent, quarter, gibbous, full" },
-    12: { p: "What are some other bodies in our solar system?", a: "asteroids, meteroids, meteorites, comets" },
-    13: { p: "What are some names of U.S. space missions?", a: "Mercury, Gemini, Apollo, Shuttle" },
-    14: { p: "What are the states of matter?", a: "solid, liquid, gas, plasma" },
-    15: { p: "What are two forms of energy?", a: "kinetic, potential" },
-    16: { p: "What is Newton's first law of motion?", a: "Newton's first law of motion states that an object at rest tends to remain at rest and an object in motion tends to continue moving in a straight line at constant speed unless an outside force acts upon it." },
-    17: { p: "What is Newton's second law of motion?", a: "Newton's second law of motion states that force equals mass times acceleration ($F=ma$)." },
-    18: { p: "What is Newton's third law of motion?", a: "Newton's third law of motion states that for every action, there is an equal and opposite reaction." },
-    19: { p: "What is the first law of thermodynamics?", a: "The first law of thermodynamics states that energy cannot be created or destroyed." },
-    20: { p: "What is the second law of thermodynamics?", a: "Often called the law of entropy, the second law of thermodynamics explains why heat flows from an area of higher temperature to an area of lower temperature." },
-    21: { p: "What is the third law of thermodynamics?", a: "The third law of thermodynamics explains that it is impossible to reach the state of absolute zero temperature." },
-    22: { p: "What are some ways light is observed?", a: "reflection, refraction, spectrum, wave, particle" },
-    23: { p: "How does heat flow?", a: "radiation, conduction, convection" },
-    24: { p: "What units are used to measure electricity?", a: "ohms measure resistance, volts measure voltage, amps measure current, watts measure power" }
-  },
-  "English": {
-    1: { p: "Parts of Speech", a: "noun, pronoun, verb, adverb, conjunction, interjection, preposition, adjective" },
-    2: { p: "A Pronoun", a: "A pronoun replaces a noun in order to avoid repetition." },
-    3: { p: "Pronoun Order", a: "1st person singular, 2nd person singular, 3rd person singular, 1st person plural, 2nd person plural, 3rd person plural" },
-    4: { p: "Nominative Pronouns", a: "I, you, he/she/it, we, you, they" },
-    5: { p: "Objective Pronouns", a: "me, you, him/her/it, us, you, them" },
-    6: { p: "Possessive Pronouns", a: "mine, yours, his/hers/its, ours, yours, theirs" },
-    7: { p: "Possessive Pronoun Adjectives", a: "my, your, his/her/its, our, your, their" },
-    8: { p: "Reflexive Pronouns", a: "myself, yourself, himself/herself/itself, ourselves, yourselves, themselves" },
-    9: { p: "Interrogative Pronouns", a: "who, whom, whose, which, what" },
-    10: { p: "Demonstrative Pronouns", a: "this, that, these, those" },
-    11: { p: "Indefinite Pronouns", a: "all, another, any, anybody, anyone, anything, both, each, either" },
-    12: { p: "Indefinite Pronouns", a: "everybody, everyone, everything, few, many, more, most, neither" },
-    13: { p: "Indefinite Pronouns", a: "nobody, none, one, other, several, some, somebody, someone, such" },
-    14: { p: "An Adverb", a: "An adverb modifies a verb, adjective, or another adverb—and answers the questions: How? When? Where? and Why?" },
-    15: { p: "Four Purposes of Sentences", a: "declarative, exclamatory, interrogative, imperative" },
-    16: { p: "A Verb", a: "A verb is a word that asserts an action, shows a state of being, links two words together, or helps another verb." },
-    17: { p: "A Noun", a: "A noun names a person, place, thing, activity, or idea." },
-    18: { p: "Five Cases of Nouns", a: "subject, direct object, indirect object, object of the preposition, possessive" },
-    19: { p: "A Gerund", a: "A gerund is a present participle verb form used as a noun." },
-    20: { p: "An Appositive", a: "An appositive is a noun or pronoun directly beside another noun that explains or identifies it." },
-    21: { p: "A Conjunction", a: "A conjunction is a word used to connect words, phrases, or clauses together." },
-    22: { p: "Coordinating Conjunctions", a: "For, And, Nor, But, Or, Yet, So (FANBOYS)" },
-    23: { p: "An Adjective", a: "An adjective modifies a noun or pronoun by describing, qualifying, or limiting—and answers the questions: What kind? How many? Which? Whose?" },
-    24: { p: "An Interjection", a: "An interjection is a word or phrase used as a strong expression of feeling or emotion." }
-  },
-  "History": {
-    1: { p: "Tell me about Charlemagne.", a: "In 800, during the medieval period, Pope Leo III crowned Charlemagne Holy Roman Emperor of Europe." },
-    2: { p: "Tell me about William the Conqueror.", a: "In 1054,the church split into Roman Catholic and Eastern Orthodox. William the Conqueror defeated King Harold of England in 1066 and started feudalism." },
-    3: { p: "Tell me about the Crusades.", a: "Richard the Lion-Hearted, son of Eleanor of Aquitaine, fought the Turks for Jerusalem during the time of the Crusades, from 1095 to 1291." },
-    4: { p: "Tell me about the Magna Carta.", a: "English King John signed the Magna Carta in 1215, limiting the king's power. Later, England's King Edward III claimed to be king of France and began the Hundred Years' War in 1337." },
-    5: { p: "Tell me about the Hundred Years' War.", a: "During the Hundred Years' War, Joan of Arc and King Charles VII led the French to defeat the English at the Siege of Orleans. In the late 1340s fleas on rats carried the plague, which killed one of out three Europeans" },
-    6: { p: "Tell me about the Renaissance.", a: "During the Renaissance period, from 1350 to 1600, Leonardo da Vinci was a famous inventor, Shakespeare was a famous playwright, Michelangelo was a famous artist, and Copernicus was a famous scientist." },
-    7: { p: "Tell me about the Reformation.", a: "In 1517, Martin Luther began the Protestant Reformation by printing the Ninety-Five Theses that made Pope Leo X excommunicate him. Later John Clavin joined the Reformation." },
-    8: { p: "Tell me about European explorers.", a: "Between the late 1400s and the mid-1500s, Dias rounded the Cape of Good Hope, Amerigo Vespucci sailed the the Americas, Balboa crossed Central America to the Pacific, Magellan's crew sailed around the globe, and Coronado explored the American Southwest." },
-    9: { p: "Tell me about some absolute monarchs.", a: "Between the 1500s and 1800s, Henry VIII of England, Louis XIV of France, Philip II of Spain, Peter the Great of Russia, and Frederick the Great of Prussia ruled during the age of absolute monarchs." },
-    10: { p: "Tell me about the history of Russia.", a: "Vladimir I brought Christianity to Russia in the 900s. In the 1500s, Czar Ivan the Terrible unified Russia, Peter the Great and Catherine the Great expanded and Westernized Russia in the 1700s." },
-    11: { p: "Tell me about the French Revolution.", a: "In 1789, the French Revolution began when citizens stormed the Bastille and fought for the Declaration of the Rights of Man. Later, during the Reign of Terror, the aristocrats' heads were removed by the guillotine." },
-    12: { p: "Tell me about the Battle of Waterloo.", a: "Napoleon Bonaparte of the French Empire was defeated at the Battle of Waterloo by British General Wellington and his allies soon after the War of 1812 in the United States." },
-    13: { p: "Tell me about the Industrial Revolution.", a: "Watt's steam engine, Cartwright's power loom, and Whitney's cotton gin spurred the Industrial Revolution that began in the 1760s." },
-    14: { p: "Tell me about World War I leaders.", a: "Clemenceau of France, Lloyd George of England, Nicholas II of Russia, Wilhelm II of Germany, and Wilson of the United States were leaders during World War I, which started in 1914 and ended in 1918." },
-    15: { p: "Tell me about World War I countries.", a: "During World War I, Great Britain, France and Russia were Allies and fought against Austria-Hungary and Germany, which were called the Central Powers. In 1917, the United States entered the war, assisting the Allies" },
-    16: { p: "Tell me about how World War II began.", a: "World War II began in 1939 when Hitler invaded Poland. Two engagements that helped the United States win the Pacific front were defeating Japan at the Battle of Midway dropping atomic bombs on Hiroshima and Nagasaki in 1945." },
-    17: { p: "Tell me about World War II leaders.", a: "World War II Axis leaders were: Hitler of Germany, Tojo of Japan, and Mussolini of Italy. World War II Allied leaders were: Churchill of England, Roosevelt, Eisenhower and MacArthur of the United States and Stalin of the USSR." },
-    18: { p: "Tell me about the United Nations.", a: "In 1945, after the League of Nations failed to prevent World War II, American President Roosevelt, British Prime Minister Churchill, and Soviet Premier Stalin began the United Nations." },
-    19: { p: "Tell me about the Korean War.", a: "In 1950, General Douglas MacArthur led United Nations forces to stop communist North Korea from capturing all of South Korea during the Korean War." },
-    20: { p: "Tell me about the Vietnam War.", a: "In 1965, President Johnson sent U.S. troops to stop communist North Vietnam from capturing all of South Vietnam during the Vietnam War." },
-    21: { p: "Tell me about the end of the Cold War.", a: "In the 1980s, British Prime Minister Margaret Thatcher and American President Ronald Reagan worked together to end the Cold War, lessen big government, and strengthen the conservative movement." },
-    22: { p: "Tell me about the fall of communism.", a: "In 1989, the communist dictators began to fall in Eastern Europe when Soviet General Secretary Gorbachev refused to send military aid." },
-    23: { p: "Tell me about the Gulf War.", a: "In 1990, President George H. W. Bush sent troops to the Persian Gulf to expel Iraqi leader Saddam Hussein from Kuwait during the Gulf War." },
-    24: { p: "Tell me about the end of apartheid.", a: "In 1994, South African President de Klerk allowed free elections. Nelson Mandela became South Africa's first black president, demonstrating apartheid was ending." }
-  },
-  "Geography": {
-    1: { p: "Continents/Oceans", a: "Continents: North America, South America, Europe, Asia, Africa, Australia, Antarctica; Oceans: Indian Ocean, Arctic Ocean, Atlantic Ocean, Pacific Ocean, Southern Ocean" },
-    2: { p: "European Waters", a: "North Sea, Baltic Sea, English Channel, Mediterranean Sea, Adriatic Sea" },
-    3: { p: "Western European Countries", a: "Ireland, England, Portugal, Spain, France" },
-    4: { p: "European Rivers", a: "Seine River, Rhine River, Elbe River, Po River, Danube River, Volga River" },
-    5: { p: "European Cities", a: "London, Paris, Rome, Barcelona, Orleans" },
-    6: { p: "European Mountains", a: "Pyrenees, Alps, Carpathians, Caucasus, Ural, Matterhorn" },
-    7: { p: "European Peninsulas", a: "Iberian, Scandinavian, Balkan, Apennine" },
-    8: { p: "Mid-Atlantic World", a: "Cape of Good Hope, Strait of Magellan, Canary Islands, Treaty of Tordesillas" },
-    9: { p: "The Caribbean", a: "Cuba, Jamaica, Haiti, Dominican Republic, Puerto Rico" },
-    10: { p: "Southwest Asia", a: "Arabian Sea, India, Kolkata, Pakistan, Afghanistan" },
-    11: { p: "Europe and Asia", a: "Russia, Moscow, Ukraine, Kiev, Siberia" },
-    12: { p: "Eastern European Seas", a: "Barents Sea, White Sea, Black Sea, Caspian Sea, Aral Sea" },
-    13: { p: "Northern European Countries", a: "Norway, Sweden, Finland, Denmark" },
-    14: { p: "Baltic Europe", a: "Estonia, Latvia, Lithuania, Poland, Belarus" },
-    15: { p: "The Levant", a: "Turkey, Cyprus, Syria, Iraq, Iran" },
-    16: { p: "The Balkans", a: "Slovenia, Albania, Romania, Bulgaria, Greece" },
-    17: { p: "Central European Countries", a: "Netherlands, Belgium, Luxembourg, Germany, Switzerland" },
-    18: { p: "More European Countries", a: "Italy, Austria, Hungary, Czechia, Slovakia" },
-    19: { p: "Southeastern Asia", a: "North Korea, South Korea, Taiwan, Philippines, Guam" },
-    20: { p: "South Central Asia", a: "Laos, Thailand, Cambodia, North Vietnam, South Vietnam" },
-    21: { p: "Central America", a: "Guatemala, Belize, El Salvador, Honduras, Nicaragua" },
-    22: { p: "Oceania", a: "Indonesia, Papua New Guinea, Australia, Great Barrier Reef, New Zealand" },
-    23: { p: "Central Asia", a: "Kazakhstan, Uzbekistan, Turkmenistan, Tajikistan, Kyrgyzstan" },
-    24: { p: "Southern Africa", a: "Namibia, Botswana, Mozambique, South Africa, Lesotho.                       " }
-  },
+      1: { p: "Prepositions", a: "in (in), apud (with), per (by), sine (without), a (from), de (of)" },
+      2: { p: "Conjunctions and Adverbs", a: "et (and), ut (that), non (not)" },
+      3: { p: "Pronouns", a: "hic (this), hoc (same), ipso/ipsum (him), cui (whose), quod (that), eam (it), illum (him)" },
+      4: { p: "Verbs", a: "erat (was), venit (came), perhiberet (bear), crederent (believe)" },
+      5: { p: "Verbs", a: "facta sunt (were made), factum est (was made), missus (sent), comprehenderunt (comprehended), lucet (shineth), fuit (there was)" },
+      6: { p: "Nouns", a: "verbum (word), Deus/Deum/Deo (God), principio (beginning), omnia/omnes (all), nihil (nothing)" },
+      7: { p: "Nouns", a: "vita (life), lux (light), homo/hominum (man), nomen (name)" },
+      8: { p: "Nouns", a: "testimonium (witness, testimony), lumine (light), Iohannes (John), tenebris/tenebrae (darkness)" },
+      9: { p: "Verb Rules", a: "Latin verbs have different endings called conjugations." },
+      10: { p: "Article Rules", a: "Latin has no translation for articles a, an, the." },
+      11: { p: "Nouns/Pronouns Rules", a: "Latin nouns and pronouns have different endings called declensions." },
+      12: { p: "John 1:1", a: "In principio erat Verbum (In the beginning was the Word)" },
+      13: { p: "John 1:1", a: "et Verbum erat apud Deum et Deus erat Verbum (and the Word was with God and the Word was God)" },
+      14: { p: "John 1:2", a: "hoc erat in principio apud Deum (the same was in the beginning with God)" },
+      15: { p: "John 1:3", a: "omnia per ipsum facta sunt (all things were made by him)" },
+      16: { p: "John 1:3", a: "et sine ipso factum est nihil quod factum est (and without him was made nothing that was made)" },
+      17: { p: "John 1:4", a: "in ipso vita erat et vita erat lux hominum (in him was life and the life was the light of men)" },
+      18: { p: "John 1:5", a: "et lux in tenebris lucet (and the light shineth in the darkness)" },
+      19: { p: "John 1:5", a: "et tenebrae eam non conprehenderunt (and the darkness did not comprehend it)" },
+      20: { p: "John 1:6", a: "fuit homo missus a Deo (there was a man sent from God)" },
+      21: { p: "John 1:6", a: "cui nomen erat Iohannes (whose name was John)" },
+      22: { p: "John 1:7", a: "hic venit in testimonium (this man came for a witness)" },
+      23: { p: "John 1:7", a: "ut testimonium perhiberet de lumine (to give testimony of the light)" },
+      24: { p: "John 1:7", a: "ut omnes crederent per illum (that all men might believe through him)" }
+    },
+    "Science": {
+      1: { p: "What are four types of tissue?", a: "connective, epithelial, muscle, nerve" },
+      2: { p: "Which bones make up the axial skeleton?", a: "skull, vertebrae, ribs, sternum" },
+      3: { p: "What are three kinds of muscle?", a: "skeletal, smooth, cardiac" },
+      4: { p: "What are three parts of the nervous system?", a: "brain, spinal cord, nerves" },
+      5: { p: "What are the five main senses?", a: "sight, hearing, taste, smell, touch" },
+      6: { p: "What are some parts of the digestive system?", a: "mouth, esophagus, stomach, liver, small intestine, large intestine" },
+      7: { p: "What are four parts of the excretory system?", a: "urinary tract, lungs, skin, intestines" },
+      8: { p: "What are six parts of the circulatory system?", a: "heart, arteries, veins, capillaries, red and white blood cells, platelets" },
+      9: { p: "What are four parts of the lymph system?", a: "lymph vessels, lymph nodes, spleen, thymus" },
+      10: { p: "What are some parts of the respiratory system?", a: "nose, pharynx, larynx, trachea, bronchi, bronchioles, alveoli, lungs" },
+      11: { p: "What is the endocrine system?", a: "The endocrine system consists of glands and organs that use hormones to send messages through the bloodstream to the rest of the body." },
+      12: { p: "What are the major purposes of blood?", a: "transportation, communication, regulation, protection" },
+      13: { p: "What is the atomic number?", a: "The atomic number is the number of protons in the nucleus of an atom, which is also the number of electrons in a neutral atom." },
+      14: { p: "What is an element?", a: "An element is a basic chemical substance defined by its atomic number and atomic mass." },
+      15: { p: "What are some parts of an atom?", a: "nucleus, protons, electrons, quarks, leptons, neutrons" },
+      16: { p: "What are the first four elements in the periodic table?", a: "1 Hydrogen (H) 1, 2 Helium (He) 4, 3 Lithium (Li) 7, 4 Beryllium (Be) 9" },
+      17: { p: "What are the second four elements in the periodic table?", a: "5 Boron (B) 11, 6 Carbon (C) 12, 7 Nitrogen (N) 14, 8 Oxygen (O) 16" },
+      18: { p: "What are the third four elements in the periodic table?", a: "9 Fluorine (F) 19, 10 Neon (Ne) 20, 11 Sodium (Na) 23, 12 Magnesium (Mg) 24" },
+      19: { p: "What is the difference between an acid and a base?", a: "An acid donates a hydrogen ion and a base accepts a hydrogen ion." },
+      20: { p: "What is natural selection?", a: "Natural selection is the idea that the fittest survive and pass along their traits to their offspring." },
+      21: { p: "What does the theory of evolution rely on?", a: "The theory of evolution relies on the belief that life began as a chance combination of non-living things." },
+      22: { p: "What does the theory of intelligent design rely on?", a: "The theory of intelligent design relies on the belief that life began as a result of intention and purpose." },
+      23: { p: "What are some ways earth's history is preserved?", a: "rocks, fossils, ice, tar, amber" },
+      24: { p: "What do the heavens declare?", a: "The heavens declare the glory of God; the skies proclaim the work of his hands. (Psalm 19:1)" }
+    },
+    "English": {
+      1: { p: "An Infinitive", a: "An infinitive is 'to' plus a verb, used as a noun, adjective, or adverb." },
+      2: { p: "A Present Participle", a: "A present participle is a verb plus '-ing,' used as an adjective or a verb." },
+      3: { p: "A Past Participle", a: "A past participle is a verb plus '-ed,' used as an adjective or a verb." },
+      4: { p: "Verb: Principal Parts", a: "infinitive, present, past, present participle, past participle" },
+      5: { p: "To Be", a: "to be, am/are/is, was/were, being, been" },
+      6: { p: "To Do", a: "to do, do/does, did, doing, done" },
+      7: { p: "To Rise", a: "to rise, rise/rises, rose, rising, risen" },
+      8: { p: "To Raise", a: "to raise, raise/raises, raised, raising, raised" },
+      9: { p: "To Lay", a: "to lay, lay/lays, laid, laying, laid" },
+      10: { p: "To Lie", a: "to lie, lie/lies, lay, lying, lain" },
+      11: { p: "To Set", a: "to set, set/sets, set, setting, set" },
+      12: { p: "To Sit", a: "to sit, sit/sits, sat, sitting, sat" },
+      13: { p: "To Beat", a: "to beat, beat/beats, beat, beating, beaten" },
+      14: { p: "To Break", a: "to break, break/breaks, broke, breaking, broken" },
+      15: { p: "To Write", a: "to write, write/writes, wrote, writing, written" },
+      16: { p: "To Go", a: "to go, go/goes, went, going, gone" },
+      17: { p: "Sentence Parts: Subject", a: "The subject is that part of a sentence about which something is being said." },
+      18: { p: "Sentence Parts: Predicate", a: "The predicate is that part of a sentence that says something about the subject." },
+      19: { p: "Sentence Parts: Clause", a: "A clause is a group of words that contains both a subject and a verb." },
+      20: { p: "Independent Clause", a: "An independent clause expresses a complete thought like a sentence." },
+      21: { p: "Subordinate Clause", a: "A subordinate clause (dependent) does not express a complete thought and cannot stand alone." },
+      22: { p: "Sentence Parts: Phrase", a: "A phrase is a group of words that does not contain both a subject and a verb." },
+      23: { p: "Four Sentence Structures", a: "simple, compound, complex, compound-complex" },
+      24: { p: "Seven Sentence Patterns", a: "S-V, S-V-DO, S-V-PN, S-V-PA, S-V-IO-DO, S-V-DO-OCN, S-V-DO-OCA" }
+    },
+    "History": {
+      1: { p: "Tell me about Columbus.", a: "In 1492, Columbus made the first of four trips to the Caribbean on three Spanish ships named the Niña, the Pinta, and the Santa María." },
+      2: { p: "Tell me about the Pilgrims.", a: "In 1620, the Pilgrims sailed from Plymouth, England and signed the Mayflower Compact before founding Plymouth Colony in North America." },
+      3: { p: "Tell me about the Boston Tea Party.", a: "In 1773, colonists disguised as Mohawks dumped tea from the British East India Company into the Boston Harbor." },
+      4: { p: "Tell me about the Declaration of Independence.", a: "In 1776, the Continental Congress published the Declaration of Independence in Philadelphia, announcing the colonists' intent to separate from England." },
+      5: { p: "Tell me about George Washington.", a: "In 1789, in New York, George Washington was granted the full powers and responsibilities of the presidency by the U.S. Constitution." },
+      6: { p: "Tell me about the Louisiana Purchase.", a: "In 1803, the purchase of Louisiana from France prompted westward exploration by pioneers such as Lewis and Clark and Congressman Davy Crockett." },
+      7: { p: "Tell me about the Monroe Doctrine.", a: "After victory in the War of 1812, the United States wrote the Monroe Doctrine, which warned Europeans not to attempt to colonize the Americas." },
+      8: { p: "Tell me about the Missouri Compromise.", a: "In 1820, Henry Clay worked out the Missouri Compromise, allowing Missouri to enter the Union as a slave state and Maine as a free state." },
+      9: { p: "Tell me about Manifest Destiny.", a: "President Polk believed that the Mexican War and the Gadsden Purchase in the mid-1800s affirmed America's manifest destiny to spread across the continent." },
+      10: { p: "Tell me about the secession of the Southern states.", a: "The Compromise of 1850, the Fugitive Slave Act, and the Dred Scott decision preceded the secession of the Southern states." },
+      11: { p: "Tell me about the Civil War.", a: "In 1861, the Civil War began when President Abraham Lincoln went to war with the Southern states that had seceded from the Union." },
+      12: { p: "Tell me about General Robert E. Lee.", a: "In 1865, General Robert E. Lee surrendered to General Ulysses S. Grant at Appomattox Court House in Virginia." },
+      13: { p: "Tell me about the Fourteenth Amendment.", a: "In 1868, the Fourteenth Amendment made all former slaves U.S. citizens and paved the way for the Civil Rights Movement." },
+      14: { p: "Tell me about tycoons.", a: "During the late 1800s, tycoons like Vanderbilt, Rockefeller, Carnegie, and Swift fueled the nation's Industrial Age by developing American resources." },
+      15: { p: "Tell me about immigrants coming to America.", a: "From 1820 to 1930, more than 37 million immigrants came to America, seeking freedom and the opportunity to increase their personal wealth." },
+      16: { p: "Tell me about the U.S. and World War I.", a: "In 1917, President Wilson asked Congress to enter World War I against the Central Powers two years after German U-boats sank the Lusitania." },
+      17: { p: "Tell me about the Nineteenth Amendment.", a: "Elizabeth Cady Stanton and Susan B. Anthony led the women's suffrage movement, resulting in the Nineteenth Amendment in 1920 that granted women the right to vote." },
+      18: { p: "Tell me about Pearl Harbor.", a: "On December 7, 1941, the Japanese bombed Pearl Harbor, Hawaii, causing the United States to join the Allies in World War II." },
+      19: { p: "Tell me about NATO.", a: "In 1949, the United States and its allies formed NATO to resist the spread of Soviet communism." },
+      20: { p: "Tell me about Brown v. Board of Education.", a: "In 1954, the U.S. Supreme Court ruled that the segregation of public schools by race is unconstitutional." },
+      21: { p: "Tell me about U.S. astronauts.", a: "In 1969, U.S. astronauts Neil Armstrong and Edwin Aldrin were the first men to walk on the moon." },
+      22: { p: "Tell me about September 11, 2001.", a: "Terrorists hijacked four airplanes, flying them into the World Trade Center, the Pentagon, and a Pennsylvania field." },
+      23: { p: "Tell me the Preamble to the U.S. Constitution.", a: "We the People of the United States, in order to form a more perfect Union, establish Justice, insure domestic Tranquility..." },
+      24: { p: "Tell me the Bill of Rights.", a: "1. Freedoms, 2. Own guns, 3. Quartering soldiers, 4. Warrants, 5. Cannot testify against self, 6. Right to speedy trial, 7. Right to a jury, 8. Cruel/unusual punishment, 9. People's rights, 10. States' rights" }
+    },
+    "Geography": {
+      1: { p: "States and Capitals", a: "Augusta, ME; Concord, NH; Boston, MA; Providence, RI; Hartford, CT" },
+      2: { p: "States and Capitals", a: "Montpelier, VT; Albany, NY; Trenton, NJ; Harrisburg, PA; Dover, DE" },
+      3: { p: "States and Capitals", a: "Annapolis, MD; Richmond, VA; Charleston, WV; Raleigh, NC; Columbia, SC" },
+      4: { p: "States and Capitals", a: "Washington, DC; Atlanta, GA; Tallahassee, FL; Montgomery, AL; Jackson, MS" },
+      5: { p: "States and Capitals", a: "Lansing, MI; Columbus, OH; Indianapolis, IN; Frankfort, KY; Nashville, TN" },
+      6: { p: "States and Capitals", a: "Madison, WI; Springfield, IL; Des Moines, IA; Jefferson City, MO; Little Rock, AR" },
+      7: { p: "States and Capitals", a: "St. Paul, MN; Bismarck, ND; Pierre, SD; Cheyenne, WY; Lincoln, NE" },
+      8: { p: "States and Capitals", a: "Topeka, KS; Oklahoma City, OK; Austin, TX; Denver, CO; Santa Fe, NM" },
+      9: { p: "States and Capitals", a: "Salt Lake City, UT; Phoenix, AZ; Carson City, NV; Sacramento, CA; Honolulu, HI" },
+      10: { p: "States and Capitals", a: "Helena, MT; Boise, ID; Olympia, WA; Salem, OR; Juneau, AK" },
+      11: { p: "Northern Appalachian Mountains", a: "White Mountains, Green Mountains, Adirondack Mountains, Allegheny Mountains" },
+      12: { p: "Southern Appalachian Mountains", a: "The Great Valley, Blue Ridge Mountains, Great Smoky Mountains, Cumberland Mountains, Mt. Mitchell" },
+      13: { p: "Western Mountains", a: "Rocky Mountains, Pikes Peak, Mt. Elbert, Sierra Nevadas, Mt. Whitney" },
+      14: { p: "Mountains", a: "Cascade Mountains, Mt. Rainier, Mt. St. Helens, Denali" },
+      15: { p: "Great Lakes", a: "Huron, Ontario, Michigan, Erie, Superior" },
+      16: { p: "Bays", a: "Chesapeake Bay, San Francisco Bay, Puget Sound, Hudson Bay, Pamlico Sound" },
+      17: { p: "Rivers (East)", a: "St. Lawrence River, Ohio River, Mississippi River, Missouri River, Arkansas River" },
+      18: { p: "Rivers (West)", a: "Colorado River, Red River, Rio Grande River, Columbia River, Great Salt Lake" },
+      19: { p: "Trails", a: "Cumberland Road, Santa Fe Trail, Mormon Trail, Gila Trail, Old Spanish Trail, California Trail, Oregon Trail" },
+      20: { p: "Canals", a: "Erie Canal, Pennsylvania Canal, Chesapeake and Ohio Canal, Ohio and Erie Canal, Miami and Erie Canal" },
+      21: { p: "Native American Regions", a: "Eastern Woodlands, Plains, Plateau, Northwest Coast, California, Great Basin, Southwest" },
+      22: { p: "Deserts", a: "Colorado Desert, Mojave Desert, Sonoran Desert, Painted Desert, Great Salt Lake Desert" },
+      23: { p: "Prominent Features", a: "Grand Canyon, Black Hills, Ozark Highlands, Okefenokee Swamp, Olympic Rain Forests, Niagara Falls" },
+      24: { p: "More Prominent Features", a: "Mississippi River Delta, Mammoth Cave, San Andreas Fault, Gulf of Mexico, Death Valley" }
+    },
   "Bible": {
-    1: { p: "What are the names of eight significant judges of Israel? (1-4)", a: "1. Othniel, 2. Ehud, 3. Deborah, 4. Gideon" },
-    2: { p: "What are the names of eight significant judges of Israel? (5-8)", a: "5. Jephthah, 6. Samson, 7. Eli, 8. Samuel" },
-    3: { p: "Who are the three kings of united Israel?", a: "1. Saul, 2. David, 3. Solomon" },
-    4: { p: "Who was David?", a: "Warrior, hero, musician, poet, king; fell greatly in sin, yet rose again to love and serve God" },
-    5: { p: "What is God's covenant with David?", a: "That the Messiah would come from the family of David; The tribe of Judah would establish an unending kingdom" },
-    6: { p: "Who oversaw the building of the first Jewish temple?", a: "King Solomon" },
-    7: { p: "What was the consequence of King Solomon's building worship temples to false gods for his pagen wives to worship?", a: "Israel divided into two kingdoms" },
-    8: { p: "Who was the first king of Israel, the northern kingdom?", a: "Jeroboam I" },
-    9: { p: "Who was the first king of Judah, the southern kingdom?", a: "Rehoboam, son of Solomon" },
-    10: { p: "Who are eighteen significant prophets of Israel? (1-6)", a: "1. Elijah, 2. Elisha, 3. Obadiah, 4. Joel, 5. Jonah, 6. Amos" },
-    11: { p: "Who are eighteen significant prophets of Israel? (7-12)", a: "7. Hosea, 8. Isaiah, 9. Micah, 10. Jeremiah, 11. Zephaniah, 12. Habakkuk" },
-    12: { p: "Who are eighteen significant prophets of Israel? (13-18)", a: "13. Nahum, 14. Ezekiel, 15. Daniel, 16. Haggai, 17. Malachi, 18. Zechariah" },
-    13: { p: "What two nations took the Jewish people into captivity?", a: "Assyria (722 BC); Babylon (586 BC)" },
-    14: { p: "Old Testament prophesy about the New Covenant?", a: "Jeremiah" },
-    15: { p: "Destruction of the first Jewish temple in 586 BC?", a: "Babylonian invasion under King Nebuchadnezzar" },
-    16: { p: "Destruction of the second Jewish temple in 70 AD?", a: "Roman soldiers during the first Jewish revolt" },
-    17: { p: "Prophecies in the Old Testament pertain to...", a: "Israel and other nations, The Messiah, End Times" },
-    18: { p: "What are the five main types of Psalms?", a: "Hymns of praise, Songs of thanksgiving, Royal psalms, Wisdom psalms, Laments" },
-    19: { p: "Book of wise instruction for godly life?", a: "Proverbs" },
-    20: { p: "Three Hebrew names of God?", a: "YHWH (Yahweh), 'I am'; Adonai, 'The Lord'; Elohim, 'The all-powerful God'" },
-    21: { p: "Original languages of the Old Testament?", a: "Hebrew and Aramaic" },
-    22: { p: "Emperor of Rome when Jesus was born?", a: "Caesar Augustus" },
-    23: { p: "Age of Jesus teaching in the temple?", a: "12 years old" },
-    24: { p: "How many OT prophecies did Jesus fulfill?", a: "Over 100!" }
-  },
-  "Timeline": {
-    1: { p: "Age of Ancient Empires - Minoans and Mycenaeans", a: "AGE OF ANCIENT EMPIRES (Creation to circa 450 AD), Creation and the Fall, The Flood and the Tower of Babel, Mesopotamia and Sumer, Egyptians, (3000 BC) Indus River Valley Civilization, Minoans and Mycenaeans" },
-    2: { p: "Seven Wonders of the Ancient World - China's Shang Dynasty", a: "Seven Wonders of the Ancient World, Patriarchs of Israel, (2000 BC) Hittites and Canaanites, Kush, Assyrians, Babylonians, China's Shang Dynasty" },
-    3: { p: "Hinduism in India - Israel's United Kingdom", a: "Hinduism in India, Phoenicians and the Alphabet, Olmecs of Mesoamerica, Israelite Exodus and Desert Wandering, Israelite Conquest and Judges, Greek Dark Ages, Israel's United Kingdom" },
-    4: { p: "Early Native Americans - Lao-Tzu, Confucius, Buddha", a: "(1000 BC) Early Native Americans, Israel Divides into Two Kingdoms, Homer and Hesiod, Rome Founded by Romulus and Remus, Israel Falls to Assyria, Assyria Falls to Babylon, Lao-Tzu, Confucius, Buddha" },
-    5: { p: "Judah Falls to Babylon - Persia Falls to Alexander the Great", a: "Judah Falls to Babylon, Temple Destroyed, Babylon Falls to Persia, Jews Return and Rebuild the Temple, Roman Republic, Golden Age of Greece, Peloponnesian Wars, Persia Falls to Alexander the Great" },
-    6: { p: "India's Mauryan Empire - John the Baptist", a: "India's Mauryan Empire, Mayans of Mesoamerica, Punic Wars, Rome Conquers Greece, Roman Dictator Julius Caesar, Caesar Augustus and the Pax Romana, John the Baptist" },
-    7: { p: "Jesus the Messiah - India's Gupta Dynasty", a: "Jesus the Messiah, (Year 1 AD) Pentecost and the Early Church, Persecution Spreads the Gospel, Herod's Temple Destroyed by Titus, Diocletian Divides the Roman Empire, Constantine Legalizes Christianity, India's Gupta Dynasty" },
-    8: { p: "Council of Nicea - Western Roman Empire Falls to Barbarians", a: "Council of Nicea, Augustine of Hippo, Jerome Completes the Vulgate, Visigoths Sack Rome, THE MIDDLE AGES (circa 450-1500) Council of Chalcedon, Western Roman Empire Falls to Barbarians" },
-    9: { p: "Byzantine Emperor Justinian - Vikings Raid and Trade", a: "(500 AD) Byzantine Emperor Justinian, Benedict and Monasticism, Muhammad Founds Islam, Zanj and Early Ghana, Franks Defeat Muslims at the Battle of Tours, Golden Age of Islam, Vikings Raid and Trade" },
-    10: { p: "Japan's Heian Period - East-West Schism of the Church", a: "Japan's Heian Period, Charlemagne Crowned Emperor of Europe, Alfred the Great, Erik the Red and Leif Eriksson, Vladimir I of Kiev, Byzantine Emperor Basil II, (1000 AD) East-West Schism of the Church" },
-    11: { p: "Norman Conquest and Feudalism in Europe - Incas of South America", a: "Norman Conquest and Feudalism in Europe, The Crusades, Zimbabwe and Early Mali in Africa, Aztecs of Mesoamerica, Francis of Assisi and Thomas Aquinas, Japan's Shoguns, Incas of South America" },
-    12: { p: "Genghis Khan Rules the Mongols - China's Ming Dynasty", a: "Genghis Khan Rules the Mongols, England's Magna Carta, Ottoman Empire, Marco Polo's Journey to China, The Hundred Years' War and Black Death, The Renaissance, China's Ming Dynasty" },
-    13: { p: "Age of Exploration - The Spanish Inquisition", a: "AGE OF EXPLORATION (c. 1400-1600), Prince Henry Founds School of Navigation, Slave Trade in Africa, Gutenberg's Printing Press, Songhai in Africa, Czar Ivan the Great of Russia, The Spanish Inquisition" },
-    14: { p: "Columbus Sails to the Caribbean - Baroque Period of the Arts", a: "Columbus Sails to the Caribbean, (1500 AD) AGE OF ABSOLUTE MONARCHS (c. 1500-1800), Protestant Reformation, Spanish Conquistadors in the Americas, Calvin's Institutes of the Christian Religion, Council of Trent, Baroque Period of the Arts" },
-    15: { p: "Japan's Isolation - The Seven Years' War", a: "Japan's Isolation, Jamestown and Plymouth Colony Founded, AGE OF ENLIGHTENMENT (c. 1650-1800), Hudson's Bay Company, First Great Awakening, Classical Period of the Arts, The Seven Years' War" },
-    16: { p: "Age of Industry - Louisiana Purchase and Lewis and Clark Expidition", a: "AGE OF INDUSTRY (c. 1760-1969), James Cook Sails to Australia, American Revolution and General George Washington, Madison's Constitution and the Bill of Rights, French Revolution, Second Great Awakening, Louisiana Purchase and Lewis and Clark Expedition" },
-    17: { p: "Napoleon to Romantic Period of the Arts", a: "Napoleon Crowned Emperor of France, Liberation of South America, The War of 1812, The Missouri Compromise, Immigrants Flock to America, The Monroe Doctrine, Romantic Period of the Arts" },
-    18: { p: "Cherokee Trail of Tears to Darwin Publishes The Origin of Species", a: "Cherokee Trail of Tears, U.S. Westward Expansion, Marx Publishes The Communist Manifesto, The Compromise of 1850 and Dred Scott Decision, U.S. Restores Trade with Japan, British Queen Victoria's Rule Over India, Darwin Publishes The Origin of Species" },
-    19: { p: "Lincoln's War Between the States to The Progressive Era", a: "Lincoln's War Between the States, Reconstruction of the Southen States, Dominion of Canada, Otto von Bismarck Unifies Germany, Boer Wars in Africa, The Spanish-American War, The Progressive Era" },
-    20: { p: "Australia Becomes a Commonwealth to The Great Depression and the New Deal", a: "Australia Becomes a Commonwealth, Mexican Revolution, World War I and President Wilson, Lenin and the Bolshevik Revolution in Russia, U.S. Evangelist Billy Graham, Modern Period of the Arts, The Great Depression and the New Deal" },
-    21: { p: "World War II to Mao and Communist Victory in China", a: "World War II and President Franklin D. Roosevelt, Stalin of the USSR and the Katyn Massacre, The United Nations Formed, The Cold War, Gandhi and India's Independence, Jewish State Established, Mao and Communist Victory in China" },
-    22: { p: "North Atlantic Treaty Organization to U.S. Astronauts Walk on the Moon", a: "North Atlantic Treaty Organization, The Korean War, Martin Luther King, Jr. and the Civil Rights Movement, Jim and Elisabeth Elliot - Missionaries to Ecuador, The Antarctic Treaty, The Vietnam War, U.S. Astronauts Walk on the Moon, " },
-    23: { p: "Age of Information and Globalization to Rising Tide of Freedom", a: "AGE OF INFORMATION AND GLOBALIZATION (c. 1970-present), Watergate and President Nixon Resigns, Fall of Communism in Eastern Europe, European Union Formed, Apartheid Abolished in South Africa, (2000 AD) September 11, 2001, Rising Tide of Freedom" },
-    24: { p: "Canadian Prime Ministers", a: "Macdonald, Mackenzie, Macdonald, Abbott, Thompson, Bowell, Tupper, Laurier, Borden, Meighen, King, Meighen, King, Bennett, King, St. Laurent, Diefenbaker, Pearson, Trudeau, Clark, Trudeau, Turner, Mulroney, Campbell, Chrétien, Martin, Harper, Trudeau, Carney" }
+      1: { p: "What are the two major themes of the Bible?", a: "Who God is and His covenant with man" },
+      2: { p: "What are the two major divisions of the Bible?", a: "Old Testament, New Testament" },
+      3: { p: "What are the seven subdivisions of the Bible?", a: "Law, History, Poetry, Prophets, Gospels, Letters, Prophecy" },
+      4: { p: "List the 66 books of the Bible in order: Old Testament (Part 1)", a: "Genesis, Exodus, Leviticus, Numbers, Deuteronomy, Joshua, Judges, Ruth" },
+      5: { p: "List the 66 books of the Bible in order: Old Testament (Part 2)", a: "1 Samuel, 2 Samuel, 1 Kings, 2 Kings, 1 Chronicles, 2 Chronicles, Ezra, Nehemiah, Esther, Job" },
+      6: { p: "List the 66 books of the Bible in order: Old Testament (Part 3)", a: "Psalms, Proverbs, Ecclesiastes, Song of Songs, Isaiah, Jeremiah" },
+      7: { p: "List the 66 books of the Bible in order: Old Testament (Part 4)", a: "Lamentations, Ezekiel, Daniel, Hosea, Joel, Amos, Obadiah, Jonah" },
+      8: { p: "List the 66 books of the Bible in order: Old Testament (Part 5)", a: "Micah, Nahum, Habakkuk, Zephaniah, Haggai, Zechariah, Malachi" },
+      9: { p: "List the 66 books of the Bible in order: New Testament (Part 1)", a: "Matthew, Mark, Luke, John, Acts" },
+      10: { p: "List the 66 books of the Bible in order: New Testament (Part 2)", a: "Romans, 1 Corinthians, 2 Corinthians, Galatians, Ephesians, Philippians, Colossians" },
+      11: { p: "List the 66 books of the Bible in order: New Testament (Part 3)", a: "1 Thessalonians, 2 Thessalonians, 1 Timothy, 2 Timothy, Titus, Philemon, Hebrews" },
+      12: { p: "List the 66 books of the Bible in order: New Testament (Part 4)", a: "James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation" },
+      13: { p: "How is Jesus portrayed in each Gospel?", a: "Matthew: as King; Mark: as Servant; Luke: as Man; John: as God" },
+      14: { p: "What are the names of Jesus' original twelve disciples? (Part 1)", a: "Peter, John, James (the brother of John), Andrew, Philip" },
+      15: { p: "What are the names of Jesus' original twelve disciples? (Part 2)", a: "Thomas, Bartholomew, Matthew, James (the son of Alphaeus), Simon the Zealot, Thaddaeus, Judas Iscariot" },
+      16: { p: "Who was Judas Iscariot?", a: "The disciple who betrayed Jesus and delivered Him over to the Jewish chief priests" },
+      17: { p: "What is God's new covenant with man?", a: "Jesus, the perfect sacrifice for sin; Eternal life to those who believe; The Holy Spirit lives within believers" },
+      18: { p: "What does the book of Acts record?", a: "The ascension of Christ; Pentecost; Powerful acts of God through the Church" },
+      19: { p: "Who was Saul of Tarsus?", a: "A Jewish leader (later known as Paul) who at first persecuted Christians but then received Jesus, became a devoted follower of Christ, and wrote most of the New Testament" },
+      20: { p: "Peter and Paul took the Gospel to which groups of people?", a: "Peter: to the Jews; Paul: to the Gentiles" },
+      21: { p: "How is Satan described in 1 Peter?", a: "A roaring lion, prowling about and seeking whom he may devour" },
+      22: { p: "What book of the New Testament is typically considered a prophecy of the end times?", a: "Revelation, written by the apostle John" },
+      23: { p: "The rebuilding of the third Jewish temple is usually associated with what important event?", a: "Jesus' return to the earth" },
+      24: { p: "What is the main original language of the New Testament?", a: "Koine Greek" }
+    },
+    "Timeline": {
+      1: { p: "Age of Ancient Empires - Minoans and Mycenaeans", a: "AGE OF ANCIENT EMPIRES (Creation to circa 450 AD), Creation and the Fall, The Flood and the Tower of Babel, Mesopotamia and Sumer, Egyptians, (3000 BC) Indus River Valley Civilization, Minoans and Mycenaeans" },
+      2: { p: "Seven Wonders of the Ancient World - China's Shang Dynasty", a: "Seven Wonders of the Ancient World, Patriarchs of Israel, (2000 BC) Hittites and Canaanites, Kush, Assyrians, Babylonians, China's Shang Dynasty" },
+      3: { p: "Hinduism in India - Israel's United Kingdom", a: "Hinduism in India, Phoenicians and the Alphabet, Olmecs of Mesoamerica, Israelite Exodus and Desert Wandering, Israelite Conquest and Judges, Greek Dark Ages, Israel's United Kingdom" },
+      4: { p: "Early Native Americans - Lao-Tzu, Confucius, Buddha", a: "(1000 BC) Early Native Americans, Israel Divides into Two Kingdoms, Homer and Hesiod, Rome Founded by Romulus and Remus, Israel Falls to Assyria, Assyria Falls to Babylon, Lao-Tzu, Confucius, Buddha" },
+      5: { p: "Judah Falls to Babylon - Persia Falls to Alexander the Great", a: "Judah Falls to Babylon, Temple Destroyed, Babylon Falls to Persia, Jews Return and Rebuild the Temple, Roman Republic, Golden Age of Greece, Peloponnesian Wars, Persia Falls to Alexander the Great" },
+      6: { p: "India's Mauryan Empire - John the Baptist", a: "India's Mauryan Empire, Mayans of Mesoamerica, Punic Wars, Rome Conquers Greece, Roman Dictator Julius Caesar, Caesar Augustus and the Pax Romana, John the Baptist" },
+      7: { p: "Jesus the Messiah - India's Gupta Dynasty", a: "Jesus the Messiah, (Year 1 AD) Pentecost and the Early Church, Persecution Spreads the Gospel, Herod's Temple Destroyed by Titus, Diocletian Divides the Roman Empire, Constantine Legalizes Christianity, India's Gupta Dynasty" },
+      8: { p: "Council of Nicea - Western Roman Empire Falls to Barbarians", a: "Council of Nicea, Augustine of Hippo, Jerome Completes the Vulgate, Visigoths Sack Rome, THE MIDDLE AGES (circa 450-1500) Council of Chalcedon, Western Roman Empire Falls to Barbarians" },
+      9: { p: "Byzantine Emperor Justinian - Vikings Raid and Trade", a: "(500 AD) Byzantine Emperor Justinian, Benedict and Monasticism, Muhammad Founds Islam, Zanj and Early Ghana, Franks Defeat Muslims at the Battle of Tours, Golden Age of Islam, Vikings Raid and Trade" },
+      10: { p: "Japan's Heian Period - East-West Schism of the Church", a: "Japan's Heian Period, Charlemagne Crowned Emperor of Europe, Alfred the Great, Erik the Red and Leif Eriksson, Vladimir I of Kiev, Byzantine Emperor Basil II, (1000 AD) East-West Schism of the Church" },
+      11: { p: "Norman Conquest and Feudalism in Europe - Incas of South America", a: "Norman Conquest and Feudalism in Europe, The Crusades, Zimbabwe and Early Mali in Africa, Aztecs of Mesoamerica, Francis of Assisi and Thomas Aquinas, Japan's Shoguns, Incas of South America" },
+      12: { p: "Genghis Khan Rules the Mongols - China's Ming Dynasty", a: "Genghis Khan Rules the Mongols, England's Magna Carta, Ottoman Empire, Marco Polo's Journey to China, The Hundred Years' War and Black Death, The Renaissance, China's Ming Dynasty" },
+      13: { p: "Age of Exploration - The Spanish Inquisition", a: "AGE OF EXPLORATION (c. 1400-1600), Prince Henry Founds School of Navigation, Slave Trade in Africa, Gutenberg's Printing Press, Songhai in Africa, Czar Ivan the Great of Russia, The Spanish Inquisition" },
+      14: { p: "Columbus Sails to the Caribbean - Baroque Period of the Arts", a: "Columbus Sails to the Caribbean, (1500 AD) AGE OF ABSOLUTE MONARCHS (c. 1500-1800), Protestant Reformation, Spanish Conquistadors in the Americas, Calvin's Institutes of the Christian Religion, Council of Trent, Baroque Period of the Arts" },
+      15: { p: "Japan's Isolation - The Seven Years' War", a: "Japan's Isolation, Jamestown and Plymouth Colony Founded, AGE OF ENLIGHTENMENT (c. 1650-1800), Hudson's Bay Company, First Great Awakening, Classical Period of the Arts, The Seven Years' War" },
+      16: { p: "Age of Industry - Louisiana Purchase and Lewis and Clark Expidition", a: "AGE OF INDUSTRY (c. 1760-1969), James Cook Sails to Australia, American Revolution and General George Washington, Madison's Constitution and the Bill of Rights, French Revolution, Second Great Awakening, Louisiana Purchase and Lewis and Clark Expedition" },
+      17: { p: "Napoleon to Romantic Period of the Arts", a: "Napoleon Crowned Emperor of France, Liberation of South America, The War of 1812, The Missouri Compromise, Immigrants Flock to America, The Monroe Doctrine, Romantic Period of the Arts" },
+      18: { p: "Cherokee Trail of Tears to Darwin Publishes The Origin of Species", a: "Cherokee Trail of Tears, U.S. Westward Expansion, Marx Publishes The Communist Manifesto, The Compromise of 1850 and Dred Scott Decision, U.S. Restores Trade with Japan, British Queen Victoria's Rule Over India, Darwin Publishes The Origin of Species" },
+      19: { p: "Lincoln's War Between the States to The Progressive Era", a: "Lincoln's War Between the States, Reconstruction of the Southen States, Dominion of Canada, Otto von Bismarck Unifies Germany, Boer Wars in Africa, The Spanish-American War, The Progressive Era" },
+      20: { p: "Australia Becomes a Commonwealth to The Great Depression and the New Deal", a: "Australia Becomes a Commonwealth, Mexican Revolution, World War I and President Wilson, Lenin and the Bolshevik Revolution in Russia, U.S. Evangelist Billy Graham, Modern Period of the Arts, The Great Depression and the New Deal" },
+      21: { p: "World War II to Mao and Communist Victory in China", a: "World War II and President Franklin D. Roosevelt, Stalin of the USSR and the Katyn Massacre, The United Nations Formed, The Cold War, Gandhi and India's Independence, Jewish State Established, Mao and Communist Victory in China" },
+      22: { p: "North Atlantic Treaty Organization to U.S. Astronauts Walk on the Moon", a: "North Atlantic Treaty Organization, The Korean War, Martin Luther King, Jr. and the Civil Rights Movement, Jim and Elisabeth Elliot - Missionaries to Ecuador, The Antarctic Treaty, The Vietnam War, U.S. Astronauts Walk on the Moon, " },
+      23: { p: "Age of Information and Globalization to Rising Tide of Freedom", a: "AGE OF INFORMATION AND GLOBALIZATION (c. 1970-present), Watergate and President Nixon Resigns, Fall of Communism in Eastern Europe, European Union Formed, Apartheid Abolished in South Africa, (2000 AD) September 11, 2001, Rising Tide of Freedom" },
+      24: { p: "Canadian Prime Ministers", a: "Macdonald, Mackenzie, Macdonald, Abbott, Thompson, Bowell, Tupper, Laurier, Borden, Meighen, King, Meighen, King, Bennett, King, St. Laurent, Diefenbaker, Pearson, Trudeau, Clark, Trudeau, Turner, Mulroney, Campbell, Chrétien, Martin, Harper, Trudeau, Carney" }
+    }
   }
 };
 
@@ -741,29 +1189,78 @@ const lessonData = {
    2. INITIALIZATION & DATA LOADING
    ========================================================================== */
 
-// --- Persistence Helpers ---
-const savedData = localStorage.getItem('ccSpinnerProgress');
-const savedMaxWeek = localStorage.getItem('ccMaxWeek');
-const savedAllowedWeeks = localStorage.getItem('ccAllowedWeeks');
-const savedBlockedWeeks = localStorage.getItem('ccBlockedWeeks');
+/* --- Persistence for the active cycle --- */
+// MUST be defined before we try to load cycle-specific data
+let currentCycle = localStorage.getItem('ccActiveCycle') ? parseInt(localStorage.getItem('ccActiveCycle')) : 2;
 
-let gridState = savedData ? JSON.parse(savedData) : {};
-let allowedWeeks = savedAllowedWeeks ? JSON.parse(savedAllowedWeeks) : [];
-let blockedWeeks = savedBlockedWeeks ? JSON.parse(savedBlockedWeeks) : [];
+// Cycle-specific prefix for storage
+const getPrefix = () => `cycle${currentCycle}_`;
 
-// Initialize gridState if empty
-if (!savedData) {
+/* --- Persistence Helpers --- */
+// We load the data based on the prefix of the current cycle
+let gridState = localStorage.getItem(getPrefix() + 'ccSpinnerProgress') ? 
+                JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress')) : {};
+
+let allowedWeeks = localStorage.getItem(getPrefix() + 'ccAllowedWeeks') ? 
+                   JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks')) : [];
+
+let blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ? 
+                   JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks')) : [];
+
+let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
+
+// Initialize lessonData pointer
+let lessonData = cycleData[currentCycle];
+
+// Initialize gridState if empty for this cycle
+if (Object.keys(gridState).length === 0) {
   subjects.forEach(s => {
     gridState[s] = {};
     weeks.forEach(w => gridState[s][w] = true);
   });
 }
 
+function changeCycle(cycleNum) {
+    currentCycle = parseInt(cycleNum);
+    localStorage.setItem('ccActiveCycle', currentCycle);
+    
+    // Update data pointer
+    lessonData = cycleData[currentCycle];
+    
+    // Reload cycle-specific progress
+    gridState = localStorage.getItem(getPrefix() + 'ccSpinnerProgress') ? 
+                JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress')) : {};
+    
+    allowedWeeks = localStorage.getItem(getPrefix() + 'ccAllowedWeeks') ? 
+                   JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks')) : [];
+                   
+    blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ? 
+                   JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks')) : [];
+    
+    // If it's a fresh cycle, initialize it
+    if (Object.keys(gridState).length === 0) {
+        subjects.forEach(s => {
+            gridState[s] = {};
+            weeks.forEach(w => gridState[s][w] = true);
+        });
+    }
+
+    // Update UI
+    const cycleMax = localStorage.getItem(getPrefix() + 'ccMaxWeek');
+    setMaxWeek(cycleMax ? parseInt(cycleMax) : 24);
+    buildGrid();
+}
+
 // --- Window Load & App Config ---
 window.onload = function() {
-  if (savedMaxWeek) setMaxWeek(parseInt(savedMaxWeek, 10));
+  document.getElementById('cyclePicker').value = currentCycle;
+  lessonData = cycleData[currentCycle];
+
+  const prefix = getPrefix();
+  const savedMax = localStorage.getItem(prefix + 'ccMaxWeek');
+  if (savedMax) setMaxWeek(parseInt(savedMax, 10));
   else setMaxWeek(24);
-  
+
   document.getElementById('toggleAnswer').disabled = true;
   buildGrid();
   
@@ -778,10 +1275,11 @@ window.onload = function() {
 };
 
 function saveToDevice() {
-  localStorage.setItem('ccSpinnerProgress', JSON.stringify(gridState));
-  localStorage.setItem('ccMaxWeek', String(getMaxWeek()));
-  localStorage.setItem('ccAllowedWeeks', JSON.stringify(allowedWeeks));
-  localStorage.setItem('ccBlockedWeeks', JSON.stringify(blockedWeeks));
+  const prefix = getPrefix();
+  localStorage.setItem(prefix + 'ccSpinnerProgress', JSON.stringify(gridState));
+  localStorage.setItem(prefix + 'ccMaxWeek', String(getMaxWeek()));
+  localStorage.setItem(prefix + 'ccAllowedWeeks', JSON.stringify(allowedWeeks));
+  localStorage.setItem(prefix + 'ccBlockedWeeks', JSON.stringify(blockedWeeks));
 }
 
 function updateVh() { 
