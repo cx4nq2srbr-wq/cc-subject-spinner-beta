@@ -335,6 +335,7 @@ h1 {
 .gridHeader {
   display: flex; 
   align-items: center; 
+  justify-content: space-between;
   padding: 12px 20px;
   background: #fff; 
   border-bottom: 2px solid #eee;
@@ -502,29 +503,21 @@ h1 {
     <div class="gridHeader">
       <button class="closeGridBtn" onclick="toggleGrid()">←</button>
       <h2>Lesson Grid</h2>
-    </div>
-<div class="gridControls" style="display: flex; flex-direction: column; gap: 10px;">
-  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-    
-    <div style="display:flex; align-items:center; gap:10px;">
-      <div>Cycle:</div>
-      <select id="cyclePicker" onchange="changeCycle(this.value)" style="padding: 8px; border-radius: 10px; font-weight: 700; border: 1px solid var(--secondary);">
+      <select id="cyclePicker" onchange="changeCycle(this.value)" style="padding: 8px; border-radius: 10px; font-weight: 700; border: 1px solid var(--secondary); min-width: 80px;">
         <option value="1">Cycle 1</option>
         <option value="2">Cycle 2</option>
         <option value="3">Cycle 3</option>
       </select>
     </div>
-
-    <div style="display:flex; align-items:center; gap:10px;">
+<div class="gridControls" style="display: flex; flex-direction: column; gap: 10px;">
+  <div style="display:flex; align-items:center; gap:10px; justify-content: center;">
       <div>Max Week:</div>
       <div class="maxWeekControl">
         <button class="maxWeekBtn" id="decreaseWeek">−</button>
         <div id="maxWeekDisplay">24</div>
         <button class="maxWeekBtn" id="increaseWeek">+</button>
       </div>
-    </div>
   </div>
-  
   <button onclick="resetGrid()" style="background: #eee; color: #666; border: 1px solid #ccc; padding: 10px; cursor: pointer; border-radius: 10px; font-weight: 700;">
     Reset Progress
   </button>
