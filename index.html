@@ -275,20 +275,28 @@ h1 {
 }
 
 #undoBtn:disabled {
-    background-color: #bdc3c7; /* A neutral grey */
-    color: #ecf0f1;
+   background-color: #94b8e2;
+    color: rgba(255, 255, 255, 0.6);
     cursor: not-allowed;
-    transform: scale(0.95); /* Slightly smaller to show it's "off" */
+    transform: scale(0.98);
     opacity: 0.7;
     box-shadow: none;
 }
 
 #spinBtn:disabled {
-  background: #cbd5e1;
-  transform: scale(0.95);
-  cursor: not-allowed;
+background-color: #ff9d94; /* Faded coral/red */
+    color: rgba(255, 255, 255, 0.6);
+    cursor: not-allowed;
+    transform: scale(0.98);
+    opacity: 0.7;
+    box-shadow: none;
 }
 
+  button:disabled svg text {
+    fill: rgba(255, 255, 255, 0.5);
+    transition: fill 0.3s ease;
+}
+  
 /* Edit Bar Polish */
 #editBtn {
   position: fixed;
