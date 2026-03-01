@@ -1806,95 +1806,132 @@ function resetGridConfirmed() {
 let confettiAnimationId = null;
 let confettiParticles = null;
 let confettiResizeHandler = null;
+let isConfettiStopping = false; // New flag to control the "fall out"
 
 function finishLesson() {
-  if (navigator.vibrate) navigator.vibrate([60,30,60]);
-  playSound(1100, 'triangle', 0.25, 0.08);
-  showDoneOverlay();
+    if (navigator.vibrate) navigator.vibrate([60,30,60]);
+    playSound(1100, 'triangle', 0.25, 0.08);
+    showDoneOverlay();
 }
 
 function showDoneOverlay() {
-  const el = document.getElementById('doneOverlay');
-  if (!el) return;
-  el.style.display = 'flex';
-  startConfetti();
+    const el = document.getElementById('doneOverlay');
+    if (!el) return;
+    el.style.display = 'flex';
+    startConfetti();
 }
 
 function hideDoneOverlay() {
-  stopConfetti();
-  const el = document.getElementById('doneOverlay');
-  if (!el) return;
-  el.style.display = 'none';
+    isConfettiStopping = true;
+    const overlay = document.getElementById('doneOverlay');
+    const box = overlay.querySelector('.doneBox');
+    
+    // Hide the popup box and remove the dark background 
+    // so the user can see the freshly reset grid underneath
+    if (box) box.style.display = 'none';
+    overlay.style.background = 'transparent';
+    
+    // The animation frame will automatically call stopConfetti() 
+    // once the last piece falls off the screen.
 }
 
 function startConfetti() {
-  const canvas = document.getElementById('confettiCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; canvas.style.width = '100%'; canvas.style.height = '100%'; }
-  resize();
-  confettiResizeHandler = resize;
-  window.addEventListener('resize', confettiResizeHandler);
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    isConfettiStopping = false;
 
-  const w = canvas.width, h = canvas.height;
-  const colors = ['#ef4444','#f97316','#f59e0b','#22c55e','#06b6d4','#6366f1','#ec4899'];
-  const parts = [];
-  for (let i = 0; i < 140; i++) {
-    parts.push({ x: Math.random() * w, y: Math.random() * -h, vx: (Math.random() - 0.5) * 4, vy: Math.random() * 3 + 2, r: Math.random() * 8 + 4, color: colors[Math.floor(Math.random() * colors.length)], rot: Math.random() * 360, vr: (Math.random() - 0.5) * 10 });
-  }
-  confettiParticles = parts;
-  let start = performance.now();
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+    }
+    resize();
+    confettiResizeHandler = resize;
+    window.addEventListener('resize', confettiResizeHandler);
 
-  function frame(now) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let p of parts) {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.02;
-      p.rot += p.vr;
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot * Math.PI / 180);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
-      ctx.restore();
-      if (p.y > canvas.height + 20) { p.y = -10; p.x = Math.random() * canvas.width; p.vy = Math.random() * 3 + 2; }
+    const w = canvas.width, h = canvas.height;
+    const colors = ['#ef4444','#f97316','#f59e0b','#22c55e','#06b6d4','#6366f1','#ec4899'];
+    const parts = [];
+
+    for (let i = 0; i < 140; i++) {
+        parts.push({
+            x: Math.random() * w,
+            y: Math.random() * -h,
+            vx: (Math.random() - 0.5) * 4,
+            vy: Math.random() * 3 + 2,
+            r: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rot: Math.random() * 360,
+            vr: (Math.random() - 0.5) * 10
+        });
+    }
+    confettiParticles = parts;
+
+    function frame(now) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        for (let p of parts) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.02; // Gravity
+            p.rot += p.vr;
+            
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
+            ctx.restore();
+
+            // If the particle falls off the bottom of the screen
+            if (p.y > canvas.height + 20) {
+                // Only loop it back to the top if we aren't stopping
+                if (!isConfettiStopping) {
+                    p.y = -10;
+                    p.x = Math.random() * canvas.width;
+                    p.vy = Math.random() * 3 + 2;
+                }
+            }
+        }
+
+        // If we are stopping AND all particles are off the screen, end the animation entirely
+        if (isConfettiStopping && parts.every(p => p.y > canvas.height + 20)) {
+            stopConfetti();
+            return; 
+        }
+
+        confettiAnimationId = requestAnimationFrame(frame);
     }
     confettiAnimationId = requestAnimationFrame(frame);
-    if (now - start > 5500) { stopConfetti(); }
-  }
-  confettiAnimationId = requestAnimationFrame(frame);
 }
 
 function stopConfetti() {
-  if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
-  confettiAnimationId = null;
-  confettiParticles = null;
-  if (confettiResizeHandler) {
-    window.removeEventListener('resize', confettiResizeHandler);
-    confettiResizeHandler = null;
-  }
-  const canvas = document.getElementById('confettiCanvas');
-  if (canvas) {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+    if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+    confettiAnimationId = null;
+    confettiParticles = null;
+    
+    if (confettiResizeHandler) {
+        window.removeEventListener('resize', confettiResizeHandler);
+        confettiResizeHandler = null;
+    }
+    
+    const canvas = document.getElementById('confettiCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Restore the overlay styles back to their defaults for the next time it's triggered
+    const overlay = document.getElementById('doneOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.style.background = 'rgba(0,0,0,0.45)';
+        const box = overlay.querySelector('.doneBox');
+        if (box) box.style.display = 'block';
+    }
 }
-
-document.addEventListener('touchstart', function (event) {
-  if (event.touches.length > 1) {
-    event.preventDefault();
-  }
-}, { passive: false });
-
-let lastTouchEnd = 0;
-document.addEventListener('touchend', function (event) {
-  const now = (new Date()).getTime();
-  if (now - lastTouchEnd <= 300) {
-    event.preventDefault();
-  }
-  lastTouchEnd = now;
-}, false);
 
 /* ==========================================================================
    7. INPUT & SERVICE WORKER BINDINGS
