@@ -942,9 +942,9 @@ const cycleData = {
       8: { p: "Reflexive Pronouns", a: "myself, yourself, himself/herself/itself, ourselves, yourselves, themselves" },
       9: { p: "Interrogative Pronouns", a: "who, whom, whose, which, what" },
       10: { p: "Demonstrative Pronouns", a: "this, that, these, those" },
-      11: { p: "Indefinite Pronouns", a: "all, another, any, anybody, anyone, anything, both, each, either" },
-      12: { p: "Indefinite Pronouns", a: "everybody, everyone, everything, few, many, more, most, neither" },
-      13: { p: "Indefinite Pronouns", a: "nobody, none, one, other, several, some, somebody, someone, such" },
+      11: { p: "Indefinite Pronouns", a: "<b>all, another, any, anybody, anyone, anything, both, each, either</b>, everybody, everyone, everything, few, many, more, most, neither, nobody, none, one, other, several, some, somebody, someone, such" },
+      12: { p: "Indefinite Pronouns", a: "all, another, any, anybody, anyone, anything, both, each, either, <b>everybody, everyone, everything, few, many, more, most, neither</b>, nobody, none, one, other, several, some, somebody, someone, such" },
+      13: { p: "Indefinite Pronouns", a: "all, another, any, anybody, anyone, anything, both, each, either, everybody, everyone, everything, few, many, more, most, neither, <b>nobody, none, one, other, several, some, somebody, someone, such</b>" },
       14: { p: "An Adverb", a: "An adverb modifies a verb, adjective, or another adverb—and answers the questions: How? When? Where? and Why?" },
       15: { p: "Four Purposes of Sentences", a: "declarative, exclamatory, interrogative, imperative" },
       16: { p: "A Verb", a: "A verb is a word that asserts an action, shows a state of being, links two words together, or helps another verb." },
@@ -1457,7 +1457,7 @@ function spinBoth() {
 
       // Display results
       document.getElementById('prompt').textContent = lesson.p;
-      document.getElementById('answerContent').textContent = lesson.a;
+      document.getElementById('answerContent').innerHTML = lesson.a;
       
       // Update Grid State
       gridState[subject][week] = false;
@@ -1560,7 +1560,7 @@ function undoLastSpin() {
 
         // Update Text to previous question
         document.getElementById('prompt').textContent = previousSpun.prompt;
-        document.getElementById('answerContent').textContent = previousSpun.answer;
+        document.getElementById('answerContent').innerHTML = previousSpun.answer;
         
         // Step back the memory
         lastSpun = { ...previousSpun };
