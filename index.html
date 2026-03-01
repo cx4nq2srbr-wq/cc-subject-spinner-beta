@@ -571,44 +571,34 @@ background-color: #ff9d94; /* Faded coral/red */
 </div>
 
 <div id="gridOverlay">
-  <div id="gridContent">
-    <div class="gridHeader">
-        <button class="closeGridBtn" onclick="toggleGrid()">&larr;</button>
-        <h2 class="header-title">Lesson Grid</h2>
-    </div>
-
-    <div class="grid-controls-row">
-        <div class="maxWeekControl">
-            <span>Max Week:</span>
-            <button class="maxWeekBtn" onclick="updateMaxWeek(-1)">-</button>
-            <span id="maxWeekDisplay">12</span>
-            <button class="maxWeekBtn" onclick="updateMaxWeek(1)">+</button>
+    <div id="gridContent">
+        <div class="gridHeader">
+            <button class="closeGridBtn" onclick="toggleGrid()">&larr;</button>
+            <h2 class="header-title">Lesson Grid</h2>
         </div>
 
-        <select id="cyclePicker" onchange="changeCycle(this.value)">
-            <option value="1">Cycle 1</option>
-            <option value="2">Cycle 2</option>
-            <option value="3">Cycle 3</option>
-        </select>
+        <div class="grid-controls-row">
+            <div class="maxWeekControl">
+                <span>Max Week:</span>
+                <button class="maxWeekBtn" onclick="updateMaxWeek(-1)">-</button>
+                <span id="maxWeekDisplay">12</span>
+                <button class="maxWeekBtn" onclick="updateMaxWeek(1)">+</button>
+            </div>
+            <select id="cyclePicker" onchange="changeCycle(this.value)">
+                <option value="1">Cycle 1</option>
+                <option value="2">Cycle 2</option>
+                <option value="3">Cycle 3</option>
+            </select>
+        </div>
+
+        <div id="grid"></div>
+
+        <div style="padding: 15px; border-top: 1px solid #eee;">
+            <button onclick="resetGrid()" style="width:100%; background: #f8f9fa; color: #dc3545; border: 1px solid #dc3545; padding: 12px; cursor: pointer; border-radius: 12px; font-weight: 700;">
+                Reset Progress
+            </button>
+        </div>
     </div>
-    
-    <div id="grid"></div>
-</div>
-<div class="gridControls" style="display: flex; flex-direction: column; gap: 10px;">
-  <div style="display:flex; align-items:center; gap:10px; justify-content: center;">
-      <div>Max Week:</div>
-      <div class="maxWeekControl">
-        <button class="maxWeekBtn" id="decreaseWeek">−</button>
-        <div id="maxWeekDisplay">24</div>
-        <button class="maxWeekBtn" id="increaseWeek">+</button>
-      </div>
-  </div>
-  <button onclick="resetGrid()" style="background: #eee; color: #666; border: 1px solid #ccc; padding: 10px; cursor: pointer; border-radius: 10px; font-weight: 700;">
-    Reset Progress
-  </button>
-</div>    
-  <div id="grid"></div>
-  </div>
 </div>
 
 <script>
