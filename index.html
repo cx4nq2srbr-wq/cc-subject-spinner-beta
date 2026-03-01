@@ -606,9 +606,9 @@ background-color: #ff9d94; /* Faded coral/red */
         <div class="grid-controls-row">
             <div class="maxWeekControl">
                 <span>Max Week:</span>
-                <button class="maxWeekBtn" onclick="decreaseWeek()">-</button>
+                <button id="decreaseWeek" class="maxWeekBtn" onclick="decreaseWeek()">-</button>
                 <span id="maxWeekDisplay">12</span>
-                <button class="maxWeekBtn" onclick="increaseWeek()">+</button>
+                <button id="increaseWeek" class="maxWeekBtn" onclick="increaseWeek()">+</button>
             </div>
             <select id="cyclePicker" onchange="changeCycle(this.value)">
                 <option value="1">Cycle 1</option>
