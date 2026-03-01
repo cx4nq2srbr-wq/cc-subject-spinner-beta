@@ -139,20 +139,24 @@ h1 {
 }
 
 #toggleAnswer {
-  width: 100%;
-  padding: 18px;
-  background: rgba(74, 144, 226, 0.05);
-  color: var(--secondary);
-  border: none;
-  border-bottom: 1px solid rgba(74, 144, 226, 0.1);
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 800;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.2s;
+    width: 100%;
+    padding: 18px;
+    /* Matches the Cycle Picker */
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+    
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
+#toggleAnswer:hover {
+    background-color: #357abd;
+}
 #answerContent {
   padding: 0 20px;
   max-height: 0px;   overflow-y: auto;
