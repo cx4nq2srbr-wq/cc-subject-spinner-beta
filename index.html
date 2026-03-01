@@ -1825,10 +1825,9 @@ let isConfettiStopping = false; // New flag to control the "fall out"
 
 function finishLesson() {
     if (navigator.vibrate) navigator.vibrate([60,30,60]);
-    playSound(1100, 'triangle', 0.25, 0.08); // <-- Remove this line
+    playVictoryChime(); //
     showDoneOverlay();
 }
-
 function showDoneOverlay() {
     const el = document.getElementById('doneOverlay');
     if (!el) return;
@@ -1949,7 +1948,7 @@ function stopConfetti() {
 }
 
 /* ==========================================================================
-   7. INPUT & SERVICE WORKER BINDINGS
+   8. INPUT & SERVICE WORKER BINDINGS
    ========================================================================== */
 
 function bindHoldButton(id, actionFn){
