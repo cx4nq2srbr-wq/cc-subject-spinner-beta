@@ -1676,7 +1676,22 @@ function playSound(frequency, type, duration, volume = 0.1) {
   oscillator.start();
   oscillator.stop(audioCtx.currentTime + duration);
 }
-
+  
+function playVictoryChime() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    // The exact frequencies for the classic 8-bit "Secret" chime
+    const notes = [784, 740, 622, 440, 415, 659, 831, 1047];
+    
+    notes.forEach((freq, index) => {
+        // Play each note 110 milliseconds after the last one
+        setTimeout(() => {
+            // Using a 'square' wave gives it that classic NES/Gameboy sound!
+            playSound(freq, 'square', 0.15, 0.04);
+        }, index * 110);
+    });
+}
+  
 // Helpers to set/get the curved label on the spin button's SVG
 function setSpinLabel(label) {
   const spinBtn = document.getElementById('spinBtn');
@@ -1800,9 +1815,9 @@ function resetGridConfirmed() {
   document.getElementById('toggleAnswer').disabled = true;
 }
 
-// ==========================================================================
-// Finish / Confetti Helpers
-// ==========================================================================
+/* ==========================================================================
+   7. Finish / Confetti Helpers
+   ========================================================================== */
 let confettiAnimationId = null;
 let confettiParticles = null;
 let confettiResizeHandler = null;
@@ -1810,7 +1825,7 @@ let isConfettiStopping = false; // New flag to control the "fall out"
 
 function finishLesson() {
     if (navigator.vibrate) navigator.vibrate([60,30,60]);
-    playSound(1100, 'triangle', 0.25, 0.08);
+    playSound(1100, 'triangle', 0.25, 0.08); // <-- Remove this line
     showDoneOverlay();
 }
 
