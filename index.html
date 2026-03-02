@@ -663,10 +663,12 @@ background-color: #ff9d94; /* Faded coral/red */
 <div id="gridOverlay">
     <div id="gridContent">
         <div class="gridHeader">
-            <button class="closeGridBtn" onclick="toggleGrid()">&larr;</button>
-            <h2 class="header-title">Lesson Grid</h2>
-            <button class="resetHeaderBtn" onclick="resetGrid()">Reset</button>
-        </div>
+  <button class="closeGridBtn" onclick="toggleGrid()">&larr;</button>
+  <div style="position: absolute; right: 15px; display: flex; gap: 8px; align-items: center;">
+      <button onclick="toggleSettings()" style="background: none; border: none; font-size: 20px; cursor: pointer;">⚙️</button>
+      <button class="resetHeaderBtn" onclick="resetGrid()">Reset</button>
+  </div>
+</div>
 
         <div class="grid-controls-row">
             <div class="maxWeekControl">
@@ -685,6 +687,37 @@ background-color: #ff9d94; /* Faded coral/red */
         <div id="grid"></div>
 
         </div>
+    </div>
+  
+  <div id="settingsOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 5000; justify-content: center; align-items: center;">
+    <div style="background: white; width: 90%; max-width: 350px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <h3 style="margin-top: 0; text-align: center; color: var(--primary);">Settings</h3>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
+            <label style="font-weight: bold;">Mute All Sounds</label>
+            <input type="checkbox" id="setMute" onchange="updateSettings()" style="width: 20px; height: 20px;">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
+            <label style="font-weight: bold;">Vibration (Haptics)</label>
+            <input type="checkbox" id="setHaptics" onchange="updateSettings()" style="width: 20px; height: 20px;">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
+            <label style="font-weight: bold;">Confetti Animation</label>
+            <input type="checkbox" id="setConfetti" onchange="updateSettings()" style="width: 20px; height: 20px;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; margin-bottom: 20px;">
+            <label style="font-weight: bold; margin-bottom: 5px;">Sound Style</label>
+            <select id="setWaveform" onchange="updateSettings()" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+                <option value="square">Retro (8-bit)</option>
+                <option value="sine">Modern (Smooth)</option>
+                <option value="triangle">Soft (Muted)</option>
+            </select>
+        </div>
+
+        <button onclick="toggleSettings()" style="width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer;">Done</button>
     </div>
 </div>
 
@@ -1373,6 +1406,17 @@ let blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ?
 
 let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
 
+  // Global User Settings
+let userSettings = JSON.parse(localStorage.getItem('appSettings')) || {
+    muted: false,
+    waveform: 'square', // Options: 'square', 'sine', 'triangle'
+    haptics: true,
+    confetti: true
+};
+
+function saveSettings() {
+    localStorage.setItem('appSettings', JSON.stringify(userSettings));
+}
 // Initialize lessonData pointer
 let lessonData = cycleData[currentCycle];
 
@@ -1429,7 +1473,7 @@ window.onload = function() {
   buildGrid();
   
   // Initial Vibration Feedback
-  if (navigator.vibrate) navigator.vibrate(40);
+  if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
 
   // Sync Version Tag
   fetch('manifest.json') 
@@ -1471,7 +1515,7 @@ function spinBoth() {
   const promptDiv = document.getElementById("prompt");
 
   if (isSpinning) return;
-  if (navigator.vibrate) navigator.vibrate(15); 
+  if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15); 
 
   const maxWeekLimit = getMaxWeek();
   const availableSubjects = subjects.filter(s =>
@@ -1497,7 +1541,7 @@ function spinBoth() {
   promptDiv.textContent = "";
 
   // 1. Pick the winning subject and week
-  const subject = availableSubjects[Math.floor(Math.random() * availableSubjects.length)];
+  const winningSubject = availableSubjects[Math.floor(Math.random() * availableSubjects.length)];
   const availableWeeks = weeks.filter(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[subject][w]);
   const week = availableWeeks[Math.floor(Math.random() * availableWeeks.length)];
 
@@ -1514,7 +1558,7 @@ function spinBoth() {
     try {
       playSound(988, 'triangle', 0.1, 0.03);
       setTimeout(() => playSound(1319, 'triangle', 0.2, 0.03), 100);
-      if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
+      if (userSettings.haptics && navigator.vibrate) navigator.vibrate([40, 30, 40]);
       
       const lesson = lessonData[subject][week];
 
@@ -1522,7 +1566,7 @@ function spinBoth() {
       previousSpun = lastSpun ? { ...lastSpun } : null; 
 
       lastSpun = {
-        subject: subject,
+        subject: winningSubject,
         week: week,
         sIdx: subIdx,   // Now properly defined
         wIdx: weekIdx,   // Now properly defined
@@ -1606,7 +1650,7 @@ function spinReel(reelId, items, finalValue, duration = 2400) {
 }
 
 function toggleAnswer() {
-  if (navigator.vibrate) navigator.vibrate(10);
+  if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
   const container = document.getElementById('answerContainer');
   const btn = document.getElementById('toggleAnswer');
   container.classList.toggle('open');
@@ -1679,7 +1723,7 @@ function undoLastSpin() {
     document.getElementById('answerContainer').classList.remove('open');
     document.getElementById('undoBtn').disabled = true;
     
-    if (navigator.vibrate) navigator.vibrate(40);
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
     saveToDevice();
     buildGrid();
 }
@@ -1688,21 +1732,28 @@ function undoLastSpin() {
    4. AUDIO & HAPTICS HELPERS
    ========================================================================== */
 
-function playSound(frequency, type, duration, volume = 0.1) {
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  const oscillator = audioCtx.createOscillator();
+function playSound(freq, type, duration, vol) {
+  if (userSettings.muted) return;
+  
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const osc = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
-  oscillator.type = type; 
-  oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+  
+  // Use user-selected waveform style (Square, Sine, or Triangle)
+  osc.type = userSettings.waveform || type; 
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  
+  // Smooth volume ramping to prevent "popping" sounds
   gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(volume, audioCtx.currentTime + 0.01);
+  gainNode.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
   gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  oscillator.connect(gainNode);
+  
+  osc.connect(gainNode);
   gainNode.connect(audioCtx.destination);
-  oscillator.start();
-  oscillator.stop(audioCtx.currentTime + duration);
+  
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
 }
   
 function playVictoryChime() {
@@ -1821,9 +1872,34 @@ function toggleGrid(){
   overlay.style.display = (overlay.style.display === "flex") ? "none" : "flex";
   if (overlay.style.display === "flex") buildGrid();
 }
-
 /* ==========================================================================
-   6. WEEK SELECTION & RESET DIALOGS
+   6. SETTINGS MENU
+   ========================================================================== */
+
+function toggleSettings() {
+    const overlay = document.getElementById('settingsOverlay');
+    if (overlay.style.display === 'none') {
+        // Load values into the inputs before showing
+        document.getElementById('setMute').checked = userSettings.muted;
+        document.getElementById('setHaptics').checked = userSettings.haptics;
+        document.getElementById('setConfetti').checked = userSettings.confetti;
+        document.getElementById('setWaveform').value = userSettings.waveform;
+        overlay.style.display = 'flex';
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+// Save settings when the user changes a toggle/dropdown
+function updateSettings() {
+    userSettings.muted = document.getElementById('setMute').checked;
+    userSettings.haptics = document.getElementById('setHaptics').checked;
+    userSettings.confetti = document.getElementById('setConfetti').checked;
+    userSettings.waveform = document.getElementById('setWaveform').value;
+    saveSettings();
+}  
+/* ==========================================================================
+   7. WEEK SELECTION & RESET DIALOGS
    ========================================================================== */
 
 function getMaxWeek() {
@@ -1866,7 +1942,7 @@ function resetGridConfirmed() {
 }
 
 /* ==========================================================================
-   7. Finish / Confetti Helpers
+   8. Finish / Confetti Helpers
    ========================================================================== */
 let confettiAnimationId = null;
 let confettiParticles = null;
@@ -1874,7 +1950,7 @@ let confettiResizeHandler = null;
 let isConfettiStopping = false; // New flag to control the "fall out"
 
 function finishLesson() {
-    if (navigator.vibrate) navigator.vibrate([60,30,60]);
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
     playVictoryChime(); //
     showDoneOverlay();
 }
@@ -1998,7 +2074,7 @@ function stopConfetti() {
 }
 
 /* ==========================================================================
-   8. INPUT & SERVICE WORKER BINDINGS
+   10. INPUT & SERVICE WORKER BINDINGS
    ========================================================================== */
 
 function bindHoldButton(id, actionFn){
