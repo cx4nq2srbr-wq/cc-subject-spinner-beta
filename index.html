@@ -1308,16 +1308,24 @@ function finishLesson() {
     showDoneOverlay();
 }
 function showDoneOverlay() {
-    const el = document.getElementById('doneOverlay');
-    if (!el) return;
-    el.style.display = 'flex';
+    const overlay = document.getElementById('doneOverlay');
+    if (!overlay) return;
     
-    // Only shoot confetti if the user has it turned on!
+    // 1. Force the styles back to normal BEFORE showing it
+    // This prevents the bug where the box gets stuck invisible!
+    overlay.style.background = 'rgba(0,0,0,0.45)';
+    overlay.style.pointerEvents = 'auto';
+    const box = overlay.querySelector('.doneBox');
+    if (box) box.style.display = 'block';
+
+    // 2. Show the overlay
+    overlay.style.display = 'flex';
+    
+    // 3. Shoot confetti if enabled
     if (userSettings.confetti) {
         startConfetti();
     }
 }
-
 function hideDoneOverlay() {
     isConfettiStopping = true;
     const overlay = document.getElementById('doneOverlay');
@@ -1327,11 +1335,15 @@ function hideDoneOverlay() {
     if (box) box.style.display = 'none';
     overlay.style.background = 'transparent';
     
-    // The animation frame will automatically call stopConfetti() 
-    // once the last piece falls off the screen.
-    overlay.style.pointerEvents = 'none';
-}
+    // Let taps pass straight through the invisible overlay to the buttons below!
+    overlay.style.pointerEvents = 'none'; 
 
+    // SAFETY CATCH: If confetti is turned OFF in settings, there are no 
+    // falling pieces to trigger the cleanup, so we must clean it up instantly!
+    if (!userSettings.confetti) {
+        stopConfetti();
+    }
+}
 function startConfetti() {
     const canvas = document.getElementById('confettiCanvas');
     if (!canvas) return;
