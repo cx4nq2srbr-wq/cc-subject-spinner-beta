@@ -1512,8 +1512,8 @@ function spinBoth() {
   // 4. Finalize Spin
   setTimeout(() => {
     try {
-      playSound(988, 'sine', 0.1, 0.03);
-      setTimeout(() => playSound(1319, 'sine', 0.2, 0.03), 100);
+      playSound(988, 'triangle', 0.1, 0.03);
+      setTimeout(() => playSound(1319, 'triangle', 0.2, 0.03), 100);
       if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
       
       const lesson = lessonData[subject][week];
@@ -1590,7 +1590,7 @@ function spinReel(reelId, items, finalValue, duration = 2400) {
   
   function playNextTick() {
     if (!isSpinning || currentTick >= sequence.length) return;
-    playSound(400, 'sine', 0.02, 0.01); 
+    playSound(400, 'triangle', 0.02, 0.01); 
     currentTick++;
     const nextDelay = (duration / sequence.length) * (1 + Math.pow(currentTick / sequence.length, 2) * 10);
     if (currentTick < sequence.length) setTimeout(playNextTick, nextDelay);
@@ -1737,7 +1737,7 @@ function playVictoryChime() {
     
     notes.forEach(note => {
         setTimeout(() => {
-            playSound(note.freq, 'sine', note.duration, 0.04);
+            playSound(note.freq, 'triangle', note.duration, 0.04);
         }, note.delay);
     });
 }
