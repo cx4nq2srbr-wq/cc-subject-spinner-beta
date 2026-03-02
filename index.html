@@ -1537,7 +1537,7 @@ function spinBoth() {
       // Update Grid State
       gridState[subject][week] = false;
       
-      if (subject === "Latin") {
+      if (subject === "Latin" && currentCycle === 2) {
         const group = latinTwinGroups.find(g => g.includes(week));
         if (group) {
           group.forEach(twinWeek => {
@@ -1618,7 +1618,7 @@ function undoLastSpin() {
 
     // 1. Put the "mistake" back on the grid
     gridState[lastSpun.subject][lastSpun.week] = true;
-    if (lastSpun.subject === "Latin") {
+    if (lastSpun.subject === "Latin" && currentCycle === 2) {
         const group = latinTwinGroups.find(g => g.includes(lastSpun.week));
         if (group) {
             group.forEach(twinWeek => {
