@@ -365,7 +365,7 @@ const cycleData = {
       21: { p: "Central America", a: "Guatemala, Belize, El Salvador, Honduras, Nicaragua" },
       22: { p: "Oceania", a: "Indonesia, Papua New Guinea, Australia, Great Barrier Reef, New Zealand" },
       23: { p: "Central Asia", a: "Kazakhstan, Uzbekistan, Turkmenistan, Tajikistan, Kyrgyzstan" },
-      24: { p: "Southern Africa", a: "Namibia, Botswana, Mozambique, South Africa, Lesotho.                       " }
+      24: { p: "Southern Africa", a: "Namibia, Botswana, Mozambique, South Africa, Lesotho" }
     },
     "Bible": {
       1: { p: "What are the names of eight significant judges of Israel? (1-4)", a: "<b>1. Othniel, 2. Ehud, 3. Deborah, 4. Gideon</b>, 5. Jephthah, 6. Samson, 7. Eli, 8. Samuel" },
