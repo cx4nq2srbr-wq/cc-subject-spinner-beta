@@ -635,10 +635,6 @@ function resetGridConfirmed() {
 let reviewSubjectIdx = 0;
 let reviewWeekIdx = 0;
 
-function initReviewMode() {
-    updateReviewDisplay();
-}
-
 function adjustReviewSubject(delta) {
     reviewSubjectIdx = (reviewSubjectIdx + delta + subjects.length) % subjects.length;
     updateReviewDisplay();
@@ -673,15 +669,13 @@ function initReviewMode() {
     const subReel = document.getElementById('reviewSubjectReel');
     const weekReel = document.getElementById('reviewWeekReel');
 
-    // 1. Populate Subject Reel
     subReel.innerHTML = "";
     subjects.forEach(s => {
         const div = document.createElement("div");
-        div.textContent = `${subjectIcons[s]} ${s}`;
+        div.innerHTML = `<span>${subjectIcons[s]}</span> <span>${s}</span>`;
         subReel.appendChild(div);
     });
 
-    // 2. Populate Week Reel
     weekReel.innerHTML = "";
     weeks.forEach(w => {
         const div = document.createElement("div");
@@ -689,7 +683,6 @@ function initReviewMode() {
         weekReel.appendChild(div);
     });
 
-    // 3. Reset indices to 0 and show the first lesson
     reviewSubjectIdx = 0;
     reviewWeekIdx = 0;
     updateReviewDisplay();
