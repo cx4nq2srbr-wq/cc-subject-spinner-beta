@@ -396,38 +396,55 @@ function undoLastSpin() {
    4. AUDIO & HAPTICS HELPERS
    ========================================================================== */
 
-   function initAudio() {
-  // Create it on the first user interaction
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  // Wake it up if the browser suspended it
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
+function initAudio() {
+  try {
+    // 1. Check if the browser even supports AudioContext
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return; 
+
+    // 2. Create it on the first user interaction
+    if (!audioCtx) {
+      audioCtx = new AudioContext();
+    }
+    
+    // 3. Wake it up if the browser suspended it
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  } catch (e) {
+    console.warn("Audio Context could not be initialized. Sound will be muted.", e);
   }
 }
+
 function playSound(freq, type, duration, vol) {
   if (userSettings.muted) return;
   
   initAudio();
   
-  const osc = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
+  // SAFETY CATCH: If audioCtx failed to build, exit out so we don't crash the spinner!
+  if (!audioCtx) return; 
   
-  // Use user-selected waveform style (Square, Sine, or Triangle)
-  osc.type = userSettings.waveform || type; 
-  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  
-  // Smooth volume ramping to prevent "popping" sounds
-  gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  
-  osc.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
+  try {
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    // Use user-selected waveform style (Square, Sine, or Triangle)
+    osc.type = userSettings.waveform || type; 
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    
+    // Smooth volume ramping to prevent "popping" sounds
+    gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) {
+    console.warn("Could not play sound tick.", e);
+  }
 }
   
 function playVictoryChime() {
