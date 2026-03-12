@@ -21,6 +21,21 @@ function switchMode(mode) {
     }
 }
 
+function switchMode(mode) {
+    // 1. Update State
+    currentMode = mode;
+
+    // 2. Toggle Visibility
+    document.getElementById('homeScreen').classList.toggle('active', mode === 'home');
+    document.getElementById('spinnerContainer').classList.toggle('active', mode === 'spinner');
+    document.getElementById('reviewContainer').classList.toggle('active', mode === 'review');
+
+    // 3. Setup Review if needed
+    if (mode === 'review') {
+        initReviewMode();
+    }
+}
+
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let isSpinning = false;
 let lastSpun = null; // The one we just spun (the "mistake")
@@ -335,6 +350,18 @@ function toggleAnswer() {
   const btn = document.getElementById('toggleAnswer');
   container.classList.toggle('open');
   btn.textContent = container.classList.contains('open') ? '▲ Hide Answer ▲' : '▼ Show Answer ▼';
+}
+
+function toggleReviewAnswer() {
+    const container = document.getElementById('reviewAnswerContainer');
+    const btn = document.getElementById('toggleReviewAnswer');
+    const isOpen = container.classList.toggle('open');
+    
+    btn.textContent = isOpen ? '▲ Hide Answer ▲' : '▼ Show Answer ▼';
+    
+    if (isOpen && userSettings.haptics) {
+        navigator.vibrate(15);
+    }
 }
 
 function undoLastSpin() {
