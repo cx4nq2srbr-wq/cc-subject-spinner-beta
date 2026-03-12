@@ -4,24 +4,6 @@
 let currentMode = 'home'; // 'home', 'spinner', or 'review'
 
 function switchMode(mode) {
-    currentMode = mode;
-    // Hide all main containers
-    document.getElementById('homeScreen').style.display = 'none';
-    document.getElementById('spinnerContainer').style.display = 'none';
-    document.getElementById('reviewContainer').style.display = 'none';
-
-    // Show the selected one
-    if (mode === 'home') {
-        document.getElementById('homeScreen').style.display = 'flex';
-    } else if (mode === 'spinner') {
-        document.getElementById('spinnerContainer').style.display = 'block';
-    } else if (mode === 'review') {
-        document.getElementById('reviewContainer').style.display = 'block';
-        initReviewMode(); // Initialize default values for review
-    }
-}
-
-function switchMode(mode) {
     // 1. Update State
     currentMode = mode;
 
@@ -688,6 +670,31 @@ function updateReviewDisplay() {
     
     // Auto-close answer when changing selection
     document.getElementById('reviewAnswerContainer').classList.remove('open');
+}
+function initReviewMode() {
+    const subReel = document.getElementById('reviewSubjectReel');
+    const weekReel = document.getElementById('reviewWeekReel');
+
+    // 1. Populate Subject Reel
+    subReel.innerHTML = "";
+    subjects.forEach(s => {
+        const div = document.createElement("div");
+        div.textContent = `${subjectIcons[s]} ${s}`;
+        subReel.appendChild(div);
+    });
+
+    // 2. Populate Week Reel
+    weekReel.innerHTML = "";
+    weeks.forEach(w => {
+        const div = document.createElement("div");
+        div.textContent = "Week " + w;
+        weekReel.appendChild(div);
+    });
+
+    // 3. Reset indices to 0 and show the first lesson
+    reviewSubjectIdx = 0;
+    reviewWeekIdx = 0;
+    updateReviewDisplay();
 }
 /* ==========================================================================
    9. Finish / Confetti Helpers
