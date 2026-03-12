@@ -647,27 +647,34 @@ function adjustReviewWeek(delta) {
     if (userSettings.haptics) navigator.vibrate(10);
 }
 
+// 1. Update updateReviewDisplay to use a fast, clean transition
 function updateReviewDisplay() {
     const subject = subjects[reviewSubjectIdx];
     const week = weeks[reviewWeekIdx];
     const lesson = lessonData[subject][week];
 
-    // Update the Reels visually (without the spin animation)
     const subReel = document.getElementById('reviewSubjectReel');
     const weekReel = document.getElementById('reviewWeekReel');
-    
-    // We reuse your 80px offset logic so it looks "docked" correctly
+
+    // Use a quick 0.2s ease-out so it feels like a "click"
+    subReel.style.transition = "transform 0.2s ease-out";
+    weekReel.style.transition = "transform 0.2s ease-out";
+
     subReel.style.transform = `translateY(-${reviewSubjectIdx * 80}px)`;
     weekReel.style.transform = `translateY(-${reviewWeekIdx * 80}px)`;
 
-    // Update the prompt and answer
     document.getElementById('reviewPrompt').textContent = lesson.p;
     document.getElementById('reviewAnswerContent').innerHTML = lesson.a;
-    
 }
+
+// 2. Update initReviewMode to ensure the reels stay simple (no random sequence)
 function initReviewMode() {
     const subReel = document.getElementById('reviewSubjectReel');
     const weekReel = document.getElementById('reviewWeekReel');
+
+    // Clear existing transitions for the setup
+    subReel.style.transition = "none";
+    weekReel.style.transition = "none";
 
     subReel.innerHTML = "";
     subjects.forEach(s => {
