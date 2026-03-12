@@ -652,14 +652,11 @@ function updateReviewDisplay() {
     const subject = subjects[reviewSubjectIdx];
     const week = weeks[reviewWeekIdx];
     const lesson = lessonData[subject][week];
-
     const subReel = document.getElementById('reviewSubjectReel');
     const weekReel = document.getElementById('reviewWeekReel');
 
-    // Use a quick 0.2s ease-out so it feels like a "click"
     subReel.style.transition = "transform 0.2s ease-out";
     weekReel.style.transition = "transform 0.2s ease-out";
-
     subReel.style.transform = `translateY(-${reviewSubjectIdx * 80}px)`;
     weekReel.style.transform = `translateY(-${reviewWeekIdx * 80}px)`;
 
