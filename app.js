@@ -61,6 +61,13 @@ let userSettings = JSON.parse(localStorage.getItem('appSettings')) || {
     confetti: true
 };
 
+function anyLessonsRemaining() {
+  const maxWeek = getMaxWeek();
+  return subjects.some(s =>
+    weeks.some(w => ((w <= maxWeek || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w]))
+  );
+}
+
 function saveSettings() {
     localStorage.setItem('appSettings', JSON.stringify(userSettings));
 }
