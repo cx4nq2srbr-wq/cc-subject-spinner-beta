@@ -616,27 +616,49 @@ background-color: #ff9d94; /* Faded coral/red */
 }
 
 .back-to-home {
-    position: absolute;
-    top: env(safe-area-inset-top, 20px);
-    left: 15px;
-    background: var(--secondary);
+  position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.2); /* Glass effect */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 15px;
-    font-weight: 700;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    z-index: 700;
+    z-index: 1000;
+    transition: all 0.2s ease;
+}
+.back-to-home:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+}
+.back-to-home:active {
+    transform: scale(0.95);
 }
 
 /* ========================================================================== 
    9. NEW: REVIEW MODE CONTROLS 
    ========================================================================== */
 .review-layout {
+    gap: 20px;
     width: 100%;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+#reviewPrompt {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-align: center;
+    padding: 0 20px;
 }
 
 .review-controls {
@@ -650,23 +672,27 @@ background-color: #ff9d94; /* Faded coral/red */
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 
 .step-btn {
-    width: 50px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     background: white;
-    border: 2px solid rgba(74, 144, 226, 0.3);
-    border-radius: 12px;
+    border: none;
+    border-radius: 50%;
     color: var(--secondary);
     font-size: 1.2rem;
-    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+}
+
+.step-btn:hover {
+    background: var(--secondary);
+    color: white;
 }
 
 .step-btn:active {
@@ -675,8 +701,43 @@ background-color: #ff9d94; /* Faded coral/red */
     transform: scale(0.9);
 }
 
-/* Ensure the review reels animate smoothly when clicked */
+.review-slot {
+    background: white;
+    border-radius: var(--radius);
+    width: 120px;
+    height: 80px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    position: relative;
+    /* This is the secret sauce for the vertical alignment */
+}
+
+#reviewContainer {
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+#reviewContainer.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers the whole block vertically */
+    align-items: center;
+    min-height: 100vh;
+    padding-top: 60px; /* Leaves room for the home icon */
+}
+
 .review-slot .reel {
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-color);
     transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
 }
 
