@@ -616,22 +616,10 @@ background-color: #ff9d94; /* Faded coral/red */
 }
 
 .back-to-home {
-  position: absolute;
+position: absolute;
     top: 20px;
     left: 20px;
-    background: rgba(255, 255, 255, 0.2); /* Glass effect */
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
     z-index: 1000;
-    transition: all 0.2s ease;
 }
 .back-to-home:hover {
     background: rgba(255, 255, 255, 0.4);
@@ -746,13 +734,14 @@ background-color: #ff9d94; /* Faded coral/red */
 }
 
 .review-slot .reel div {
-   height: 80px;
+    height: 80px;
     min-height: 80px;
-    max-height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-sizing: border-box;
+    white-space: nowrap; /* Keeps icon and text on one line */
+    gap: 8px;
+    font-size: 18px; /* Slightly smaller for long words */
 }
 
 .prompt-text {
@@ -769,6 +758,12 @@ background-color: #ff9d94; /* Faded coral/red */
     display: block !important;
 }
 
+#reviewAnswerContent {
+    max-height: none !important;
+    padding: 20px !important;
+    opacity: 1 !important;
+    display: block !important;
+}
 
 #reviewAnswerContainer.review-always-open {
     background: rgba(255, 255, 255, 0.8);
@@ -785,6 +780,6 @@ background-color: #ff9d94; /* Faded coral/red */
     color: white;
     font-size: 14px;
     font-weight: 800;
-    letter-spacing: 1px;
     text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
