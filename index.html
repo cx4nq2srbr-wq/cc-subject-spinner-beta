@@ -18,6 +18,25 @@
 </head>
 <body>
 
+<div id="homeScreen" class="view-container active">
+    <h1 class="app-title">CC Study Tool</h1>
+    <div class="mode-cards">
+        <div class="mode-card" onclick="switchMode('spinner')">
+            <div class="icon">🎯</div>
+            <h3>Spinner</h3>
+            <p>Randomized practice</p>
+        </div>
+        <div class="mode-card" onclick="switchMode('review')">
+            <div class="icon">📚</div>
+            <h3>Review</h3>
+            <p>Browse specific lessons</p>
+        </div>
+    </div>
+</div>
+
+<div id="spinnerContainer" class="view-container">
+    <button class="back-to-home" onclick="switchMode('home')">← Home</button>
+  
 <div class="rollerBox">
   <div class="slot">
     <div class="reel" id="subjectReel"></div>
@@ -56,6 +75,37 @@
       </text>
     </svg>
   </button>
+</div>
+</div>
+
+<div id="reviewContainer" class="view-container">
+    <button class="back-to-home" onclick="switchMode('home')">← Home</button>
+    
+    <div class="review-layout">
+        <div class="review-controls">
+            <div class="ctrl-group">
+                <button class="step-btn" onclick="adjustReviewSubject(-1)">▲</button>
+                <div class="slot review-slot">
+                    <div class="reel" id="reviewSubjectReel"></div>
+                </div>
+                <button class="step-btn" onclick="adjustReviewSubject(1)">▼</button>
+            </div>
+
+            <div class="ctrl-group">
+                <button class="step-btn" onclick="adjustReviewWeek(-1)">▲</button>
+                <div class="slot review-slot">
+                    <div class="reel" id="reviewWeekReel"></div>
+                </div>
+                <button class="step-btn" onclick="adjustReviewWeek(1)">▼</button>
+            </div>
+        </div>
+
+        <div id="reviewPrompt" class="prompt-text"></div>
+        <div id="reviewAnswerContainer" class="answer-box">
+            <button id="toggleReviewAnswer" onclick="toggleReviewAnswer()">▼ Show Answer ▼</button>
+            <div id="reviewAnswerContent"></div>
+        </div>
+    </div>
 </div>
 
 <div id="resetConfirmOverlay">
