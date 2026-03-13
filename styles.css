@@ -45,7 +45,7 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: env(safe-area-inset-top, 20px) 15px 80px 15px; 
+  padding: env(safe-area-inset-top, 20px) 15px calc(20px + env(safe-area-inset-bottom, 0px)) 15px;
 }
 
 h1 {
@@ -209,11 +209,10 @@ h1 {
 
 .control-row {
   position: fixed;
-  /* Fixed 50px for the edit bar + the device notch */
-  bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+  bottom: env(safe-area-inset-bottom, 0px);
   left: 0;
   right: 0;
-  height: 0; /* Let children overflow so they don't block the screen */
+  height: 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -289,28 +288,43 @@ background-color: #ff9d94; /* Faded coral/red */
     transition: fill 0.3s ease;
 }
   
-/* Edit Bar Polish */
 #editBtn {
   position: fixed;
-  bottom: 0; 
-  left: 0; 
-  right: 0;
-  /* Safe area handling for modern iPhones */
-  height: calc(50px + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  bottom: calc(15px + env(safe-area-inset-bottom, 0px)); 
+  left: 50%; 
+  transform: translateX(-50%);
+  height: auto;
+  padding: 12px 24px;
   
-  background: white;
+  /* Make it a sleek, floating glass-morphism pill */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: var(--secondary);
-  border: none;
-  border-top: 1px solid rgba(0,0,0,0.1);
+  border: 2px solid rgba(74, 144, 226, 0.2);
+  border-radius: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  
   font-family: inherit;
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: 800;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   z-index: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* Add a nice bouncy hover/tap effect */
+#editBtn:hover {
+  transform: translateX(-50%) scale(1.05);
+  border-color: var(--secondary);
+}
+#editBtn:active {
+  transform: translateX(-50%) scale(0.95);
 }
 
 /* ==========================================================================
