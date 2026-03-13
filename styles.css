@@ -22,14 +22,31 @@
 /* ==========================================================================
    2. GLOBAL LAYOUT & BODY
    ========================================================================== */
-html, body {
+html {
   height: 100%;
+  /* Colors the absolute bottom of the screen to match your gradient */
+  background-color: #e2e8f0; 
+}
+
+body {
   margin: 0;
-  padding: 0;
+  /* The magic bullet: tells mobile browsers to adapt to the true screen size */
+  min-height: 100vh;
+  min-height: 100dvh; 
+  padding: env(safe-area-inset-top, 20px) 15px calc(20px + env(safe-area-inset-bottom, 0px)) 15px;
   overflow: hidden; 
   touch-action: pan-y;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior: none;
+  
+  font-family: 'Quicksand', sans-serif;
+  background: radial-gradient(circle at top, #f0f7ff, #e2e8f0);
+  background-attachment: fixed;
+  color: var(--text-main);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 input, button, select, textarea {
