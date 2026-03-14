@@ -762,23 +762,6 @@ position: absolute;
     scroll-snap-align: start; /* Snaps exactly to the box edges */
 }
 
-.picker-hint {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 11px;
-    color: var(--secondary);
-    pointer-events: none; /* Lets clicks pass through to the slot */
-    background: rgba(255,255,255,0.9);
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 #reviewContainer {
     justify-content: center;
     min-height: 100vh;
