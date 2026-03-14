@@ -19,6 +19,8 @@
 <body>
 
 <div id="homeScreen" class="view-container active">
+    <div class="version-tag">v<span id="app-version">loading...</span></div>
+    
     <h1 class="app-title">CC Study Tool</h1>
     <div class="mode-cards">
         <div class="mode-card" onclick="switchMode('spinner')">
@@ -53,8 +55,6 @@
 </div>
 
 <button id="editBtn" onclick="toggleGrid()">Lesson Settings</button>
-
-<div class="version-tag">v<span id="app-version">1.0.4</span></div>
 
 <div class="control-row">
   <button id="undoBtn" onclick="undoLastSpin()" disabled>

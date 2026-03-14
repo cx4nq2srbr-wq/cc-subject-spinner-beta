@@ -561,7 +561,16 @@ background-color: #ff9d94; /* Faded coral/red */
 /* ========================================================================== 
    8. NEW: VIEW MANAGEMENT & HOME SCREEN 
    ========================================================================== */
-.view-container {
+.version-tag {
+     position: absolute; 
+    top: env(safe-area-inset-top, 10px);
+    right: 15px; 
+    font-size: 11px; /* Bumped up slightly so it's readable in light grey */
+    color: #cbd5e1;  /* A clean, soft light grey */
+    opacity: 0.8;    /* Raised opacity so it doesn't vanish entirely */
+}
+
+   .view-container {
     display: none; /* Hidden by default */
     flex-direction: column;
     align-items: center;
