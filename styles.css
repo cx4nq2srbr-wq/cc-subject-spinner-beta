@@ -645,15 +645,18 @@ background-color: #ff9d94; /* Faded coral/red */
 }
 
 .back-to-home {
-position: absolute;
-    top: 20px;
-    left: 20px;
+    pointer-events: auto; /* Required so it's clickable */
+    margin-bottom: 20px;  /* Floats it perfectly above the bottom edge */
+    width: 48px;          /* Makes it slightly larger */
+    height: 48px;
     z-index: 1000;
 }
+
 .back-to-home:hover {
-    background: rgba(255, 255, 255, 0.4);
+    background-color: #357abd;
     transform: scale(1.05);
 }
+
 .back-to-home:active {
     transform: scale(0.95);
 }
@@ -772,7 +775,7 @@ position: absolute;
     justify-content: flex-start; /* Start from top but with padding */
     align-items: center;
     min-height: 100vh;
-    padding-top: 80px; /* More room for home icon */
+    padding-top: 20px;
     overflow-y: auto; /* Allow scrolling if answer is long */
 }
 
