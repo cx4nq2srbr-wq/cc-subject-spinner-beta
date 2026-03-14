@@ -628,7 +628,6 @@ background-color: #ff9d94; /* Faded coral/red */
 
 .back-to-home:hover {
     background-color: #357abd;
-    /* Includes the translateX so it doesn't jump to the left when hovered! */
     transform: translateX(-50%) scale(1.05);
 }
 
