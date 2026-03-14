@@ -65,30 +65,26 @@
   <button id="undoBtn" onclick="undoLastSpin()" disabled>
     <svg viewBox="0 0 100 100">
       <path id="undoCurve" d="M 30,30 A 50,50 0 0 1 70,70" fill="transparent" />
-      <text>
-        <textPath xlink:href="#undoCurve" startOffset="50%" text-anchor="middle">undo</textPath>
-      </text>
+      <text><textPath xlink:href="#undoCurve" startOffset="50%" text-anchor="middle">undo</textPath></text>
+    </svg>
+  </button>
+
+  <button class="circleBtn back-to-home" onclick="switchMode('home')" aria-label="Home">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
     </svg>
   </button>
 
   <button id="spinBtn" onclick="spinBoth()">
     <svg viewBox="0 0 100 100">
       <path id="spinCurve" d="M 30,70 A 50,50 0 0 1 70,30" fill="transparent" />
-      <text>
-        <textPath xlink:href="#spinCurve" startOffset="50%" text-anchor="middle">SPIN</textPath>
-      </text>
+      <text><textPath xlink:href="#spinCurve" startOffset="50%" text-anchor="middle">SPIN</textPath></text>
     </svg>
   </button>
 </div>
 </div>
 
 <div id="reviewContainer" class="view-container">
-<button class="circleBtn back-to-home" onclick="switchMode('home')" aria-label="Home">
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-    </svg>
-</button>
-    
     <div class="review-layout">
         <div class="review-controls">
             <div class="ctrl-group">
@@ -106,10 +102,20 @@
             </div>
         </div>
 
-        <div id="reviewPrompt" class="prompt-card-style"></div> <div id="reviewAnswerContainer">
+        <div id="reviewPrompt" class="prompt-card-style"></div> 
+        
+        <div id="reviewAnswerContainer">
             <div class="answer-header-static">ANSWER</div>
             <div id="reviewAnswerContent"></div>
         </div>
+    </div>
+
+    <div class="control-row" style="justify-content: center;">
+        <button class="circleBtn back-to-home" onclick="switchMode('home')" aria-label="Home">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+        </button>
     </div>
 </div>
 
