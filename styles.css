@@ -31,7 +31,7 @@ body {
   margin: 0;
   min-height: 100vh;
   min-height: 100dvh; 
-  padding: env(safe-area-inset-top, 20px) 15px calc(70px + env(safe-area-inset-bottom, 0px)) 15px;
+  padding: env(safe-area-inset-top, 20px) 15px 85px 15px;
   overflow: hidden; 
   touch-action: pan-y;
   -webkit-text-size-adjust: 100%;
@@ -194,7 +194,7 @@ input, button, select, textarea {
    ========================================================================== */
 .control-row {
   position: fixed;
-  bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+  bottom: 65px;
   left: 0;
   right: 0;
   height: 0; 
@@ -277,10 +277,10 @@ button:disabled svg text {
   bottom: 0; 
   left: 0; 
   right: 0;
-  height: calc(50px + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: 50px;
+  padding-bottom: 15px;
   
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: var(--secondary);
@@ -745,4 +745,30 @@ button:disabled svg text {
     font-weight: 800;
     text-align: center;
     border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* ==========================================================================
+   10. INSTALLED APP (PWA) OVERRIDES
+   ========================================================================== */
+@media (display-mode: standalone) {
+    body {
+        /* Removes the extra browser padding and uses the device's exact hardware safe-area */
+        padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .control-row {
+        /* Drops the buttons down to sit exactly on the settings bar */
+        bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+    }
+
+    #editBtn {
+        /* Removes the extra browser padding and hugs the hardware safe-area */
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        height: calc(50px + env(safe-area-inset-bottom, 0px));
+    }
+    
+    .back-to-home {
+        /* Adjusts the floating home button for the standalone view */
+        bottom: calc(70px + env(safe-area-inset-bottom, 0px)); 
+    }
 }
