@@ -30,10 +30,10 @@ html {
 
 body {
   margin: 0;
-  /* The magic bullet: tells mobile browsers to adapt to the true screen size */
   min-height: 100vh;
   min-height: 100dvh; 
-  padding: env(safe-area-inset-top, 20px) 15px calc(20px + env(safe-area-inset-bottom, 0px)) 15px;
+  /* Added 50px back to the bottom padding (70px total) */
+  padding: env(safe-area-inset-top, 20px) 15px calc(70px + env(safe-area-inset-bottom, 0px)) 15px;
   overflow: hidden; 
   touch-action: pan-y;
   -webkit-text-size-adjust: 100%;
@@ -226,10 +226,10 @@ h1 {
 
 .control-row {
   position: fixed;
-  bottom: env(safe-area-inset-bottom, 0px);
+  bottom: calc(50px + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
-  height: 0;
+  height: 0; 
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -307,20 +307,19 @@ background-color: #ff9d94; /* Faded coral/red */
   
 #editBtn {
   position: fixed;
-  bottom: calc(15px + env(safe-area-inset-bottom, 0px)); 
-  left: 50%; 
-  transform: translateX(-50%);
-  height: auto;
-  padding: 12px 24px;
+  bottom: 0; 
+  left: 0; 
+  right: 0;
+  height: calc(50px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   
-  /* Make it a sleek, floating glass-morphism pill */
-  background: rgba(255, 255, 255, 0.9);
+  /* Sleek, full-width glass bar */
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: var(--secondary);
-  border: 2px solid rgba(74, 144, 226, 0.2);
-  border-radius: 30px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-top: 2px solid rgba(74, 144, 226, 0.2);
   
   font-family: inherit;
   font-weight: 800;
@@ -332,16 +331,15 @@ background-color: #ff9d94; /* Faded coral/red */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
-/* Add a nice bouncy hover/tap effect */
 #editBtn:hover {
-  transform: translateX(-50%) scale(1.05);
-  border-color: var(--secondary);
+  background-color: #f0f7ff;
 }
+
 #editBtn:active {
-  transform: translateX(-50%) scale(0.95);
+  background-color: #e2e8f0;
 }
 
 /* ==========================================================================
