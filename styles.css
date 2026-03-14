@@ -684,9 +684,10 @@ button:disabled svg text {
 }
 
 #reviewContainer {
-    justify-content: center;
-    min-height: 100vh;
+    /* Changed to exact height to prevent stretching */
+    height: 100%; 
     padding: 20px;
+    box-sizing: border-box;
 }
 
 #reviewContainer.active {
@@ -694,9 +695,13 @@ button:disabled svg text {
     flex-direction: column;
     justify-content: flex-start; 
     align-items: center;
-    min-height: 100vh;
+    
+    /* Locks it strictly to the screen size */
+    height: 100%; 
     padding-top: 20px;
-    overflow-y: auto; 
+    
+    /* The magic line: Stops all left/right/up/down page dragging */
+    overflow: hidden; 
 }
 
 .prompt-text {
