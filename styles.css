@@ -646,7 +646,8 @@ button:disabled svg text {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 0; 
+    min-height: 0;
+    margin: 0 auto; /* Guarantees the layout stays dead center */
 }
 
 .review-controls {
@@ -685,10 +686,12 @@ button:disabled svg text {
 }
 
 #reviewContainer {
-    /* Changed to exact height to prevent stretching */
-    height: 100%; 
-    padding: 20px;
+    width: 100%;
+    height: 100%;
+    padding: 0; /* Removed the padding that was breaking the width! */
+    margin: 0;
     box-sizing: border-box;
+    overflow: hidden; /* Locks the page from dragging */
 }
 
 #reviewContainer.active {
@@ -696,13 +699,7 @@ button:disabled svg text {
     flex-direction: column;
     justify-content: flex-start; 
     align-items: center;
-    
-    /* Locks it strictly to the screen size */
-    height: 100%; 
-    padding-top: 20px;
-    
-    /* The magic line: Stops all left/right/up/down page dragging */
-    overflow: hidden; 
+    overflow: hidden; /* Enforces the lock when visible */
 }
 
 .prompt-text {
