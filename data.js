@@ -21,10 +21,10 @@ const cycleData = {
       18: { p: "Area of a Triangle", a: "The area of a triangle equals one-half base times height" },
       19: { p: "Area of a Circle", a: "The area of a circle equals pi (3.14) times the radius squared" },
       20: { p: "Circumference of a Circle", a: "The circumference of a circle equals 2 times pi (3.14) times the radius" },
-      21: { p: "The Associative Law", a: "<b>The Associative Law for addition states:</b> (<i>a</i> + <i>b</i>) + <i>c</i> = <i>a</i> + (<i>b</i> + <i>c</i>)<br><br><b>The Associative Law for multiplication states:</b> (<i>a</i> &times; <i>b</i>) &times; <i>c</i> = <i>a</i> &times; (<i>b</i> &times; <i>c</i>)" },
-      22: { p: "The Commutative Law", a: "<b>The Commutative Law for addition states:</b> <i>a</i> + <i>b</i> = <i>b</i> + <i>a</i><br><br><b>The Commutative Law for multiplication states:</b> <i>a</i> &times; <i>b</i> = <i>b</i> &times; <i>a</i>" },
-      23: { p: "The Distributive Law", a: "<b>The Distributive Law states:</b> <i>a</i>(<i>b</i> + <i>c</i>) = <i>ab</i> + <i>ac</i>" },
-      24: { p: "The Identity Law", a: "<b>The Identity Law for addition states:</b> <i>a</i> + 0 = <i>a</i><br><br><b>The Identity Law for multiplication states:</b> <i>a</i> &times; 1 = <i>a</i>" }
+      21: { p: "The Associative Law", a: "<b>The Associative Law for addition states:</b><br> (<i>a</i> + <i>b</i>) + <i>c</i> = <i>a</i> + (<i>b</i> + <i>c</i>)<br><br><b>The Associative Law for multiplication states:</b><br> (<i>a</i> &times; <i>b</i>) &times; <i>c</i> = <i>a</i> &times; (<i>b</i> &times; <i>c</i>)" },
+      22: { p: "The Commutative Law", a: "<b>The Commutative Law for addition states:</b><br> <i>a</i> + <i>b</i> = <i>b</i> + <i>a</i><br><br><b>The Commutative Law for multiplication states:</b><br> <i>a</i> &times; <i>b</i> = <i>b</i> &times; <i>a</i>" },
+      23: { p: "The Distributive Law", a: "<b>The Distributive Law states:</b><br> <i>a</i>(<i>b</i> + <i>c</i>) = <i>ab</i> + <i>ac</i>" },
+      24: { p: "The Identity Law", a: "<b>The Identity Law for addition states:</b><br> <i>a</i> + 0 = <i>a</i><br><br><b>The Identity Law for multiplication states:</b><br> <i>a</i> &times; 1 = <i>a</i>" }
     },
     "Latin": {
       1: { p: "Noun Cases", a: "nominative-subject, genitive-possessive, dative-indirect object, accusative-direct object, ablative-object of the prep." },
