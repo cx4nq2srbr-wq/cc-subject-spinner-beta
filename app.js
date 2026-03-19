@@ -184,13 +184,8 @@ updateVh();
    ========================================================================== */
 
 function spinBoth() {
-  // Handle Reset State
-  // If we've switched to the Done state, show celebration
   if (getSpinLabel().toLowerCase() === 'done') { finishLesson(); return; }
-
-  // Handle Reset State
   if (getSpinLabel() === "Reset") { showResetConfirm(); return; }
-  
 
   if (isSpinning) return;
   if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15); 
@@ -218,16 +213,14 @@ function spinBoth() {
   ansDiv.textContent = "";
   promptDiv.textContent = "";
 
- // 1. Pick the winning subject and week
   const subject = availableSubjects[Math.floor(Math.random() * availableSubjects.length)];
   const availableWeeks = weeks.filter(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[subject][w]);
   const week = availableWeeks[Math.floor(Math.random() * availableWeeks.length)];
 
-  // 2. DEFINE THE INDICES 
   const subIdx = subjects.indexOf(subject);
   const weekIdx = weeks.indexOf(week);
 
-  // 3. Start Reel Animations
+  // Apply Turbo Math
   const spinDuration = userSettings.turbo ? 500 : 2000;
   const weekDuration = userSettings.turbo ? 700 : 2800;
   const finalTimeout = userSettings.turbo ? 750 : 2600;
@@ -235,7 +228,7 @@ function spinBoth() {
   spinReel("subjectReel", availableSubjects, subject, spinDuration);
   spinReel("weekReel", availableWeeks.map(w => "Week " + w), "Week " + week, weekDuration);
 
-  // 4. Finalize Spin
+  // Finalize Spin
   setTimeout(() => {
     try {
       playSound(988, 'triangle', 0.1, 0.03);
@@ -243,26 +236,40 @@ function spinBoth() {
       if (userSettings.haptics && navigator.vibrate) navigator.vibrate([40, 30, 40]);
       
       const lesson = lessonData[subject][week];
+
       previousSpun = lastSpun ? { ...lastSpun } : null; 
-      lastSpun = { subject: subject, week: week, sIdx: subIdx, wIdx: weekIdx, prompt: lesson.p, answer: lesson.a };
+
+      lastSpun = {
+        subject: subject, 
+        week: week,
+        sIdx: subIdx,   
+        wIdx: weekIdx,   
+        prompt: lesson.p,
+        answer: lesson.a
+      };
 
       promptDiv.textContent = lesson.p;
       ansDiv.innerHTML = lesson.a;
       
-      // NEW: Auto-Reveal Logic
+      // Handle Auto-Reveal
       if (userSettings.autoReveal) {
           document.getElementById('answerContainer').classList.add('open');
           toggleBtn.textContent = '▲ Hide Answer ▲';
       }
       
       gridState[subject][week] = false;
+      
       if (subject === "Latin" && currentCycle === 2) {
         const group = latinTwinGroups.find(g => g.includes(week));
-        if (group) { group.forEach(twinWeek => { gridState["Latin"][twinWeek] = false; }); }
+        if (group) {
+          group.forEach(twinWeek => {
+            gridState["Latin"][twinWeek] = false;
+          });
+        }
       }
 
       saveToDevice();
-      buildGrid();
+      buildGrid(); // This crashed earlier because the HTML grid was missing!
       
       const remaining = subjects.some(s =>
         weeks.some(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[s][w])
