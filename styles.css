@@ -45,6 +45,7 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  padding: env(safe-area-inset-top, 20px) 15px calc(140px + env(safe-area-inset-bottom, 0px)) 15px;
 }
 
 input, button, select, textarea {
@@ -194,7 +195,8 @@ input, button, select, textarea {
    ========================================================================== */
 .control-row {
   position: fixed;
-  bottom: 65px;
+  /* Floats perfectly above the new navigation bar */
+  bottom: calc(85px + env(safe-area-inset-bottom, 0px)); 
   left: 0;
   right: 0;
   height: 0; 
@@ -272,42 +274,6 @@ button:disabled svg text {
     transition: fill 0.3s ease;
 }
   
-#editBtn {
-  position: fixed;
-  bottom: 0; 
-  left: 0; 
-  right: 0;
-  height: 50px;
-  padding-bottom: 15px;
-  
-  background: #ffffff;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--secondary);
-  border: none;
-  border-top: 2px solid rgba(74, 144, 226, 0.2);
-  
-  font-family: inherit;
-  font-weight: 800;
-  font-size: 15px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  z-index: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
-}
-
-#editBtn:hover {
-  background-color: #f0f7ff;
-}
-
-#editBtn:active {
-  background-color: #e2e8f0;
-}
-
 /* ==========================================================================
    6. GRID OVERLAY & EDITING
    ========================================================================== */
@@ -330,8 +296,7 @@ button:disabled svg text {
   overflow: hidden; 
   padding-top: env(safe-area-inset-top, 44px);
 }
-
-.gridHeader {
+#gridHeader {
     display: flex;
     align-items: center;
     justify-content: space-between; 
@@ -368,7 +333,7 @@ button:disabled svg text {
 }
   
 #grid {
-  padding: 12px 6px 32px 6px; 
+  padding: 12px 6px 90px 6px; 
   overflow-y: auto; 
   overflow-x: hidden;
   touch-action: pan-y; 
@@ -623,26 +588,6 @@ button:disabled svg text {
     margin: 0;
 }
 
-.back-to-home {
-    position: fixed;
-    bottom: calc(70px + env(safe-area-inset-bottom, 0px)); 
-    left: 50%;
-    transform: translateX(-50%);
-    width: 48px;          
-    height: 48px;
-    z-index: 1000;
-    pointer-events: auto; 
-}
-
-.back-to-home:hover {
-    background-color: #357abd;
-    transform: translateX(-50%) scale(1.05);
-}
-
-.back-to-home:active {
-    transform: translateX(-50%) scale(0.95);
-}
-
 /* ========================================================================== 
    9. REVIEW MODE CONTROLS 
    ========================================================================== */
@@ -760,12 +705,6 @@ button:disabled svg text {
         /* Drops the buttons down to sit exactly on the settings bar */
         bottom: calc(50px + env(safe-area-inset-bottom, 0px));
     }
-
-    #editBtn {
-        /* Removes the extra browser padding and hugs the hardware safe-area */
-        padding-bottom: env(safe-area-inset-bottom, 0px);
-        height: calc(50px + env(safe-area-inset-bottom, 0px));
-    }
     
     .back-to-home {
         /* Adjusts the floating home button for the standalone view */
@@ -791,15 +730,6 @@ body.dark-mode .review-slot {
     border-color: rgba(255, 255, 255, 0.1);
 }
 
-body.dark-mode #editBtn {
-    background: rgba(15, 23, 42, 0.95);
-    border-top-color: rgba(255, 255, 255, 0.1);
-}
-
-@media (display-mode: standalone) {
-    body.dark-mode #editBtn { background: #0f172a; }
-}
-
 body.dark-mode .slot::after { background: linear-gradient(rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%); }
 body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #334155, #1e293b); color: #f8fafc; }
 
@@ -822,3 +752,50 @@ body.dark-mode #pickerGrid button[style*="var(--secondary)"] { background: var(-
 /* --- Large Text Overrides --- */
 body.large-text #prompt, body.large-text #reviewPrompt { font-size: 24px; }
 body.large-text #answerContent, body.large-text #reviewAnswerContent { font-size: 21px; }
+
+/* ==========================================================================
+   12. BOTTOM NAVIGATION BAR
+   ========================================================================== */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(65px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(74, 144, 226, 0.2);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 2000;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: all 0.2s ease;
+}
+
+.nav-item svg { width: 24px; height: 24px; }
+.nav-item.active { color: var(--secondary); transform: translateY(-2px); }
+.nav-item:active { transform: scale(0.95); }
+
+/* Dark mode support for nav */
+body.dark-mode .bottom-nav { background: rgba(15, 23, 42, 0.95); border-top-color: rgba(255, 255, 255, 0.1); }
+body.dark-mode .nav-item { color: #64748b; }
+body.dark-mode .nav-item.active { color: var(--secondary); }

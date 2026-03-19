@@ -4,15 +4,18 @@
 let currentMode = 'home'; // 'home', 'spinner', or 'review'
 
 function switchMode(mode) {
-    // 1. Update State
     currentMode = mode;
-
-    // 2. Toggle Visibility
     document.getElementById('homeScreen').classList.toggle('active', mode === 'home');
     document.getElementById('spinnerContainer').classList.toggle('active', mode === 'spinner');
     document.getElementById('reviewContainer').classList.toggle('active', mode === 'review');
 
-    // 3. Setup Review if needed
+    // Auto-close the grid if you navigate to a new tab
+    document.getElementById('gridOverlay').style.display = 'none';
+
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    const activeNav = document.getElementById('nav-' + mode);
+    if (activeNav) activeNav.classList.add('active');
+
     if (mode === 'review') {
         initReviewMode();
     }
@@ -562,13 +565,25 @@ function bindWeekHeaderHandlers(){
 }
 
 function toggleGrid(){
-  const overlay = document.getElementById("gridOverlay");
-  overlay.style.display = (overlay.style.display === "flex") ? "none" : "flex";
-  if (overlay.style.display === "flex") buildGrid();
+    const overlay = document.getElementById("gridOverlay");
+    const gridNav = document.getElementById('nav-grid');
+    const isOpen = overlay.style.display === "flex";
+    
+    if (isOpen) {
+        // Closing the grid: Hide it and revert nav highlight back to current mode
+        overlay.style.display = "none";
+        if (gridNav) gridNav.classList.remove('active');
+        const activeNav = document.getElementById('nav-' + currentMode);
+        if (activeNav) activeNav.classList.add('active');
+    } else {
+        // Opening the grid: Show it, build it, and highlight the Lessons tab
+        overlay.style.display = "flex";
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+        if (gridNav) gridNav.classList.add('active');
+        buildGrid();
+    }
 }
-/* ==========================================================================
-   6. QUICK SETTINGS TOGGLES
-   ========================================================================== */
+
 /* ==========================================================================
    6. QUICK SETTINGS TOGGLES
    ========================================================================== */
