@@ -73,7 +73,11 @@ let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
   // Global User Settings
 let userSettings = JSON.parse(localStorage.getItem('appSettings')) || {
     muted: false,
-    haptics: true
+    haptics: true,
+    turbo: false,
+    autoReveal: false,
+    darkMode: false,
+    largeText: false
 };
 
 function anyLessonsRemaining() {
@@ -224,8 +228,12 @@ function spinBoth() {
   const weekIdx = weeks.indexOf(week);
 
   // 3. Start Reel Animations
-  spinReel("subjectReel", availableSubjects, subject, 2000);
-  spinReel("weekReel", availableWeeks.map(w => "Week " + w), "Week " + week, 2800);
+  const spinDuration = userSettings.turbo ? 500 : 2000;
+  const weekDuration = userSettings.turbo ? 700 : 2800;
+  const finalTimeout = userSettings.turbo ? 750 : 2600;
+
+  spinReel("subjectReel", availableSubjects, subject, spinDuration);
+  spinReel("weekReel", availableWeeks.map(w => "Week " + w), "Week " + week, weekDuration);
 
   // 4. Finalize Spin
   setTimeout(() => {
@@ -235,38 +243,27 @@ function spinBoth() {
       if (userSettings.haptics && navigator.vibrate) navigator.vibrate([40, 30, 40]);
       
       const lesson = lessonData[subject][week];
-
-      // Save memory for Undo
       previousSpun = lastSpun ? { ...lastSpun } : null; 
+      lastSpun = { subject: subject, week: week, sIdx: subIdx, wIdx: weekIdx, prompt: lesson.p, answer: lesson.a };
 
-      lastSpun = {
-        subject: subject, 
-        week: week,
-        sIdx: subIdx,   
-        wIdx: weekIdx,   
-        prompt: lesson.p,
-        answer: lesson.a
-      };
-
-      // Display results
-        promptDiv.textContent = lesson.p;
-        ansDiv.innerHTML = lesson.a;
+      promptDiv.textContent = lesson.p;
+      ansDiv.innerHTML = lesson.a;
       
-      // Update Grid State
+      // NEW: Auto-Reveal Logic
+      if (userSettings.autoReveal) {
+          document.getElementById('answerContainer').classList.add('open');
+          toggleBtn.textContent = '▲ Hide Answer ▲';
+      }
+      
       gridState[subject][week] = false;
-      
       if (subject === "Latin" && currentCycle === 2) {
         const group = latinTwinGroups.find(g => g.includes(week));
-        if (group) {
-          group.forEach(twinWeek => {
-            gridState["Latin"][twinWeek] = false;
-          });
-        }
+        if (group) { group.forEach(twinWeek => { gridState["Latin"][twinWeek] = false; }); }
       }
 
       saveToDevice();
       buildGrid();
-      // If no lessons remain available, change spin button to a green "Done" button
+      
       const remaining = subjects.some(s =>
         weeks.some(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[s][w])
       );
@@ -280,13 +277,12 @@ function spinBoth() {
       console.error("Spin Error:", e);
       document.getElementById('prompt').textContent = "Spinning error. Please try again!";
     } finally {
-      // Re-enable everything
       isSpinning = false;
       spinBtn.disabled = false;
       toggleBtn.disabled = false;
       undoBtn.disabled = false; 
     }
-  }, 2600);
+  }, finalTimeout);
 }
 
 function spinReel(reelId, items, finalValue, duration = 2400) {
@@ -566,36 +562,56 @@ function toggleGrid(){
 /* ==========================================================================
    6. QUICK SETTINGS TOGGLES
    ========================================================================== */
-// Crisp SVG icons for our new toggle buttons
+/* ==========================================================================
+   6. QUICK SETTINGS TOGGLES
+   ========================================================================== */
 const iconSoundOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
 const iconSoundOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="2" x2="22" y2="22"></line><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
 const iconHapticsOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><path d="M12 18h.01"></path><path d="M2 8v8"></path><path d="M22 8v8"></path></svg>`;
 const iconHapticsOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><path d="M12 18h.01"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>`;
+const iconTurboOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+const iconTurboOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+const iconRevealOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+const iconRevealOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+const iconMoon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+const iconSun = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+const iconTextLarge = `<span style="font-size:16px; font-weight:900; color:white; line-height:1;">Aa</span>`;
+const iconTextNormal = `<span style="font-size:12px; font-weight:600; color:white; line-height:1;">Aa</span>`;
 
 function updateHeaderIcons() {
     const sBtn = document.getElementById('soundToggleBtn');
     const hBtn = document.getElementById('hapticsToggleBtn');
+    const tBtn = document.getElementById('turboToggleBtn');
+    const aBtn = document.getElementById('autoRevealToggleBtn');
+    const dBtn = document.getElementById('darkModeToggleBtn');
+    const lBtn = document.getElementById('largeTextToggleBtn');
     
     if(sBtn) sBtn.innerHTML = userSettings.muted ? iconSoundOff : iconSoundOn;
-    
     if(hBtn) {
         hBtn.innerHTML = userSettings.haptics ? iconHapticsOn : iconHapticsOff;
-        // If the user's device doesn't support vibration (like a desktop), hide the button
         if(!navigator.vibrate) hBtn.style.display = 'none'; 
     }
+    if(tBtn) tBtn.innerHTML = userSettings.turbo ? iconTurboOn : iconTurboOff;
+    if(aBtn) aBtn.innerHTML = userSettings.autoReveal ? iconRevealOn : iconRevealOff;
+    if(dBtn) dBtn.innerHTML = userSettings.darkMode ? iconMoon : iconSun;
+    if(lBtn) lBtn.innerHTML = userSettings.largeText ? iconTextLarge : iconTextNormal;
+    
+    // Apply CSS modifications
+    document.documentElement.classList.toggle('dark-mode', userSettings.darkMode);
+    document.body.classList.toggle('dark-mode', userSettings.darkMode);
+    document.body.classList.toggle('large-text', userSettings.largeText);
 }
 
-function toggleSound() {
-    userSettings.muted = !userSettings.muted;
-    saveSettings();
-    updateHeaderIcons();
-}
-
-function toggleHaptics() {
-    userSettings.haptics = !userSettings.haptics;
-    saveSettings();
-    updateHeaderIcons();
-    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
+function toggleSound() { userSettings.muted = !userSettings.muted; saveSettings(); updateHeaderIcons(); }
+function toggleTurbo() { userSettings.turbo = !userSettings.turbo; saveSettings(); updateHeaderIcons(); }
+function toggleAutoReveal() { userSettings.autoReveal = !userSettings.autoReveal; saveSettings(); updateHeaderIcons(); }
+function toggleDarkMode() { userSettings.darkMode = !userSettings.darkMode; saveSettings(); updateHeaderIcons(); }
+function toggleLargeText() { userSettings.largeText = !userSettings.largeText; saveSettings(); updateHeaderIcons(); }
+function toggleHaptics() { 
+    userSettings.haptics = !userSettings.haptics; 
+    saveSettings(); 
+    updateHeaderIcons(); 
+    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(15); 
 }
 /* ==========================================================================
    7. WEEK SELECTION & RESET DIALOGS

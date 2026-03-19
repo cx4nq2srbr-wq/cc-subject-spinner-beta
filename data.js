@@ -157,8 +157,8 @@ const cycleData = {
       24: { p: "North Atlantic", a: "Greenland, Iceland, Denmark Strait, Davis Strait" }
     },
     "Bible": {
-      1: { p: "Creation Days 1-3", a: "<b>1: Earth/Space/Time/Light; 2: Atmosphere; 3: Dry land/Plants;</b> 4: Sun/Moon/Stars; 5: Fish/Sea creatures/Birds; 6: Land animals/Man/Woman" },
-      2: { p: "Creation Days 4-6", a: "1: Earth/Space/Time/Light; 2: Atmosphere; 3: Dry land/Plants; <b>4: Sun/Moon/Stars; 5: Fish/Sea creatures/Birds; 6: Land animals/Man/Woman</b>" },
+      1: { p: "Creation Days 1-3", a: "<b>1: Earth/Space/Time/Light; 2: Atmosphere; 3: Dry land/Plants;</b><br>4: Sun/Moon/Stars; 5: Fish/Sea creatures/Birds; 6: Land animals/Man/Woman" },
+      2: { p: "Creation Days 4-6", a: "1: Earth/Space/Time/Light; 2: Atmosphere; 3: Dry land/Plants;<br><b>4: Sun/Moon/Stars; 5: Fish/Sea creatures/Birds; 6: Land animals/Man/Woman</b>" },
       3: { p: "Covenant with Adam", a: "To send a Redeemer to the world" },
       4: { p: "Noah", a: "Built an ark at God's command to save his family from the Great Flood." },
       5: { p: "Covenant with Noah", a: "Save family; be fruitful; never destroy human race by flood again" },

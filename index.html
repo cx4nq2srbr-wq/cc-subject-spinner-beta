@@ -150,14 +150,15 @@
         <div class="gridHeader">
           <button class="circleBtn" onclick="toggleGrid()">&larr;</button>
           
-          <div style="display: flex; gap: 15px;">
+          <div style="display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;">
               <button class="circleBtn" id="soundToggleBtn" onclick="toggleSound()"></button>
               <button class="circleBtn" id="hapticsToggleBtn" onclick="toggleHaptics()"></button>
+              <button class="circleBtn" id="turboToggleBtn" onclick="toggleTurbo()"></button>
+              <button class="circleBtn" id="autoRevealToggleBtn" onclick="toggleAutoReveal()"></button>
+              <button class="circleBtn" id="darkModeToggleBtn" onclick="toggleDarkMode()"></button>
+              <button class="circleBtn" id="largeTextToggleBtn" onclick="toggleLargeText()"></button>
           </div>
-          
-          <button class="resetHeaderBtn" onclick="resetGrid()">Reset</button>
         </div>
-  
 
         <div class="grid-controls-row">
             <div class="maxWeekControl">
@@ -166,12 +167,9 @@
                 <span id="maxWeekDisplay">12</span>
                 <button id="increaseWeek" class="maxWeekBtn" onclick="increaseWeek()">+</button>
             </div>
+            
+            <button class="resetHeaderBtn" onclick="resetGrid()">Reset</button>
         </div>
-
-        <div id="grid"></div>
-
-        </div>
-    </div>
 
 <div id="reviewPickerOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 5000;">
     <div style="background: white; width: 90%; max-width: 350px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 80vh; display: flex; flex-direction: column;">

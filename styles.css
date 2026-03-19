@@ -772,3 +772,53 @@ button:disabled svg text {
         bottom: calc(70px + env(safe-area-inset-bottom, 0px)); 
     }
 }
+/* ==========================================================================
+   11. EXTRA FEATURES (Dark Mode & Large Text)
+   ========================================================================== */
+/* --- Dark Mode Variables & Overrides --- */
+html.dark-mode { background-color: #0f172a; }
+
+body.dark-mode {
+    background: radial-gradient(circle at top, #1e293b, #0f172a);
+    color: #f8fafc;
+}
+
+body.dark-mode #result, body.dark-mode #prompt, body.dark-mode #reviewPrompt, 
+body.dark-mode #answer, body.dark-mode .slot, body.dark-mode #answerContainer, 
+body.dark-mode #reviewAnswerContainer, body.dark-mode .mode-card,
+body.dark-mode .review-slot {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode #editBtn {
+    background: rgba(15, 23, 42, 0.95);
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (display-mode: standalone) {
+    body.dark-mode #editBtn { background: #0f172a; }
+}
+
+body.dark-mode .slot::after { background: linear-gradient(rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%); }
+body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #334155, #1e293b); color: #f8fafc; }
+
+/* Grid Coloring for Dark Mode */
+body.dark-mode #gridContent, body.dark-mode #grid table, body.dark-mode .grid-controls-row { background: #0f172a; }
+body.dark-mode #grid th, body.dark-mode #grid td { border-color: #334155; }
+body.dark-mode .weekNumber { background: #1e293b; color: #f8fafc; }
+body.dark-mode .weekNumber.active { background: #22c55e; color: #fff; }
+body.dark-mode .completed { background: #334155 !important; color: #94a3b8; }
+body.dark-mode .override { background: #064e3b; }
+body.dark-mode .blocked { background: #7f1d1d; color: #fecaca; }
+body.dark-mode .maxWeekControl { background: #334155; border-color: #475569; color: #f8fafc; }
+body.dark-mode .maxWeekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
+
+/* Modal Coloring for Dark Mode */
+body.dark-mode #reviewPickerOverlay > div, body.dark-mode .confirmBox, body.dark-mode .doneBox { background: #1e293b; color: #f8fafc; }
+body.dark-mode #pickerGrid button { background: #334155 !important; border-color: #475569 !important; color: #f8fafc !important; }
+body.dark-mode #pickerGrid button[style*="var(--secondary)"] { background: var(--secondary) !important; color: white !important; }
+
+/* --- Large Text Overrides --- */
+body.large-text #prompt, body.large-text #reviewPrompt { font-size: 24px; }
+body.large-text #answerContent, body.large-text #reviewAnswerContent { font-size: 21px; }
