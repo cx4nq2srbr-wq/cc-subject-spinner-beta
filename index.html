@@ -150,14 +150,12 @@
         <div class="gridHeader">
           <button class="circleBtn" onclick="toggleGrid()">&larr;</button>
           
-          <button class="resetHeaderBtn" onclick="resetGrid()">Reset</button>
+          <div style="display: flex; gap: 15px;">
+              <button class="circleBtn" id="soundToggleBtn" onclick="toggleSound()"></button>
+              <button class="circleBtn" id="hapticsToggleBtn" onclick="toggleHaptics()"></button>
+          </div>
           
-          <button class="circleBtn" onclick="toggleSettings()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-          </button>
+          <button class="resetHeaderBtn" onclick="resetGrid()">Reset</button>
         </div>
   
 
@@ -174,38 +172,6 @@
 
         </div>
     </div>
-  
-  <div id="settingsOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 5000; justify-content: center; align-items: center;">
-    <div style="background: white; width: 90%; max-width: 350px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-        <h3 style="margin-top: 0; text-align: center; color: var(--primary);">Settings</h3>
-        
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
-          <label style="font-weight: bold;">Mute Sound</label>
-          <input type="checkbox" id="setMute" onchange="updateSettings()" style="width: 20px; height: 20px;">
-        </div>
-
-        <div id="hapticsContainer" style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
-          <label style="font-weight: bold;">Vibration (Haptics)</label>
-          <input type="checkbox" id="setHaptics" onchange="updateSettings()" style="width: 20px; height: 20px;">
-        </div>
-
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
-            <label style="font-weight: bold;">Confetti Animation</label>
-            <input type="checkbox" id="setConfetti" onchange="updateSettings()" style="width: 20px; height: 20px;">
-        </div>
-
-        <div style="display: flex; flex-direction: column; margin-bottom: 20px;">
-            <label style="font-weight: bold; margin-bottom: 5px;">Sound Style</label>
-            <select id="setWaveform" onchange="updateSettings()" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
-                <option value="square">Retro (8-bit)</option>
-                <option value="sine">Modern (Smooth)</option>
-                <option value="triangle">Soft (Muted)</option>
-            </select>
-        </div>
-
-        <button onclick="toggleSettings()" style="width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer;">Done</button>
-    </div>
-</div>
 
 <div id="reviewPickerOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 5000;">
     <div style="background: white; width: 90%; max-width: 350px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 80vh; display: flex; flex-direction: column;">

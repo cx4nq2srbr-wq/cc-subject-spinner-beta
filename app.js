@@ -73,9 +73,7 @@ let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
   // Global User Settings
 let userSettings = JSON.parse(localStorage.getItem('appSettings')) || {
     muted: false,
-    waveform: 'square', // Options: 'square', 'sine', 'triangle'
-    haptics: true,
-    confetti: true
+    haptics: true
 };
 
 function anyLessonsRemaining() {
@@ -143,7 +141,8 @@ window.onload = function() {
       const hapticsRow = document.getElementById('hapticsContainer');
       if (hapticsRow) hapticsRow.style.display = 'none';
   }
-  
+  updateHeaderIcons();
+
   const prefix = getPrefix();
   const savedMax = localStorage.getItem(prefix + 'ccMaxWeek');
   if (savedMax) setMaxWeek(parseInt(savedMax, 10));
@@ -433,7 +432,7 @@ function playSound(freq, type, duration, vol) {
   const gainNode = audioCtx.createGain();
   
   // Use user-selected waveform style (Square, Sine, or Triangle)
-  osc.type = userSettings.waveform || type; 
+  osc.type = 'triangle';
   osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
   
   // Smooth volume ramping to prevent "popping" sounds
@@ -565,31 +564,39 @@ function toggleGrid(){
   if (overlay.style.display === "flex") buildGrid();
 }
 /* ==========================================================================
-   6. SETTINGS MENU
+   6. QUICK SETTINGS TOGGLES
    ========================================================================== */
+// Crisp SVG icons for our new toggle buttons
+const iconSoundOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
+const iconSoundOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="2" x2="22" y2="22"></line><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
+const iconHapticsOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><path d="M12 18h.01"></path><path d="M2 8v8"></path><path d="M22 8v8"></path></svg>`;
+const iconHapticsOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><path d="M12 18h.01"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>`;
 
-function toggleSettings() {
-    const overlay = document.getElementById('settingsOverlay');
-    if (overlay.style.display === 'none') {
-        // Load values into the inputs before showing
-        document.getElementById('setMute').checked = userSettings.muted;
-        document.getElementById('setHaptics').checked = userSettings.haptics;
-        document.getElementById('setConfetti').checked = userSettings.confetti;
-        document.getElementById('setWaveform').value = userSettings.waveform;
-        overlay.style.display = 'flex';
-    } else {
-        overlay.style.display = 'none';
+function updateHeaderIcons() {
+    const sBtn = document.getElementById('soundToggleBtn');
+    const hBtn = document.getElementById('hapticsToggleBtn');
+    
+    if(sBtn) sBtn.innerHTML = userSettings.muted ? iconSoundOff : iconSoundOn;
+    
+    if(hBtn) {
+        hBtn.innerHTML = userSettings.haptics ? iconHapticsOn : iconHapticsOff;
+        // If the user's device doesn't support vibration (like a desktop), hide the button
+        if(!navigator.vibrate) hBtn.style.display = 'none'; 
     }
 }
 
-// Save settings when the user changes a toggle/dropdown
-function updateSettings() {
-    userSettings.muted = document.getElementById('setMute').checked;
-    userSettings.haptics = document.getElementById('setHaptics').checked;
-    userSettings.confetti = document.getElementById('setConfetti').checked;
-    userSettings.waveform = document.getElementById('setWaveform').value;
+function toggleSound() {
+    userSettings.muted = !userSettings.muted;
     saveSettings();
-}  
+    updateHeaderIcons();
+}
+
+function toggleHaptics() {
+    userSettings.haptics = !userSettings.haptics;
+    saveSettings();
+    updateHeaderIcons();
+    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
+}
 /* ==========================================================================
    7. WEEK SELECTION & RESET DIALOGS
    ========================================================================== */
@@ -775,21 +782,16 @@ function showDoneOverlay() {
     const overlay = document.getElementById('doneOverlay');
     if (!overlay) return;
     
-    // 1. Force the styles back to normal BEFORE showing it
-    // This prevents the bug where the box gets stuck invisible!
     overlay.style.background = 'rgba(0,0,0,0.45)';
     overlay.style.pointerEvents = 'auto';
     const box = overlay.querySelector('.doneBox');
     if (box) box.style.display = 'block';
 
-    // 2. Show the overlay
     overlay.style.display = 'flex';
     
-    // 3. Shoot confetti if enabled
-    if (userSettings.confetti) {
         startConfetti();
-    }
-}
+  }
+
 function hideDoneOverlay() {
     isConfettiStopping = true;
     const overlay = document.getElementById('doneOverlay');
