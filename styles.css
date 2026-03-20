@@ -190,7 +190,7 @@ input, button, select, textarea {
    ========================================================================== */
 .control-row {
   position: fixed;
-  bottom: calc(85px + env(safe-area-inset-bottom, 0px)); 
+  bottom: calc(75px + env(safe-area-inset-bottom, 0px)); 
   left: 0;
   right: 0;
   height: 0; 
@@ -594,7 +594,18 @@ body.dark-mode .maxWeekBtn { background: #475569; border-color: #64748b; color: 
 body.dark-mode #reviewPickerOverlay > div, body.dark-mode .confirmBox, body.dark-mode .doneBox { background: #1e293b; color: #f8fafc; }
 body.dark-mode #pickerGrid button { background: #334155 !important; border-color: #475569 !important; color: #f8fafc !important; }
 body.dark-mode #pickerGrid button[style*="var(--secondary)"] { background: var(--secondary) !important; color: white !important; }
+body.dark-mode #answerContent, 
+body.dark-mode #reviewAnswerContent {
+    color: #cbd5e1; /* A soft, easy-to-read light grey */
+}
 
+body.dark-mode #answerContent b, 
+body.dark-mode #reviewAnswerContent b,
+body.dark-mode #answerContent strong, 
+body.dark-mode #reviewAnswerContent strong {
+    color: #ffffff; /* Pure white for maximum contrast */
+    font-weight: 800; /* Extra thick so you can't miss it */
+}
 body.large-text #prompt, body.large-text #reviewPrompt { font-size: 24px; }
 body.large-text #answerContent, body.large-text #reviewAnswerContent { font-size: 21px; }
 
@@ -608,6 +619,7 @@ body.large-text #answerContent, body.large-text #reviewAnswerContent { font-size
     right: 0;
     height: calc(65px + env(safe-area-inset-bottom, 0px));
     padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;   
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
