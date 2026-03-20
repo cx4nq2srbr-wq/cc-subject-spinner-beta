@@ -14,7 +14,6 @@
   --radius: 24px;
   --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 
-  /* dimensions used by controls */
   --spin-size: 85px;
   --undo-size: 50px;
 }
@@ -31,7 +30,8 @@ body {
   margin: 0;
   min-height: 100vh;
   min-height: 100dvh; 
-  padding: env(safe-area-inset-top, 20px) 15px 85px 15px;
+  /* Cleaned up duplicate padding - leaves perfect room for the nav bar */
+  padding: env(safe-area-inset-top, 20px) 15px calc(140px + env(safe-area-inset-bottom, 0px)) 15px;
   overflow: hidden; 
   touch-action: pan-y;
   -webkit-text-size-adjust: 100%;
@@ -45,7 +45,6 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: env(safe-area-inset-top, 20px) 15px calc(140px + env(safe-area-inset-bottom, 0px)) 15px;
 }
 
 input, button, select, textarea {
@@ -55,8 +54,6 @@ input, button, select, textarea {
 /* ==========================================================================
    3. UI COMPONENTS (Prompt & Answer Boxes)
    ========================================================================== */
-
-/* Common Card Base Style */
 #result, #prompt, #reviewPrompt, #answer, .slot {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
@@ -69,7 +66,6 @@ input, button, select, textarea {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Prompt Card */
 #prompt, #reviewPrompt {
   display: flex; 
   align-items: center;
@@ -89,7 +85,6 @@ input, button, select, textarea {
   transition: border-color 0.3s ease;
 }
 
-/* Unified Answer Container */
 #answerContainer, #reviewAnswerContainer {
   width: 95%;
   max-width: 600px !important;
@@ -195,7 +190,6 @@ input, button, select, textarea {
    ========================================================================== */
 .control-row {
   position: fixed;
-  /* Floats perfectly above the new navigation bar */
   bottom: calc(85px + env(safe-area-inset-bottom, 0px)); 
   left: 0;
   right: 0;
@@ -252,7 +246,7 @@ input, button, select, textarea {
 }
 
 #undoBtn:disabled {
-   background-color: #94b8e2;
+    background-color: #94b8e2;
     color: rgba(255, 255, 255, 0.6);
     cursor: not-allowed;
     transform: scale(0.98);
@@ -275,33 +269,18 @@ button:disabled svg text {
 }
   
 /* ==========================================================================
-   6. GRID OVERLAY & EDITING
+   6. LESSONS GRID VIEW
    ========================================================================== */
-#gridOverlay {
-  display: none; 
-  position: fixed; 
-  inset: 0; 
-  background: rgba(0,0,0,0.35);
-  z-index: 1000; 
-  justify-content: flex-start; 
-  align-items: stretch;
+#gridContainer {
+    width: 100%; height: 100%; display: none; flex-direction: column;
+}
+
+#gridContainer.active {
+    display: flex;
 }
 
 #gridContent {
-  width: 100vw; 
-  height: calc(var(--vh, 1vh) * 100);
-  display: flex; 
-  flex-direction: column; 
-  background: #fff;
-  overflow: hidden; 
-  padding-top: env(safe-area-inset-top, 44px);
-}
-#gridHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; 
-    padding: 15px;
-    border-bottom: 1px solid #eee;
+    width: 100%; flex: 1; display: flex; flex-direction: column; overflow: hidden;
 }
 
 .circleBtn {
@@ -309,25 +288,21 @@ button:disabled svg text {
     border: none;
     color: white;
     box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
-    
     width: 38px;  
     height: 38px; 
     border-radius: 50%;
     font-size: 22px;
     font-weight: bold;
     cursor: pointer;
-    
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1; 
     padding: 0;
-    
     transition: all 0.2s ease;
 }
   
-.circleBtn:hover,
-.circleBtn:active {
+.circleBtn:hover, .circleBtn:active {
     background-color: #357abd;
     transform: scale(1.05); 
 }
@@ -414,14 +389,8 @@ button:disabled svg text {
   transition: all 0.2s ease;
 }
 
-.resetHeaderBtn:hover {
-  background: #fff5f5;
-}
-
-.resetHeaderBtn:active {
-  background: #dc3545;
-  color: white;
-}
+.resetHeaderBtn:hover { background: #fff5f5; }
+.resetHeaderBtn:active { background: #dc3545; color: white; }
   
 /* ==========================================================================
    7. MODALS & DIALOGS
@@ -484,7 +453,6 @@ button:disabled svg text {
     -webkit-appearance: none;
     background-color: var(--secondary);
     color: white;
-    /* Adjusted padding to make room for the custom arrow */
     padding: 10px 35px 10px 20px;
     border-radius: 25px;
     font-weight: 800;
@@ -496,33 +464,21 @@ button:disabled svg text {
     box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
     font-family: inherit;
     margin: 0;
-    
-    /* Magic CSS to draw a crisp white dropdown arrow without needing an image file */
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
     background-repeat: no-repeat;
     background-position: right 15px top 50%;
     background-size: 12px auto;
 }
 
-#cyclePicker:hover {
-    background-color: #357abd;
-    transform: translateY(-2px);
-}
-
-#cyclePicker:active {
-    transform: translateY(0);
-}
+#cyclePicker:hover { transform: translateY(-2px); background-color: #357abd; }
+#cyclePicker:active { transform: translateY(0); }
 
 @media (max-width: 480px) {
-    #prompt, #reviewPrompt {
-        font-size: 16px; 
-        padding: 12px;   
-        height: 110px;   
-    }
+    #prompt, #reviewPrompt { font-size: 16px; padding: 12px; height: 110px; }
 }
 
 /* ========================================================================== 
-   8. VIEW MANAGEMENT & HOME SCREEN 
+   8. VIEW MANAGEMENT
    ========================================================================== */
 .version-tag {
     position: absolute; 
@@ -541,52 +497,7 @@ button:disabled svg text {
     height: 100%;
 }
 
-.view-container.active {
-    display: flex;
-}
-
-.mode-cards {
-    display: flex;
-    flex-direction: column; 
-    align-items: center;    
-    gap: 20px;
-    margin-top: 40px;
-    padding: 0 15px;
-}
-
-.mode-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    border-radius: var(--radius);
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    box-shadow: var(--shadow);
-    padding: 25px 20px;
-    width: 80%;         
-    max-width: 280px;   
-    cursor: pointer;
-    transition: transform 0.3s ease, border-color 0.3s ease;
-}
-
-.mode-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--secondary);
-}
-
-.mode-card .icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
-.mode-card h3 {
-    margin: 10px 0 5px;
-    color: var(--secondary);
-}
-
-.mode-card p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin: 0;
-}
+.view-container.active { display: flex; }
 
 /* ========================================================================== 
    9. REVIEW MODE CONTROLS 
@@ -599,7 +510,7 @@ button:disabled svg text {
     flex-direction: column;
     align-items: center;
     min-height: 0;
-    margin: 0 auto; /* Guarantees the layout stays dead center */
+    margin: 0 auto;
 }
 
 .review-controls {
@@ -626,95 +537,33 @@ button:disabled svg text {
 }
 
 .review-slot::-webkit-scrollbar { display: none; }
-
-.review-slot .reel {
-    transition: none !important;
-    transform: none !important;
-}
-
-.review-slot .reel div {
-    height: 80px;
-    scroll-snap-align: start; 
-}
+.review-slot .reel { transition: none !important; transform: none !important; }
+.review-slot .reel div { height: 80px; scroll-snap-align: start; }
 
 #reviewContainer {
-    width: 100%;
-    height: 100%;
-    padding: 0; /* Removed the padding that was breaking the width! */
-    margin: 0;
-    box-sizing: border-box;
-    overflow: hidden; /* Locks the page from dragging */
+    width: 100%; height: 100%; padding: 0; margin: 0; box-sizing: border-box; overflow: hidden;
 }
 
 #reviewContainer.active {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; 
-    align-items: center;
-    overflow: hidden; /* Enforces the lock when visible */
+    display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden;
 }
 
-.prompt-text {
-    min-height: 100px;
-    margin-bottom: 15px;
-}
+.prompt-text { min-height: 100px; margin-bottom: 15px; }
 
-.review-always-open #reviewAnswerContent {
-    max-height: none !important;
-    padding: 20px !important;
-    opacity: 1 !important;
-    display: block !important;
-}
-
-#reviewAnswerContent {
-    max-height: none !important;
-    padding: 20px !important;
-    opacity: 1 !important;
-    display: block !important;
-}
+.review-always-open #reviewAnswerContent { max-height: none !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
+#reviewAnswerContent { max-height: none !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
 
 #reviewAnswerContainer.review-always-open {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    border-radius: var(--radius);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: var(--shadow);
+    background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-radius: var(--radius); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: var(--shadow);
 }
 
 .answer-header-static {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--secondary);
-    color: white;
-    font-size: 14px;
-    font-weight: 800;
-    text-align: center;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    width: 100%; padding: 12px; background-color: var(--secondary); color: white; font-size: 14px; font-weight: 800; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 /* ==========================================================================
-   10. INSTALLED APP (PWA) OVERRIDES
+   10. EXTRA FEATURES (Dark Mode & Large Text)
    ========================================================================== */
-@media (display-mode: standalone) {
-    body {
-        /* Removes the extra browser padding and uses the device's exact hardware safe-area */
-        padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
-    }
-
-    .control-row {
-        /* Drops the buttons down to sit exactly on the settings bar */
-        bottom: calc(50px + env(safe-area-inset-bottom, 0px));
-    }
-    
-    .back-to-home {
-        /* Adjusts the floating home button for the standalone view */
-        bottom: calc(70px + env(safe-area-inset-bottom, 0px)); 
-    }
-}
-/* ==========================================================================
-   11. EXTRA FEATURES (Dark Mode & Large Text)
-   ========================================================================== */
-/* --- Dark Mode Variables & Overrides --- */
 html.dark-mode { background-color: #0f172a; }
 
 body.dark-mode {
@@ -724,8 +573,7 @@ body.dark-mode {
 
 body.dark-mode #result, body.dark-mode #prompt, body.dark-mode #reviewPrompt, 
 body.dark-mode #answer, body.dark-mode .slot, body.dark-mode #answerContainer, 
-body.dark-mode #reviewAnswerContainer, body.dark-mode .mode-card,
-body.dark-mode .review-slot {
+body.dark-mode #reviewAnswerContainer, body.dark-mode .review-slot {
     background: rgba(30, 41, 59, 0.9);
     border-color: rgba(255, 255, 255, 0.1);
 }
@@ -733,7 +581,6 @@ body.dark-mode .review-slot {
 body.dark-mode .slot::after { background: linear-gradient(rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%); }
 body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #334155, #1e293b); color: #f8fafc; }
 
-/* Grid Coloring for Dark Mode */
 body.dark-mode #gridContent, body.dark-mode #grid table, body.dark-mode .grid-controls-row { background: #0f172a; }
 body.dark-mode #grid th, body.dark-mode #grid td { border-color: #334155; }
 body.dark-mode .weekNumber { background: #1e293b; color: #f8fafc; }
@@ -744,17 +591,15 @@ body.dark-mode .blocked { background: #7f1d1d; color: #fecaca; }
 body.dark-mode .maxWeekControl { background: #334155; border-color: #475569; color: #f8fafc; }
 body.dark-mode .maxWeekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
 
-/* Modal Coloring for Dark Mode */
 body.dark-mode #reviewPickerOverlay > div, body.dark-mode .confirmBox, body.dark-mode .doneBox { background: #1e293b; color: #f8fafc; }
 body.dark-mode #pickerGrid button { background: #334155 !important; border-color: #475569 !important; color: #f8fafc !important; }
 body.dark-mode #pickerGrid button[style*="var(--secondary)"] { background: var(--secondary) !important; color: white !important; }
 
-/* --- Large Text Overrides --- */
 body.large-text #prompt, body.large-text #reviewPrompt { font-size: 24px; }
 body.large-text #answerContent, body.large-text #reviewAnswerContent { font-size: 21px; }
 
 /* ==========================================================================
-   12. BOTTOM NAVIGATION BAR
+   11. BOTTOM NAVIGATION BAR
    ========================================================================== */
 .bottom-nav {
     position: fixed;
@@ -795,7 +640,74 @@ body.large-text #answerContent, body.large-text #reviewAnswerContent { font-size
 .nav-item.active { color: var(--secondary); transform: translateY(-2px); }
 .nav-item:active { transform: scale(0.95); }
 
-/* Dark mode support for nav */
 body.dark-mode .bottom-nav { background: rgba(15, 23, 42, 0.95); border-top-color: rgba(255, 255, 255, 0.1); }
 body.dark-mode .nav-item { color: #64748b; }
 body.dark-mode .nav-item.active { color: var(--secondary); }
+
+/* ==========================================================================
+   12. SETTINGS MENU
+   ========================================================================== */
+.settings-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 95%;
+    max-width: 400px;
+    margin: 0 auto 100px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(74, 144, 226, 0.2);
+    border-radius: 16px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    box-shadow: var(--shadow);
+}
+
+.setting-item:hover {
+    border-color: var(--secondary);
+    transform: translateY(-2px);
+}
+
+.setting-item:active {
+    transform: scale(0.98);
+}
+
+.setting-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.setting-text h4 {
+    margin: 0 0 2px 0;
+    color: var(--secondary);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.setting-text p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+body.dark-mode .setting-item {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+body.dark-mode .setting-text h4 { color: #f8fafc; }
+body.dark-mode .setting-text p { color: #94a3b8; }

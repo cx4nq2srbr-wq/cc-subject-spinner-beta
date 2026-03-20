@@ -1,24 +1,25 @@
 /* ==========================================================================
    1. GLOBAL STATE & CONSTANTS
    ========================================================================== */
-let currentMode = 'home'; // 'home', 'spinner', or 'review'
+let currentMode = 'spinner'; 
 
 function switchMode(mode) {
     currentMode = mode;
-    document.getElementById('homeScreen').classList.toggle('active', mode === 'home');
+    
+    // Toggle actual pages
     document.getElementById('spinnerContainer').classList.toggle('active', mode === 'spinner');
     document.getElementById('reviewContainer').classList.toggle('active', mode === 'review');
+    document.getElementById('gridContainer').classList.toggle('active', mode === 'grid');
+    document.getElementById('settingsContainer').classList.toggle('active', mode === 'settings');
 
-    // Auto-close the grid if you navigate to a new tab
-    document.getElementById('gridOverlay').style.display = 'none';
-
+    // Handle nav bar highlighting
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
     const activeNav = document.getElementById('nav-' + mode);
     if (activeNav) activeNav.classList.add('active');
 
-    if (mode === 'review') {
-        initReviewMode();
-    }
+    // Run setup if needed
+    if (mode === 'review') initReviewMode();
+    if (mode === 'grid') buildGrid();
 }
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -73,7 +74,7 @@ let blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ?
 
 let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
 
-  // Global User Settings
+// Global User Settings
 let userSettings = JSON.parse(localStorage.getItem('appSettings')) || {
     muted: false,
     haptics: true,
@@ -144,11 +145,12 @@ window.onload = function() {
   document.getElementById('cyclePicker').value = currentCycle;
   lessonData = cycleData[currentCycle];
   
+  updateSettingsIcons();
+
   if (!navigator.vibrate) {
-      const hapticsRow = document.getElementById('hapticsContainer');
+      const hapticsRow = document.getElementById('row-haptics');
       if (hapticsRow) hapticsRow.style.display = 'none';
   }
-  updateHeaderIcons();
 
   const prefix = getPrefix();
   const savedMax = localStorage.getItem(prefix + 'ccMaxWeek');
@@ -272,7 +274,7 @@ function spinBoth() {
       }
 
       saveToDevice();
-      buildGrid(); // This crashed earlier because the HTML grid was missing!
+      buildGrid(); 
       
       const remaining = subjects.some(s =>
         weeks.some(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[s][w])
@@ -297,22 +299,21 @@ function spinBoth() {
 
 function spinReel(reelId, items, finalValue, duration = 2400) {
   const reel = document.getElementById(reelId);
-reel.innerHTML = "";
+  reel.innerHTML = "";
 
-const sequence = [];
-for (let i = 0; i < 20; i++) sequence.push(items[Math.floor(Math.random() * items.length)]);
-sequence.push(finalValue);
+  const sequence = [];
+  for (let i = 0; i < 20; i++) sequence.push(items[Math.floor(Math.random() * items.length)]);
+  sequence.push(finalValue);
 
-// Build elements in memory first (faster)
-const fragment = document.createDocumentFragment();
+  const fragment = document.createDocumentFragment();
 
-sequence.forEach(text => {
-  const div = document.createElement("div");
-  div.textContent = subjectIcons[text] ? `${subjectIcons[text]} ${text}` : text;
-  fragment.appendChild(div);
-});
+  sequence.forEach(text => {
+    const div = document.createElement("div");
+    div.textContent = subjectIcons[text] ? `${subjectIcons[text]} ${text}` : text;
+    fragment.appendChild(div);
+  });
 
-reel.appendChild(fragment);
+  reel.appendChild(fragment);
 
   const totalMove = (sequence.length - 1) * 80;
   let currentTick = 0;
@@ -342,18 +343,6 @@ function toggleAnswer() {
   btn.textContent = container.classList.contains('open') ? '▲ Hide Answer ▲' : '▼ Show Answer ▼';
 }
 
-function toggleReviewAnswer() {
-    const container = document.getElementById('reviewAnswerContainer');
-    const btn = document.getElementById('toggleReviewAnswer');
-    const isOpen = container.classList.toggle('open');
-    
-    btn.textContent = isOpen ? '▲ Hide Answer ▲' : '▼ Show Answer ▼';
-    
-    if (isOpen && userSettings.haptics) {
-        navigator.vibrate(15);
-    }
-}
-
 function undoLastSpin() {
     if (!lastSpun) return;
 
@@ -367,13 +356,12 @@ function undoLastSpin() {
             });
         }
     }
+    
     // 2. Rewind the UI
     if (previousSpun) {
-        // We must REBUILD the reels with the standard lists so the index matches the physical divs
         const subReel = document.getElementById('subjectReel');
         const weekReel = document.getElementById('weekReel');
 
-        // Re-populate Subject Reel with standard list
         subReel.innerHTML = "";
         subjects.forEach(s => {
             const div = document.createElement("div");
@@ -381,7 +369,6 @@ function undoLastSpin() {
             subReel.appendChild(div);
         });
 
-        // Re-populate Week Reel with standard list
         weekReel.innerHTML = "";
         weeks.forEach(w => {
             const div = document.createElement("div");
@@ -389,26 +376,20 @@ function undoLastSpin() {
             weekReel.appendChild(div);
         });
 
-        // Force a tiny reflow so the browser sees the new divs before animating
         void subReel.offsetHeight; 
 
-        // Apply the "Rewind" animation
         subReel.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
         weekReel.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
 
-        // Move to the PREVIOUS indices
         subReel.style.transform = `translateY(-${previousSpun.sIdx * 80}px)`;
         weekReel.style.transform = `translateY(-${previousSpun.wIdx * 80}px)`;
 
-        // Update Text to previous question
         document.getElementById('prompt').textContent = previousSpun.prompt;
         document.getElementById('answerContent').innerHTML = previousSpun.answer;
         
-        // Step back the memory
         lastSpun = { ...previousSpun };
         previousSpun = null; 
     } else {
-        // If there was no previous question, just reset to top
         document.getElementById('subjectReel').style.transform = `translateY(0)`;
         document.getElementById('weekReel').style.transform = `translateY(0)`;
         document.getElementById('prompt').textContent = "Spin to start!";
@@ -437,11 +418,9 @@ function playSound(freq, type, duration, vol) {
   const osc = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
   
-  // Use user-selected waveform style (Square, Sine, or Triangle)
   osc.type = 'triangle';
   osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
   
-  // Smooth volume ramping to prevent "popping" sounds
   gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
   gainNode.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
   gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
@@ -456,26 +435,21 @@ function playSound(freq, type, duration, vol) {
 function playVictoryChime() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     
-    // A longer, more complex 8-bit RPG fanfare with chords
     const notes = [
-        // 1. Fast upward sweep (single notes)
         { freq: 261.63, delay: 0,   duration: 0.1 },  // C4
         { freq: 392.00, delay: 80,  duration: 0.1 },  // G4
         { freq: 523.25, delay: 160, duration: 0.1 },  // C5
         { freq: 659.25, delay: 240, duration: 0.1 },  // E5
         { freq: 784.00, delay: 320, duration: 0.2 },  // G5
 
-        // 2. F-Major bounce (Chord - 3 notes play at exactly 500ms)
         { freq: 349.23, delay: 500, duration: 0.15 }, // F4
         { freq: 440.00, delay: 500, duration: 0.15 }, // A4
         { freq: 523.25, delay: 500, duration: 0.15 }, // C5
 
-        // 3. G-Major bounce (Chord - 3 notes play at exactly 650ms)
         { freq: 392.00, delay: 650, duration: 0.15 }, // G4
         { freq: 493.88, delay: 650, duration: 0.15 }, // B4
         { freq: 587.33, delay: 650, duration: 0.15 }, // D5
 
-        // 4. Big Triumphant C-Major Resolve (Full 5-note Chord at 850ms)
         { freq: 261.63, delay: 850, duration: 0.8 },  // C4 (Bass)
         { freq: 392.00, delay: 850, duration: 0.8 },  // G4
         { freq: 523.25, delay: 850, duration: 0.8 },  // C5
@@ -490,7 +464,6 @@ function playVictoryChime() {
     });
 }
   
-// Helpers to set/get the curved label on the spin button's SVG
 function setSpinLabel(label) {
   const spinBtn = document.getElementById('spinBtn');
   if (!spinBtn) return;
@@ -542,7 +515,6 @@ function buildGrid(){
   bindWeekHeaderHandlers();
 }
 
-// --- Grid Interaction Helpers ---
 function toggleCell(s,w){ gridState[s][w] = !gridState[s][w]; buildGrid(); }
 function toggleSubject(s){ const anyOn = weeks.some(w => gridState[s][w]); weeks.forEach(w => gridState[s][w] = !anyOn); buildGrid(); }
 function toggleWeek(w){ const anyOn = subjects.some(s => gridState[s][w]); subjects.forEach(s => gridState[s][w] = !anyOn); buildGrid(); }
@@ -564,26 +536,6 @@ function bindWeekHeaderHandlers(){
   document.querySelectorAll('#grid .weekNumber').forEach(btn => btn.addEventListener('click', function(e){ e.stopPropagation(); toggleAllowWeek(e, Number(this.getAttribute('data-week'))); }));
 }
 
-function toggleGrid(){
-    const overlay = document.getElementById("gridOverlay");
-    const gridNav = document.getElementById('nav-grid');
-    const isOpen = overlay.style.display === "flex";
-    
-    if (isOpen) {
-        // Closing the grid: Hide it and revert nav highlight back to current mode
-        overlay.style.display = "none";
-        if (gridNav) gridNav.classList.remove('active');
-        const activeNav = document.getElementById('nav-' + currentMode);
-        if (activeNav) activeNav.classList.add('active');
-    } else {
-        // Opening the grid: Show it, build it, and highlight the Lessons tab
-        overlay.style.display = "flex";
-        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-        if (gridNav) gridNav.classList.add('active');
-        buildGrid();
-    }
-}
-
 /* ==========================================================================
    6. QUICK SETTINGS TOGGLES
    ========================================================================== */
@@ -600,41 +552,36 @@ const iconSun = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" str
 const iconTextLarge = `<span style="font-size:16px; font-weight:900; color:white; line-height:1;">Aa</span>`;
 const iconTextNormal = `<span style="font-size:12px; font-weight:600; color:white; line-height:1;">Aa</span>`;
 
-function updateHeaderIcons() {
-    const sBtn = document.getElementById('soundToggleBtn');
-    const hBtn = document.getElementById('hapticsToggleBtn');
-    const tBtn = document.getElementById('turboToggleBtn');
-    const aBtn = document.getElementById('autoRevealToggleBtn');
-    const dBtn = document.getElementById('darkModeToggleBtn');
-    const lBtn = document.getElementById('largeTextToggleBtn');
+function updateSettingsIcons() {
+    document.getElementById('set-icon-sound').innerHTML = userSettings.muted ? iconSoundOff : iconSoundOn;
+    document.getElementById('set-icon-haptics').innerHTML = userSettings.haptics ? iconHapticsOn : iconHapticsOff;
+    document.getElementById('set-icon-turbo').innerHTML = userSettings.turbo ? iconTurboOn : iconTurboOff;
+    document.getElementById('set-icon-reveal').innerHTML = userSettings.autoReveal ? iconRevealOn : iconRevealOff;
+    document.getElementById('set-icon-dark').innerHTML = userSettings.darkMode ? iconMoon : iconSun;
+    document.getElementById('set-icon-text').innerHTML = userSettings.largeText ? iconTextLarge : iconTextNormal;
     
-    if(sBtn) sBtn.innerHTML = userSettings.muted ? iconSoundOff : iconSoundOn;
-    if(hBtn) {
-        hBtn.innerHTML = userSettings.haptics ? iconHapticsOn : iconHapticsOff;
-        if(!navigator.vibrate) hBtn.style.display = 'none'; 
+    if(!navigator.vibrate) {
+        const hapticsRow = document.getElementById('row-haptics');
+        if(hapticsRow) hapticsRow.style.display = 'none';
     }
-    if(tBtn) tBtn.innerHTML = userSettings.turbo ? iconTurboOn : iconTurboOff;
-    if(aBtn) aBtn.innerHTML = userSettings.autoReveal ? iconRevealOn : iconRevealOff;
-    if(dBtn) dBtn.innerHTML = userSettings.darkMode ? iconMoon : iconSun;
-    if(lBtn) lBtn.innerHTML = userSettings.largeText ? iconTextLarge : iconTextNormal;
-    
-    // Apply CSS modifications
+
     document.documentElement.classList.toggle('dark-mode', userSettings.darkMode);
     document.body.classList.toggle('dark-mode', userSettings.darkMode);
     document.body.classList.toggle('large-text', userSettings.largeText);
 }
 
-function toggleSound() { userSettings.muted = !userSettings.muted; saveSettings(); updateHeaderIcons(); }
-function toggleTurbo() { userSettings.turbo = !userSettings.turbo; saveSettings(); updateHeaderIcons(); }
-function toggleAutoReveal() { userSettings.autoReveal = !userSettings.autoReveal; saveSettings(); updateHeaderIcons(); }
-function toggleDarkMode() { userSettings.darkMode = !userSettings.darkMode; saveSettings(); updateHeaderIcons(); }
-function toggleLargeText() { userSettings.largeText = !userSettings.largeText; saveSettings(); updateHeaderIcons(); }
+function toggleSound() { userSettings.muted = !userSettings.muted; saveSettings(); updateSettingsIcons(); }
+function toggleTurbo() { userSettings.turbo = !userSettings.turbo; saveSettings(); updateSettingsIcons(); }
+function toggleAutoReveal() { userSettings.autoReveal = !userSettings.autoReveal; saveSettings(); updateSettingsIcons(); }
+function toggleDarkMode() { userSettings.darkMode = !userSettings.darkMode; saveSettings(); updateSettingsIcons(); }
+function toggleLargeText() { userSettings.largeText = !userSettings.largeText; saveSettings(); updateSettingsIcons(); }
 function toggleHaptics() { 
     userSettings.haptics = !userSettings.haptics; 
     saveSettings(); 
-    updateHeaderIcons(); 
+    updateSettingsIcons(); 
     if(userSettings.haptics && navigator.vibrate) navigator.vibrate(15); 
 }
+
 /* ==========================================================================
    7. WEEK SELECTION & RESET DIALOGS
    ========================================================================== */
@@ -803,19 +750,21 @@ function selectPickerItem(idx) {
     if(userSettings.haptics) navigator.vibrate(20);
     closePicker();
 }
+
 /* ==========================================================================
    9. Finish / Confetti Helpers
    ========================================================================== */
 let confettiAnimationId = null;
 let confettiParticles = null;
 let confettiResizeHandler = null;
-let isConfettiStopping = false; // New flag to control the "fall out"
+let isConfettiStopping = false; 
 
 function finishLesson() {
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
-    playVictoryChime(); //
+    playVictoryChime(); 
     showDoneOverlay();
 }
+
 function showDoneOverlay() {
     const overlay = document.getElementById('doneOverlay');
     if (!overlay) return;
@@ -827,27 +776,19 @@ function showDoneOverlay() {
 
     overlay.style.display = 'flex';
     
-        startConfetti();
-  }
+    startConfetti();
+}
 
 function hideDoneOverlay() {
     isConfettiStopping = true;
     const overlay = document.getElementById('doneOverlay');
     const box = overlay.querySelector('.doneBox');
     
-    // Hide the popup box and remove the dark background 
     if (box) box.style.display = 'none';
     overlay.style.background = 'transparent';
-    
-    // Let taps pass straight through the invisible overlay to the buttons below!
     overlay.style.pointerEvents = 'none'; 
-
-    // SAFETY CATCH: If confetti is turned OFF in settings, there are no 
-    // falling pieces to trigger the cleanup, so we must clean it up instantly!
-    if (!userSettings.confetti) {
-        stopConfetti();
-    }
 }
+
 function startConfetti() {
     const canvas = document.getElementById('confettiCanvas');
     if (!canvas) return;
@@ -882,7 +823,7 @@ function startConfetti() {
     }
     confettiParticles = parts;
 
-    function frame(now) {
+    function frame() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         for (let p of parts) {
@@ -898,9 +839,7 @@ function startConfetti() {
             ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
             ctx.restore();
 
-            // If the particle falls off the bottom of the screen
             if (p.y > canvas.height + 20) {
-                // Only loop it back to the top if we aren't stopping
                 if (!isConfettiStopping) {
                     p.y = -10;
                     p.x = Math.random() * canvas.width;
@@ -909,7 +848,6 @@ function startConfetti() {
             }
         }
 
-        // If we are stopping AND all particles are off the screen, end the animation entirely
         if (isConfettiStopping && parts.every(p => p.y > canvas.height + 20)) {
             stopConfetti();
             return; 
@@ -936,7 +874,6 @@ function stopConfetti() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Restore the overlay styles back to their defaults for the next time it's triggered
     const overlay = document.getElementById('doneOverlay');
     if (overlay) {
         overlay.style.display = 'none';
@@ -946,12 +883,14 @@ function stopConfetti() {
         if (box) box.style.display = 'block';
     }
 }
+
 /* ==========================================================================
    10. INPUT & SERVICE WORKER BINDINGS
    ========================================================================== */
 
 function bindHoldButton(id, actionFn){
   const el = document.getElementById(id);
+  if(!el) return;
   let holdTimeout, holdInterval;
   const start = (e) => { e.preventDefault(); actionFn(); holdTimeout = setTimeout(()=> holdInterval = setInterval(actionFn, 110), 350); };
   const stop = () => { clearTimeout(holdTimeout); clearInterval(holdInterval); };
