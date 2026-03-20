@@ -503,9 +503,7 @@ button:disabled svg text {
    9. REVIEW MODE CONTROLS 
    ========================================================================== */
 .review-layout {
-    gap: 20px;
     width: 100%;
-    max-width: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -558,7 +556,15 @@ button:disabled svg text {
 }
 
 .answer-header-static {
-    width: 100%; padding: 12px; background-color: var(--secondary); color: white; font-size: 14px; font-weight: 800; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);
+    width: 100%; 
+    padding: 12px; 
+    background-color: var(--secondary); 
+    color: white; 
+    font-size: 14px; 
+    font-weight: 800; 
+    text-align: center; 
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-sizing: border-box; 
 }
 
 /* ==========================================================================
