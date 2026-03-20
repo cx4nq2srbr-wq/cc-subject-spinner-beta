@@ -76,23 +76,27 @@
 </div>
 
 <div id="gridContainer" class="view-container">
-    <div id="gridContent" style="padding-top: 20px; width: 100%; flex: 1; display: flex; flex-direction: column;">
+    <div id="gridContent" style="padding-top: 20px; width: 100%; flex: 1; display: flex; flex-direction: column; min-height: 0;">
         
-        <div class="grid-controls-row" style="flex-wrap: wrap; justify-content: center; gap: 15px;">
-            <select id="cyclePicker" onchange="changeCycle(this.value)">
-                <option value="1">Cycle 1</option>
-                <option value="2">Cycle 2</option>
-                <option value="3">Cycle 3</option>
-            </select>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 10px;">
             
-            <div class="maxWeekControl">
-                <span>Max Week:</span>
-                <button id="decreaseWeek" class="maxWeekBtn" onclick="decreaseWeek()">-</button>
-                <span id="maxWeekDisplay">12</span>
-                <button id="increaseWeek" class="maxWeekBtn" onclick="increaseWeek()">+</button>
+            <button class="resetHeaderBtn" onclick="resetGrid()" style="padding: 10px 24px; font-size: 14px;">Reset Grid</button>
+            
+            <div style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap;">
+                <select id="cyclePicker" onchange="changeCycle(this.value)">
+                    <option value="1">Cycle 1</option>
+                    <option value="2">Cycle 2</option>
+                    <option value="3">Cycle 3</option>
+                </select>
+                
+                <div class="maxWeekControl">
+                    <span>Max Week:</span>
+                    <button id="decreaseWeek" class="maxWeekBtn" onclick="decreaseWeek()">-</button>
+                    <span id="maxWeekDisplay">12</span>
+                    <button id="increaseWeek" class="maxWeekBtn" onclick="increaseWeek()">+</button>
+                </div>
             </div>
             
-            <button class="resetHeaderBtn" onclick="resetGrid()">Reset Grid</button>
         </div>
 
         <div id="grid"></div>

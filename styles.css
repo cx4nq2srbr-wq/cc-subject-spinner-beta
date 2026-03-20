@@ -272,7 +272,9 @@ button:disabled svg text {
    6. LESSONS GRID VIEW
    ========================================================================== */
 #gridContainer {
-    width: 100%; height: 100%; display: none; flex-direction: column;
+    width: 100%; 
+    display: none; 
+    flex-direction: column;
 }
 
 #gridContainer.active {
@@ -280,7 +282,12 @@ button:disabled svg text {
 }
 
 #gridContent {
-    width: 100%; flex: 1; display: flex; flex-direction: column; overflow: hidden;
+    width: 100%; 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden;
+    min-height: 0; 
 }
 
 .circleBtn {
@@ -494,7 +501,8 @@ button:disabled svg text {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 .view-container.active { display: flex; }
