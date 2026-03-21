@@ -293,27 +293,27 @@ button:disabled svg text {
 }
 
 .circleBtn {
-    background-color: var(--secondary);
-    border: none;
-    color: white;
-    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
-    width: 38px;  
-    height: 38px; 
-    border-radius: 50%;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1; 
-    padding: 0;
-    transition: all 0.2s ease;
+  background-color: var(--secondary);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+  width: 38px;  
+  height: 38px; 
+  border-radius: 50%;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; 
+  padding: 0;
+  transition: all 0.2s ease;
 }
   
 .circleBtn:hover, .circleBtn:active {
-    background-color: #357abd;
-    transform: scale(1.05); 
+  background-color: #357abd;
+  transform: scale(1.05); 
 }
   
 #grid {
@@ -329,13 +329,13 @@ button:disabled svg text {
 }
 
 #grid table { 
-    table-layout: fixed; 
-    width: 100%; 
-    border-collapse: separate; 
-    border-spacing: 0; 
-    background: white; 
-    border-top: 1px solid #aaa;
-    border-left: 1px solid #aaa;
+  table-layout: fixed; 
+  width: 100%; 
+  border-collapse: separate; 
+  border-spacing: 0; 
+  background: white; 
+  border-top: 1px solid #aaa;
+  border-left: 1px solid #aaa;
 }
 #grid th, #grid td {
   border-right: 1px solid #aaa; 
@@ -646,8 +646,6 @@ body.dark-mode #reviewAnswerContent strong {
     color: #ffffff; /* Pure white for maximum contrast */
     font-weight: 800; /* Extra thick so you can't miss it */
 }
-body.large-text #prompt, body.large-text #reviewPrompt { font-size: 24px; }
-body.large-text #answerContent, body.large-text #reviewAnswerContent { font-size: 21px; }
 
 /* ==========================================================================
    11. BOTTOM NAVIGATION BAR

@@ -81,7 +81,6 @@ let userSettings = JSON.parse(localStorage.getItem('appSettings')) || {
     turbo: false,
     autoReveal: false,
     darkMode: false,
-    largeText: false
 };
 
 function anyLessonsRemaining() {
@@ -549,8 +548,6 @@ const iconRevealOn = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none
 const iconRevealOff = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
 const iconMoon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
 const iconSun = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-const iconTextLarge = `<span style="font-size:16px; font-weight:900; color:white; line-height:1;">Aa</span>`;
-const iconTextNormal = `<span style="font-size:12px; font-weight:600; color:white; line-height:1;">Aa</span>`;
 
 function updateSettingsIcons() {
     document.getElementById('set-icon-sound').innerHTML = userSettings.muted ? iconSoundOff : iconSoundOn;
@@ -558,7 +555,6 @@ function updateSettingsIcons() {
     document.getElementById('set-icon-turbo').innerHTML = userSettings.turbo ? iconTurboOn : iconTurboOff;
     document.getElementById('set-icon-reveal').innerHTML = userSettings.autoReveal ? iconRevealOn : iconRevealOff;
     document.getElementById('set-icon-dark').innerHTML = userSettings.darkMode ? iconMoon : iconSun;
-    document.getElementById('set-icon-text').innerHTML = userSettings.largeText ? iconTextLarge : iconTextNormal;
     
     if(!navigator.vibrate) {
         const hapticsRow = document.getElementById('row-haptics');
@@ -567,14 +563,12 @@ function updateSettingsIcons() {
 
     document.documentElement.classList.toggle('dark-mode', userSettings.darkMode);
     document.body.classList.toggle('dark-mode', userSettings.darkMode);
-    document.body.classList.toggle('large-text', userSettings.largeText);
 }
 
 function toggleSound() { userSettings.muted = !userSettings.muted; saveSettings(); updateSettingsIcons(); }
 function toggleTurbo() { userSettings.turbo = !userSettings.turbo; saveSettings(); updateSettingsIcons(); }
 function toggleAutoReveal() { userSettings.autoReveal = !userSettings.autoReveal; saveSettings(); updateSettingsIcons(); }
 function toggleDarkMode() { userSettings.darkMode = !userSettings.darkMode; saveSettings(); updateSettingsIcons(); }
-function toggleLargeText() { userSettings.largeText = !userSettings.largeText; saveSettings(); updateSettingsIcons(); }
 function toggleHaptics() { 
     userSettings.haptics = !userSettings.haptics; 
     saveSettings(); 
