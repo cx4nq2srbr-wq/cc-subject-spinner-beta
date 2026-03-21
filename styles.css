@@ -28,9 +28,9 @@ html {
 
 body {
   margin: 0;
-  height: 100%;
-  height: 100dvh; 
-  padding: env(safe-area-inset-top, 20px) 15px calc(140px + env(safe-area-inset-bottom, 0px)) 15px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top, 20px) 15px calc(65px + env(safe-area-inset-bottom, 0px)) 15px;
   overflow: hidden; 
   touch-action: pan-y;
   -webkit-text-size-adjust: 100%;
@@ -317,10 +317,9 @@ button:disabled svg text {
 }
   
 #grid {
-  padding: 0 6px 90px 6px; 
+  padding: 0 6px 20px 6px; 
   overflow-y: auto; 
   overflow-x: hidden;
-  /* The ultimate Safari scrolling fix: */
   -webkit-overflow-scrolling: touch; 
   touch-action: pan-y; 
   width: 100%; 
@@ -348,11 +347,11 @@ button:disabled svg text {
   font-size: 14px;
 }
 
-#grid th {
+#grid tr:first-child th {
   position: sticky;
-  top: 0; /* Locks to the top of the scrolling #grid */
+  top: 0; 
   z-index: 10;
-  background: #fff; /* Solid white so scrolling rows hide behind it */
+  background: #fff; 
 }
 
 #grid th.subjectHeader {
@@ -622,9 +621,8 @@ body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #3341
 
 body.dark-mode #gridContent, body.dark-mode #grid table, body.dark-mode .grid-controls-row { background: #0f172a; }
 body.dark-mode #grid table { border-top-color: #334155; border-left-color: #334155; }
-body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #334155; border-bottom-color: #334155; }
-body.dark-mode #grid th { background: #0f172a; } 
-body.dark-mode #grid th.subjectHeader { background: #b45309; } /* A sleek dark amber */
+body.dark-mode #grid tr:first-child th { background: #0f172a; } 
+body.dark-mode #grid th.subjectHeader { background: #b45309; }body.dark-mode #grid th.subjectHeader { background: #b45309; } /* A sleek dark amber */
 body.dark-mode #grid th.subjectHeader span { color: #f8fafc; }body.dark-mode .weekNumber { background: #1e293b; color: #f8fafc; }
 body.dark-mode .weekNumber.active { background: #22c55e; color: #fff; }
 body.dark-mode .completed { background: #334155 !important; color: #94a3b8; }
