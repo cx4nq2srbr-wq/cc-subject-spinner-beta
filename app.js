@@ -493,22 +493,28 @@ function buildGrid(){
 
   let html = `<table><colgroup><col style="width:48px">`;
   subjects.forEach(() => { html += `<col style="width:${subjectWidth}px">`; });
-  html += '</colgroup><tr><th></th>';
-  subjects.forEach(s => { html += `<th class="subjectHeader" onclick="toggleSubject('${s}')"><span>${s}</span></th>`; });
-  html += '</tr>';
+  
+  html += '</colgroup><thead><tr><th></th>';
+  
+  subjects.forEach(s => { 
+    const isSubjectBlocked = weeks.every(w => !gridState[s][w]);
+    const subClass = isSubjectBlocked ? "subjectHeader blocked-header" : "subjectHeader";
+    
+    html += `<th class="${subClass}" onclick="toggleSubject('${s}')"><span>${s}</span></th>`; 
+  });
+  html += '</tr></thead><tbody>';
 
   weeks.forEach(w => {
     const isAllowed = allowedWeeks.includes(w);
     const isBlocked = blockedWeeks.includes(w);
     const numClass = isBlocked ? 'blocked' : (isAllowed ? 'active' : '');
     html += `<tr><th class="week-header" data-week="${w}"><button class="weekNumber ${numClass}" data-week="${w}">${w}</button></th>`;
+    
     subjects.forEach(s => {
       let cls = "";
       
-      // THE FIX: If the week is blocked, turn the whole row red!
-      if (isBlocked) {
-          cls = "blocked-cell";
-      } else if (!gridState[s][w] || (w > maxWeek && !isAllowed)) {
+      // THE FIX: If blocked, turned off, or past max week, just turn it GREY (.completed)
+      if (isBlocked || !gridState[s][w] || (w > maxWeek && !isAllowed)) {
           cls = "completed";
       } else if (isAllowed && w > maxWeek) {
           cls = "override";
@@ -518,7 +524,7 @@ function buildGrid(){
     });
     html += '</tr>';
   });
-  document.getElementById('grid').innerHTML = html + '</table>';
+  document.getElementById('grid').innerHTML = html + '</tbody></table>';
   bindWeekHeaderHandlers();
 }
 
