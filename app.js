@@ -504,8 +504,16 @@ function buildGrid(){
     html += `<tr><th class="week-header" data-week="${w}"><button class="weekNumber ${numClass}" data-week="${w}">${w}</button></th>`;
     subjects.forEach(s => {
       let cls = "";
-      if (!gridState[s][w] || isBlocked || (w > maxWeek && !isAllowed)) cls = "completed";
-      else if (isAllowed && w > maxWeek) cls = "override";
+      
+      // THE FIX: If the week is blocked, turn the whole row red!
+      if (isBlocked) {
+          cls = "blocked-cell";
+      } else if (!gridState[s][w] || (w > maxWeek && !isAllowed)) {
+          cls = "completed";
+      } else if (isAllowed && w > maxWeek) {
+          cls = "override";
+      }
+      
       html += `<td class="${cls}" onclick="toggleCell('${s}',${w})"></td>`;
     });
     html += '</tr>';

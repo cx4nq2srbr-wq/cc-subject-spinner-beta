@@ -347,7 +347,9 @@ button:disabled svg text {
   font-size: 14px;
 }
 
-#grid tr:first-child th {
+/* THE FIX: Bulletproof sticky targeting using first-of-type and webkit prefix */
+#grid tr:first-of-type th {
+  position: -webkit-sticky;
   position: sticky;
   top: 0; 
   z-index: 10;
@@ -383,6 +385,9 @@ button:disabled svg text {
 .completed { background: #ccc !important; color: #666; }
 .override { background: #d4f0d8; }
 .blocked { background: #fdecea; color: #5a2a28; }
+
+/* The red tinge for blocked rows */
+.blocked-cell { background: #fdecea !important; }
 
 .grid-controls-row {
     display: flex;
@@ -620,14 +625,23 @@ body.dark-mode .slot::after { background: linear-gradient(rgba(0,0,0,0.5) 0%, tr
 body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #334155, #1e293b); color: #f8fafc; }
 
 body.dark-mode #gridContent, body.dark-mode #grid table, body.dark-mode .grid-controls-row { background: #0f172a; }
+/* Apply the dark borders individually */
 body.dark-mode #grid table { border-top-color: #334155; border-left-color: #334155; }
-body.dark-mode #grid tr:first-child th { background: #0f172a; } 
-body.dark-mode #grid th.subjectHeader { background: #b45309; }body.dark-mode #grid th.subjectHeader { background: #b45309; } /* A sleek dark amber */
-body.dark-mode #grid th.subjectHeader span { color: #f8fafc; }body.dark-mode .weekNumber { background: #1e293b; color: #f8fafc; }
+body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #334155; border-bottom-color: #334155; }
+
+/* THE FIX: Matching the new sticky selector for Dark Mode */
+body.dark-mode #grid tr:first-of-type th { background: #0f172a; } 
+body.dark-mode #grid th.subjectHeader { background: #b45309; } 
+body.dark-mode #grid th.subjectHeader span { color: #f8fafc; }
+
+body.dark-mode .weekNumber { background: #1e293b; color: #f8fafc; }
 body.dark-mode .weekNumber.active { background: #22c55e; color: #fff; }
 body.dark-mode .completed { background: #334155 !important; color: #94a3b8; }
 body.dark-mode .override { background: #064e3b; }
 body.dark-mode .blocked { background: #7f1d1d; color: #fecaca; }
+
+/* NEW: Dark Mode red tinge for blocked rows */
+body.dark-mode .blocked-cell { background: #7f1d1d !important; }
 body.dark-mode .maxWeekControl { background: #334155; border-color: #475569; color: #f8fafc; }
 body.dark-mode .maxWeekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
 
