@@ -15,4 +15,5 @@ to do list
 
 Future updates
 
-    - Add 
+    - Add the audio files to each lesson
+    - focus lesson (mark a lesson the child struggles with for easier review)
