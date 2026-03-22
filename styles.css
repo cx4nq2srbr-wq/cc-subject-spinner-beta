@@ -607,8 +607,8 @@ body.dark-mode #answerContent strong, body.dark-mode #reviewAnswerContent strong
 }
 
 body.dark-mode #gridContent, body.dark-mode #grid table, body.dark-mode .grid-controls-row { background: #0f172a; }
-body.dark-mode #grid table { border-top-color: #334155; border-left-color: #334155; }
-body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #334155; border-bottom-color: #334155; }
+body.dark-mode #grid table { border-top-color: #475569; border-left-color: #475569; }
+body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #475569; border-bottom-color: #475569; }
 
 body.dark-mode #grid th.top-header { background: #0f172a; } 
 body.dark-mode #grid th.subjectHeader { background: #b45309; } 
@@ -617,7 +617,9 @@ body.dark-mode #grid th.subjectHeader span { color: #f8fafc; }
 
 body.dark-mode .weekNumber { background: #1e293b; color: #f8fafc; }
 body.dark-mode .weekNumber.active { background: #22c55e; color: #fff; }
-body.dark-mode .completed { background: #334155 !important; color: #94a3b8; }
+
+body.dark-mode .completed { background: #1e293b !important; color: #64748b; }
+
 body.dark-mode .override { background: #064e3b; }
 body.dark-mode .blocked { background: #7f1d1d; color: #fecaca; }
 body.dark-mode .maxWeekControl { background: #334155; border-color: #475569; color: #f8fafc; }
