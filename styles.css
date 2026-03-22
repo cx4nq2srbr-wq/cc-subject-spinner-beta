@@ -28,8 +28,8 @@ html {
 
 body {
   margin: 0;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100%;
+  height: 100dvh; 
   padding: env(safe-area-inset-top, 20px) 15px calc(65px + env(safe-area-inset-bottom, 0px)) 15px;
   overflow: hidden; 
   touch-action: pan-y;
@@ -53,7 +53,7 @@ input, button, select, textarea {
 /* ==========================================================================
    3. UI COMPONENTS (Prompt & Answer Boxes)
    ========================================================================== */
-#result, #prompt, #reviewPrompt, #answer, .slot {
+#prompt, #reviewPrompt, .slot {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -82,6 +82,10 @@ input, button, select, textarea {
   background: rgba(255, 255, 255, 0.95);
   border: 2px solid rgba(74, 144, 226, 0.2);
   transition: border-color 0.3s ease;
+}
+
+@media (max-width: 480px) {
+    #prompt, #reviewPrompt { font-size: 16px; padding: 12px; height: 110px; }
 }
 
 #answerContainer, #reviewAnswerContainer {
@@ -268,7 +272,7 @@ button:disabled svg text {
 }
   
 /* ==========================================================================
-   6. LESSONS GRID VIEW
+   6. LESSONS GRID VIEW & CONTROLS
    ========================================================================== */
 #gridContainer {
     width: 100%; 
@@ -291,40 +295,14 @@ button:disabled svg text {
     flex-direction: column; 
     overflow: hidden;
 }
-
-.circleBtn {
-  background-color: var(--secondary);
-  border: none;
-  color: white;
-  box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
-  width: 38px;  
-  height: 38px; 
-  border-radius: 50%;
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1; 
-  padding: 0;
-  transition: all 0.2s ease;
-}
-  
-.circleBtn:hover, .circleBtn:active {
-  background-color: #357abd;
-  transform: scale(1.05); 
-}
   
 #grid {
   padding: 0 6px 20px 6px; 
-  /* THE FIX: Removed overflow-x: hidden. This is what broke Safari's sticky tables! */
   overflow: auto; 
   -webkit-overflow-scrolling: touch; 
   touch-action: pan-y; 
   width: 100%; 
   box-sizing: border-box; 
-  /* THE FIX: Absolute height enforcement for Safari flexbox */
   flex: 1 1 0;
   height: 100%;
 }
@@ -348,11 +326,10 @@ button:disabled svg text {
   font-size: 14px;
 }
 
-/* THE FIX: Target the hardcoded class directly */
 #grid th.top-header {
   position: -webkit-sticky;
   position: sticky;
-  top: -1px; /* 1px negative offset fixes a tiny Safari gap glitch */
+  top: -1px; 
   z-index: 10;
   background: #fff; 
 }
@@ -364,7 +341,6 @@ button:disabled svg text {
   z-index: 11;
 }
 
-/* NEW: Red tinge for subject headers that are completely turned off */
 #grid th.subjectHeader.blocked-header {
   background: #fdecea; 
 }
@@ -430,6 +406,31 @@ button:disabled svg text {
 
 .resetHeaderBtn:hover { background: #fff5f5; }
 .resetHeaderBtn:active { background: #dc3545; color: white; }
+
+#cyclePicker {
+    appearance: none; 
+    -webkit-appearance: none;
+    background-color: var(--secondary);
+    color: white;
+    padding: 10px 35px 10px 20px;
+    border-radius: 25px;
+    font-weight: 800;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    font-family: inherit;
+    margin: 0;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 12px auto;
+}
+
+#cyclePicker:hover { transform: translateY(-2px); background-color: #357abd; }
+#cyclePicker:active { transform: translateY(0); }
   
 /* ==========================================================================
    7. MODALS & DIALOGS
@@ -485,35 +486,6 @@ button:disabled svg text {
   width: 85%;
   max-width: 320px;
   text-align: center;
-}
-
-#cyclePicker {
-    appearance: none; 
-    -webkit-appearance: none;
-    background-color: var(--secondary);
-    color: white;
-    padding: 10px 35px 10px 20px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    transition: transform 0.2s, background 0.2s;
-    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-    font-family: inherit;
-    margin: 0;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px top 50%;
-    background-size: 12px auto;
-}
-
-#cyclePicker:hover { transform: translateY(-2px); background-color: #357abd; }
-#cyclePicker:active { transform: translateY(0); }
-
-@media (max-width: 480px) {
-    #prompt, #reviewPrompt { font-size: 16px; padding: 12px; height: 110px; }
 }
 
 /* ========================================================================== 
@@ -608,7 +580,7 @@ button:disabled svg text {
 }
 
 /* ==========================================================================
-   10. EXTRA FEATURES (Dark Mode & Large Text)
+   10. DARK MODE OVERRIDES
    ========================================================================== */
 html.dark-mode { background-color: #0f172a; }
 
@@ -617,8 +589,8 @@ body.dark-mode {
     color: #f8fafc;
 }
 
-body.dark-mode #result, body.dark-mode #prompt, body.dark-mode #reviewPrompt, 
-body.dark-mode #answer, body.dark-mode .slot, body.dark-mode #answerContainer, 
+body.dark-mode #prompt, body.dark-mode #reviewPrompt, 
+body.dark-mode .slot, body.dark-mode #answerContainer, 
 body.dark-mode #reviewAnswerContainer, body.dark-mode .review-slot {
     background: rgba(30, 41, 59, 0.9);
     border-color: rgba(255, 255, 255, 0.1);
@@ -627,42 +599,41 @@ body.dark-mode #reviewAnswerContainer, body.dark-mode .review-slot {
 body.dark-mode .slot::after { background: linear-gradient(rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%); }
 body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #334155, #1e293b); color: #f8fafc; }
 
+body.dark-mode #answerContent, body.dark-mode #reviewAnswerContent { color: #cbd5e1; }
+
+body.dark-mode #answerContent b, body.dark-mode #reviewAnswerContent b,
+body.dark-mode #answerContent strong, body.dark-mode #reviewAnswerContent strong {
+    color: #ffffff; font-weight: 800;
+}
+
 body.dark-mode #gridContent, body.dark-mode #grid table, body.dark-mode .grid-controls-row { background: #0f172a; }
-/* Apply the dark borders individually */
 body.dark-mode #grid table { border-top-color: #334155; border-left-color: #334155; }
 body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #334155; border-bottom-color: #334155; }
 
 body.dark-mode #grid th.top-header { background: #0f172a; } 
 body.dark-mode #grid th.subjectHeader { background: #b45309; } 
-
 body.dark-mode #grid th.subjectHeader.blocked-header { background: #7f1d1d; } 
-
 body.dark-mode #grid th.subjectHeader span { color: #f8fafc; }
+
 body.dark-mode .weekNumber { background: #1e293b; color: #f8fafc; }
 body.dark-mode .weekNumber.active { background: #22c55e; color: #fff; }
 body.dark-mode .completed { background: #334155 !important; color: #94a3b8; }
 body.dark-mode .override { background: #064e3b; }
 body.dark-mode .blocked { background: #7f1d1d; color: #fecaca; }
-
 body.dark-mode .maxWeekControl { background: #334155; border-color: #475569; color: #f8fafc; }
 body.dark-mode .maxWeekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
 
 body.dark-mode #reviewPickerOverlay > div, body.dark-mode .confirmBox, body.dark-mode .doneBox { background: #1e293b; color: #f8fafc; }
 body.dark-mode #pickerGrid button { background: #334155 !important; border-color: #475569 !important; color: #f8fafc !important; }
 body.dark-mode #pickerGrid button[style*="var(--secondary)"] { background: var(--secondary) !important; color: white !important; }
-body.dark-mode #answerContent, 
-body.dark-mode #reviewAnswerContent {
-    color: #cbd5e1; /* A soft, easy-to-read light grey */
-}
 
-body.dark-mode #answerContent b, 
-body.dark-mode #reviewAnswerContent b,
-body.dark-mode #answerContent strong, 
-body.dark-mode #reviewAnswerContent strong {
-    color: #ffffff; /* Pure white for maximum contrast */
-    font-weight: 800; /* Extra thick so you can't miss it */
-}
+body.dark-mode .bottom-nav { background: rgba(15, 23, 42, 0.95); border-top-color: rgba(255, 255, 255, 0.1); }
+body.dark-mode .nav-item { color: #64748b; }
+body.dark-mode .nav-item.active { color: var(--secondary); }
 
+body.dark-mode .setting-item { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }
+body.dark-mode .setting-text h4 { color: #f8fafc; }
+body.dark-mode .setting-text p { color: #94a3b8; }
 body.dark-mode .toggle-switch { background-color: #475569; }
 body.dark-mode .toggle-switch.on { background-color: #34c759; }
 
@@ -709,12 +680,8 @@ body.dark-mode .toggle-switch.on { background-color: #34c759; }
 .nav-item.active { color: var(--secondary); transform: translateY(-2px); }
 .nav-item:active { transform: scale(0.95); }
 
-body.dark-mode .bottom-nav { background: rgba(15, 23, 42, 0.95); border-top-color: rgba(255, 255, 255, 0.1); }
-body.dark-mode .nav-item { color: #64748b; }
-body.dark-mode .nav-item.active { color: var(--secondary); }
-
 /* ==========================================================================
-   12. SETTINGS MENU
+   12. SETTINGS MENU & TOGGLES
    ========================================================================== */
 .settings-menu {
     display: flex;
@@ -740,48 +707,17 @@ body.dark-mode .nav-item.active { color: var(--secondary); }
     box-shadow: var(--shadow);
 }
 
-.setting-item:hover {
-    border-color: var(--secondary);
-    transform: translateY(-2px);
-}
+.setting-item:hover { border-color: var(--secondary); transform: translateY(-2px); }
+.setting-item:active { transform: scale(0.98); }
 
-.setting-item:active {
-    transform: scale(0.98);
-}
+.setting-text { flex: 1; margin-right: 15px; }
+.setting-text h4 { margin: 0 0 2px 0; color: var(--secondary); font-size: 16px; font-weight: 800; }
+.setting-text p { margin: 0; font-size: 13px; color: var(--text-muted); }
 
-.setting-text {
-    /* THE FIX: Flex 1 pushes the new toggle switch to the far right */
-    flex: 1; 
-    margin-right: 15px;
-}
-
-.setting-text h4 {
-    margin: 0 0 2px 0;
-    color: var(--secondary);
-    font-size: 16px;
-    font-weight: 800;
-}
-
-.setting-text p {
-    margin: 0;
-    font-size: 13px;
-    color: var(--text-muted);
-}
-
-body.dark-mode .setting-item {
-    background: rgba(30, 41, 59, 0.9);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-body.dark-mode .setting-text h4 { color: #f8fafc; }
-body.dark-mode .setting-text p { color: #94a3b8; }
-
-/* ==========================================================================
-   13. iOS TOGGLE SWITCHES
-   ========================================================================== */
 .toggle-switch {
     width: 50px;
     height: 30px;
-    background-color: #cbd5e1; /* Default grey for "Off" */
+    background-color: #cbd5e1; 
     border-radius: 30px;
     position: relative;
     transition: background-color 0.3s ease;
@@ -789,9 +725,7 @@ body.dark-mode .setting-text p { color: #94a3b8; }
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.toggle-switch.on {
-    background-color: #34c759; /* Classic Apple Green for "On" */
-}
+.toggle-switch.on { background-color: #34c759; }
 
 .toggle-knob {
     width: 26px;
@@ -801,11 +735,8 @@ body.dark-mode .setting-text p { color: #94a3b8; }
     position: absolute;
     top: 2px;
     left: 2px;
-    /* Adds that authentic, slight "bounce" to the Apple animation */
     transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.3); 
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-.toggle-switch.on .toggle-knob {
-    transform: translateX(20px); /* Slides the knob to the right */
-}
+.toggle-switch.on .toggle-knob { transform: translateX(20px); }
