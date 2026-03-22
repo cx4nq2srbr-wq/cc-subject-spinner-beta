@@ -494,11 +494,13 @@ function buildGrid(){
   let html = `<table><colgroup><col style="width:48px">`;
   subjects.forEach(() => { html += `<col style="width:${subjectWidth}px">`; });
   
-  html += '</colgroup><thead><tr><th></th>';
+  // THE FIX: Hardcoding the 'top-header' class so Safari doesn't have to guess
+  html += '</colgroup><thead><tr><th class="top-header empty-header"></th>';
   
   subjects.forEach(s => { 
+    // NEW: If all weeks in a subject are false, turn the subject header RED
     const isSubjectBlocked = weeks.every(w => !gridState[s][w]);
-    const subClass = isSubjectBlocked ? "subjectHeader blocked-header" : "subjectHeader";
+    const subClass = isSubjectBlocked ? "subjectHeader top-header blocked-header" : "subjectHeader top-header";
     
     html += `<th class="${subClass}" onclick="toggleSubject('${s}')"><span>${s}</span></th>`; 
   });
@@ -513,7 +515,7 @@ function buildGrid(){
     subjects.forEach(s => {
       let cls = "";
       
-      // THE FIX: If blocked, turned off, or past max week, just turn it GREY (.completed)
+      // THE FIX: If blocked, turned off, or past max week, turn the cell GREY (.completed)
       if (isBlocked || !gridState[s][w] || (w > maxWeek && !isAllowed)) {
           cls = "completed";
       } else if (isAllowed && w > maxWeek) {
