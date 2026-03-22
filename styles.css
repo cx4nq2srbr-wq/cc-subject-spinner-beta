@@ -663,6 +663,9 @@ body.dark-mode #reviewAnswerContent strong {
     font-weight: 800; /* Extra thick so you can't miss it */
 }
 
+body.dark-mode .toggle-switch { background-color: #475569; }
+body.dark-mode .toggle-switch.on { background-color: #34c759; }
+
 /* ==========================================================================
    11. BOTTOM NAVIGATION BAR
    ========================================================================== */
@@ -746,16 +749,10 @@ body.dark-mode .nav-item.active { color: var(--secondary); }
     transform: scale(0.98);
 }
 
-.setting-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.setting-text {
+    /* THE FIX: Flex 1 pushes the new toggle switch to the far right */
+    flex: 1; 
     margin-right: 15px;
-    flex-shrink: 0;
 }
 
 .setting-text h4 {
@@ -777,3 +774,38 @@ body.dark-mode .setting-item {
 }
 body.dark-mode .setting-text h4 { color: #f8fafc; }
 body.dark-mode .setting-text p { color: #94a3b8; }
+
+/* ==========================================================================
+   13. iOS TOGGLE SWITCHES
+   ========================================================================== */
+.toggle-switch {
+    width: 50px;
+    height: 30px;
+    background-color: #cbd5e1; /* Default grey for "Off" */
+    border-radius: 30px;
+    position: relative;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.toggle-switch.on {
+    background-color: #34c759; /* Classic Apple Green for "On" */
+}
+
+.toggle-knob {
+    width: 26px;
+    height: 26px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    /* Adds that authentic, slight "bounce" to the Apple animation */
+    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.3); 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.toggle-switch.on .toggle-knob {
+    transform: translateX(20px); /* Slides the knob to the right */
+}

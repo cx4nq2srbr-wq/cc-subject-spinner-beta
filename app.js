@@ -566,12 +566,21 @@ const iconMoon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" st
 const iconSun = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
 
 function updateSettingsIcons() {
+    // 1. Update the original SVGs
     document.getElementById('set-icon-sound').innerHTML = userSettings.muted ? iconSoundOff : iconSoundOn;
     document.getElementById('set-icon-haptics').innerHTML = userSettings.haptics ? iconHapticsOn : iconHapticsOff;
     document.getElementById('set-icon-turbo').innerHTML = userSettings.turbo ? iconTurboOn : iconTurboOff;
     document.getElementById('set-icon-reveal').innerHTML = userSettings.autoReveal ? iconRevealOn : iconRevealOff;
     document.getElementById('set-icon-dark').innerHTML = userSettings.darkMode ? iconMoon : iconSun;
     
+    // 2. NEW: Toggle the iOS Sliders! 
+    // (Note: we use !userSettings.muted because "muted" is the opposite of "Sound On")
+    document.getElementById('switch-sound').classList.toggle('on', !userSettings.muted);
+    document.getElementById('switch-haptics').classList.toggle('on', userSettings.haptics);
+    document.getElementById('switch-turbo').classList.toggle('on', userSettings.turbo);
+    document.getElementById('switch-reveal').classList.toggle('on', userSettings.autoReveal);
+    document.getElementById('switch-dark').classList.toggle('on', userSettings.darkMode);
+
     if(!navigator.vibrate) {
         const hapticsRow = document.getElementById('row-haptics');
         if(hapticsRow) hapticsRow.style.display = 'none';
