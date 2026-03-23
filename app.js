@@ -641,7 +641,7 @@ function initReviewMode() {
     subReel.innerHTML = "";
     subjects.forEach(s => {
         const div = document.createElement("div");
-        div.innerHTML = `<span>${subjectIcons[s]}</span> <span>${s}</span>`;
+        div.textContent = `${subjectIcons[s]} ${s}`;
         subReel.appendChild(div);
     });
 
