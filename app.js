@@ -628,8 +628,8 @@ function resetGridConfirmed() {
 /* ==========================================================================
    8. Review Mode Logic
    ========================================================================== */
-let reviewSubjectIdx = 0;
-let reviewWeekIdx = 0;
+let reviewSubjectIdx = localStorage.getItem('reviewSubjectIdx') ? parseInt(localStorage.getItem('reviewSubjectIdx')) : 0;
+let reviewWeekIdx = localStorage.getItem('reviewWeekIdx') ? parseInt(localStorage.getItem('reviewWeekIdx')) : 0;
 let scrollTimeout;
 
 function initReviewMode() {
@@ -652,9 +652,6 @@ function initReviewMode() {
         weekReel.appendChild(div);
     });
 
-    reviewSubjectIdx = 0;
-    reviewWeekIdx = 0;
-
     // Attach native scroll listeners to track finger swipes
     if (!scrollSub.dataset.listening) {
         scrollSub.addEventListener('scroll', handleReelScroll);
@@ -674,10 +671,12 @@ function handleReelScroll(e) {
         
         if (el.id === 'scrollSubject' && reviewSubjectIdx !== idx) {
             reviewSubjectIdx = Math.max(0, Math.min(idx, subjects.length - 1));
+            localStorage.setItem('reviewSubjectIdx', reviewSubjectIdx); // SAVE HERE
             updateReviewDisplay();
             if(userSettings.haptics) navigator.vibrate(10);
         } else if (el.id === 'scrollWeek' && reviewWeekIdx !== idx) {
             reviewWeekIdx = Math.max(0, Math.min(idx, weeks.length - 1));
+            localStorage.setItem('reviewWeekIdx', reviewWeekIdx); // SAVE HERE
             updateReviewDisplay();
             if(userSettings.haptics) navigator.vibrate(10);
         }
@@ -744,8 +743,10 @@ function closePicker() {
 function selectPickerItem(idx) {
     if (currentPickerType === 'subject') {
         reviewSubjectIdx = idx;
+        localStorage.setItem('reviewSubjectIdx', idx); // SAVE HERE
     } else {
         reviewWeekIdx = idx;
+        localStorage.setItem('reviewWeekIdx', idx); // SAVE HERE
     }
     updateReviewDisplay();
     if(userSettings.haptics) navigator.vibrate(20);
