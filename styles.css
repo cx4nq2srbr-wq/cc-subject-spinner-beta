@@ -606,19 +606,24 @@ body.dark-mode #answerContent strong, body.dark-mode #reviewAnswerContent strong
     color: #ffffff; font-weight: 800;
 }
 
-body.dark-mode #gridContent, body.dark-mode #grid table, body.dark-mode .grid-controls-row { background: #0f172a; }
-body.dark-mode #grid table { border-top-color: #475569; border-left-color: #475569; }
-body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #475569; border-bottom-color: #475569; }
+/* THE FIX: Split the backgrounds. Wrapper is dark, active table cells are lighter */
+body.dark-mode #gridContent, body.dark-mode .grid-controls-row { background: #0f172a; }
+
+/* THE FIX: Brighten the grid lines to #64748b so they are highly visible in daylight */
+body.dark-mode #grid table { background: #1e293b; border-top-color: #64748b; border-left-color: #64748b; }
+body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #64748b; border-bottom-color: #64748b; }
 
 body.dark-mode #grid th.top-header { background: #0f172a; } 
 body.dark-mode #grid th.subjectHeader { background: #b45309; } 
 body.dark-mode #grid th.subjectHeader.blocked-header { background: #7f1d1d; } 
 body.dark-mode #grid th.subjectHeader span { color: #f8fafc; }
 
-body.dark-mode .weekNumber { background: #1e293b; color: #f8fafc; }
+/* THE FIX: Lighten the week number column so it separates from the active cells */
+body.dark-mode .weekNumber { background: #334155; color: #f8fafc; }
 body.dark-mode .weekNumber.active { background: #22c55e; color: #fff; }
 
-body.dark-mode .completed { background: #1e293b !important; color: #64748b; }
+/* THE FIX: Make completed cells match the deep background so they look "punched out" and empty */
+body.dark-mode .completed { background: #0f172a !important; color: #475569; }
 
 body.dark-mode .override { background: #064e3b; }
 body.dark-mode .blocked { background: #7f1d1d; color: #fecaca; }
