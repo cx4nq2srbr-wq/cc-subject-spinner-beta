@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cc-spinner-v3.1.3'; // Increment this (v1.1, v1.2) to force an update
+const CACHE_NAME = 'cc-spinner-v3.1.5'; // Increment this (v1.1, v1.2) to force an update
 const ASSETS = [
   './',
   './index.html',
