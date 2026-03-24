@@ -731,7 +731,8 @@ function openPicker(type) {
         grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))';
         subjects.forEach((s, i) => {
             const btn = document.createElement('button');
-            btn.style.cssText = `padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; border: 2px solid #cce7ff; background: ${i === reviewSubjectIdx ? 'var(--secondary)' : '#f0f7ff'}; color: ${i === reviewSubjectIdx ? 'white' : 'var(--secondary)'};`;
+            // THE FIX: Using clean CSS classes instead of hardcoded inline styles!
+            btn.className = `picker-btn ${i === reviewSubjectIdx ? 'selected' : ''}`;
             btn.innerHTML = `${subjectIcons[s]} ${s}`;
             btn.onclick = () => selectPickerItem(i);
             grid.appendChild(btn);
@@ -741,7 +742,8 @@ function openPicker(type) {
         grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(60px, 1fr))';
         weeks.forEach((w, i) => {
             const btn = document.createElement('button');
-            btn.style.cssText = `padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; border: 2px solid #cce7ff; background: ${i === reviewWeekIdx ? 'var(--secondary)' : '#f0f7ff'}; color: ${i === reviewWeekIdx ? 'white' : 'var(--secondary)'};`;
+            // THE FIX: Same clean class logic here!
+            btn.className = `picker-btn ${i === reviewWeekIdx ? 'selected' : ''}`;
             btn.textContent = w;
             btn.onclick = () => selectPickerItem(i);
             grid.appendChild(btn);
