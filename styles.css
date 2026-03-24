@@ -691,9 +691,9 @@ body.dark-mode .toggle-switch.on { background-color: #34c759; }
     bottom: 0;
     left: 0;
     right: 0;
-    height: calc(65px + env(safe-area-inset-bottom, 0px));
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    box-sizing: border-box;   
+    height: 65px;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-sizing: content-box; 
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
