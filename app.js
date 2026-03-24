@@ -72,6 +72,8 @@ let allowedWeeks = localStorage.getItem(getPrefix() + 'ccAllowedWeeks') ?
 let blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ? 
                    JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks')) : [];
 
+let blockedSubjects = localStorage.getItem(getPrefix() + 'ccBlockedSubjects') ? 
+                   JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects')) : [];
 let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
 
 // Global User Settings
@@ -114,7 +116,7 @@ function changeCycle(cycleNum) {
     
     // Reload cycle-specific progress
     gridState = localStorage.getItem(getPrefix() + 'ccSpinnerProgress') ? 
-                JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress')) : {};
+                   JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress')) : {};
     
     allowedWeeks = localStorage.getItem(getPrefix() + 'ccAllowedWeeks') ? 
                    JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks')) : [];
@@ -122,6 +124,8 @@ function changeCycle(cycleNum) {
     blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ? 
                    JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks')) : [];
     
+    blockedSubjects = localStorage.getItem(getPrefix() + 'ccBlockedSubjects') ? 
+                   JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects')) : [];               
     // If it's a fresh cycle, initialize it
     if (Object.keys(gridState).length === 0) {
         subjects.forEach(s => {
@@ -175,6 +179,7 @@ function saveToDevice() {
   localStorage.setItem(prefix + 'ccMaxWeek', String(getMaxWeek()));
   localStorage.setItem(prefix + 'ccAllowedWeeks', JSON.stringify(allowedWeeks));
   localStorage.setItem(prefix + 'ccBlockedWeeks', JSON.stringify(blockedWeeks));
+  localStorage.setItem(prefix + 'ccBlockedSubjects', JSON.stringify(blockedSubjects));
 }
 
 function updateVh() { 
@@ -196,7 +201,7 @@ function spinBoth() {
 
   const maxWeekLimit = getMaxWeek();
   const availableSubjects = subjects.filter(s =>
-    weeks.some(w => (w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w])
+    !blockedSubjects.includes(s) && weeks.some(w => (w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w])
   );
 
   if (availableSubjects.length === 0) {
@@ -276,7 +281,7 @@ function spinBoth() {
       buildGrid(); 
       
       const remaining = subjects.some(s =>
-        weeks.some(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[s][w])
+        !blockedSubjects.includes(s) && weeks.some(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[s][w])
       );
       if (!remaining) {
         setSpinLabel('Done');
@@ -494,12 +499,11 @@ function buildGrid(){
   let html = `<table><colgroup><col style="width:48px">`;
   subjects.forEach(() => { html += `<col style="width:${subjectWidth}px">`; });
   
-  // THE FIX: Hardcoding the 'top-header' class so Safari doesn't have to guess
   html += '</colgroup><thead><tr><th class="top-header empty-header"></th>';
   
   subjects.forEach(s => { 
-    // NEW: If all weeks in a subject are false, turn the subject header RED
-    const isSubjectBlocked = weeks.every(w => !gridState[s][w]);
+    // THE FIX: Check the new blockedSubjects memory bank!
+    const isSubjectBlocked = blockedSubjects.includes(s);
     const subClass = isSubjectBlocked ? "subjectHeader top-header blocked-header" : "subjectHeader top-header";
     
     html += `<th class="${subClass}" onclick="toggleSubject('${s}')"><span>${s}</span></th>`; 
@@ -515,8 +519,8 @@ function buildGrid(){
     subjects.forEach(s => {
       let cls = "";
       
-      // THE FIX: If blocked, turned off, or past max week, turn the cell GREY (.completed)
-      if (isBlocked || !gridState[s][w] || (w > maxWeek && !isAllowed)) {
+      // THE FIX: If the subject is in the blocked bank, turn the cell grey!
+      if (isBlocked || blockedSubjects.includes(s) || !gridState[s][w] || (w > maxWeek && !isAllowed)) {
           cls = "completed";
       } else if (isAllowed && w > maxWeek) {
           cls = "override";
@@ -531,7 +535,16 @@ function buildGrid(){
 }
 
 function toggleCell(s,w){ gridState[s][w] = !gridState[s][w]; buildGrid(); }
-function toggleSubject(s){ const anyOn = weeks.some(w => gridState[s][w]); weeks.forEach(w => gridState[s][w] = !anyOn); buildGrid(); }
+
+// THE FIX: Add or remove from the memory bank instead of deleting gridState progress!
+function toggleSubject(s){ 
+    const idx = blockedSubjects.indexOf(s);
+    if (idx !== -1) blockedSubjects.splice(idx, 1);
+    else blockedSubjects.push(s);
+    saveToDevice();
+    buildGrid(); 
+}
+
 function toggleWeek(w){ const anyOn = subjects.some(s => gridState[s][w]); subjects.forEach(s => gridState[s][w] = !anyOn); buildGrid(); }
 
 function toggleAllowWeek(e, w) {
@@ -611,6 +624,7 @@ function resetGridConfirmed() {
   });
   allowedWeeks = [];
   blockedWeeks = [];
+  blockedSubjects = [];
   saveToDevice();
   buildGrid();
   
