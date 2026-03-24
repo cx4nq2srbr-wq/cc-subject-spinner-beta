@@ -58,7 +58,7 @@ input, button, select, textarea {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(74, 144, 226, 0.2);
   box-shadow: var(--shadow);
   overflow: hidden;
   flex-shrink: 0;      
