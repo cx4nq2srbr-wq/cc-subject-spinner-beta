@@ -981,3 +981,121 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+/* ==========================================================================
+   11. CHALLENGE MODES (Review Mistakes)
+   ========================================================================== */
+let mistakeQueue = [];
+let currentMistake = null;
+let isMistakeSpinning = false;
+
+function startMistakeReview() {
+    if (mistakesBank.length === 0) {
+        alert("Great job! Your mistakes bank is currently empty.");
+        return;
+    }
+
+    // Hide challenge menu, show game
+    document.getElementById('challengeContainer').classList.remove('active');
+    document.getElementById('mistakeGameContainer').classList.add('active');
+
+    // Shuffle the mistakes into a fresh deck for this session
+    mistakeQueue = [...mistakesBank].sort(() => Math.random() - 0.5);
+    
+    spinNextMistake();
+}
+
+function exitMistakeReview() {
+    document.getElementById('mistakeGameContainer').classList.remove('active');
+    document.getElementById('challengeContainer').classList.add('active');
+}
+
+function spinNextMistake() {
+    if (mistakeQueue.length === 0) {
+        finishMistakeReview();
+        return;
+    }
+
+    isMistakeSpinning = true;
+    currentMistake = mistakeQueue.shift(); // Pull the top card off the deck
+
+    document.getElementById('mistakesRemaining').textContent = `Remaining: ${mistakeQueue.length + 1}`;
+    
+    // Reset UI for the spin
+    document.getElementById('mistakeNeedsWorkBtn').disabled = true;
+    document.getElementById('mistakeCorrectBtn').disabled = true;
+    document.getElementById('mistakeNeedsWorkBtn').style.opacity = '0.5';
+    document.getElementById('mistakeCorrectBtn').style.opacity = '0.5';
+    document.getElementById('mistakePrompt').textContent = "";
+    document.getElementById('mistakeAnswerContent').innerHTML = "";
+    document.getElementById('mistakeAnswerContainer').classList.remove('open');
+    document.getElementById('toggleMistakeAnswer').textContent = '▼ Show Answer ▼';
+
+    // Animate the reels using your existing logic
+    const spinDuration = userSettings.turbo ? 500 : 1500;
+    const subItems = subjects.filter(s => s !== currentMistake.subject);
+    const subFill = [];
+    for(let i=0; i<10; i++) subFill.push(subItems[Math.floor(Math.random()*subItems.length)]);
+    
+    const weekFill = [];
+    for(let i=0; i<10; i++) weekFill.push("Week " + (Math.floor(Math.random()*24)+1));
+
+    spinReel("mistakeSubjectReel", subFill, currentMistake.subject, spinDuration);
+    spinReel("mistakeWeekReel", weekFill, "Week " + currentMistake.week, spinDuration + 300);
+
+    setTimeout(() => {
+        if (userSettings.haptics && navigator.vibrate) navigator.vibrate([40, 30, 40]);
+        playSound(988, 'triangle', 0.1, 0.03);
+        
+        const lesson = lessonData[currentMistake.subject][currentMistake.week];
+        document.getElementById('mistakePrompt').textContent = lesson.p;
+        document.getElementById('mistakeAnswerContent').innerHTML = lesson.a;
+
+        if (userSettings.autoReveal) {
+            toggleMistakeAnswerBtn();
+        }
+
+        document.getElementById('mistakeNeedsWorkBtn').disabled = false;
+        document.getElementById('mistakeCorrectBtn').disabled = false;
+        document.getElementById('mistakeNeedsWorkBtn').style.opacity = '1';
+        document.getElementById('mistakeCorrectBtn').style.opacity = '1';
+        isMistakeSpinning = false;
+
+    }, spinDuration + 500);
+}
+
+function toggleMistakeAnswerBtn() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    const container = document.getElementById('mistakeAnswerContainer');
+    const btn = document.getElementById('toggleMistakeAnswer');
+    container.classList.toggle('open');
+    btn.textContent = container.classList.contains('open') ? '▲ Hide Answer ▲' : '▼ Show Answer ▼';
+}
+
+function processMistake(isCorrect) {
+    if (isMistakeSpinning) return;
+    
+    if (isCorrect) {
+        // Remove it permanently from the phone's memory
+        const idx = mistakesBank.findIndex(m => m.subject === currentMistake.subject && m.week === currentMistake.week);
+        if (idx !== -1) mistakesBank.splice(idx, 1);
+        saveToDevice();
+    } else {
+        // Shove it to the back of the queue so they have to get it right before winning!
+        mistakeQueue.push(currentMistake);
+    }
+    
+    spinNextMistake();
+}
+
+function finishMistakeReview() {
+    playVictoryChime();
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
+    startConfetti();
+    
+    setTimeout(() => {
+        alert("Deck Cleared! You mastered your mistakes.");
+        stopConfetti();
+        exitMistakeReview();
+    }, 3500);
+}

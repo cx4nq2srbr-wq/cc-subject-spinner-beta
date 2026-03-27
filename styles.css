@@ -53,7 +53,7 @@ input, button, select, textarea {
 /* ==========================================================================
    3. UI COMPONENTS (Prompt & Answer Boxes)
    ========================================================================== */
-#prompt, #reviewPrompt, .slot {
+#prompt, #reviewPrompt, #mistakePrompt, .slot {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -65,7 +65,7 @@ input, button, select, textarea {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#prompt, #reviewPrompt {
+#prompt, #reviewPrompt, #mistakePrompt {
   display: flex; 
   align-items: center;
   justify-content: center;
@@ -88,7 +88,7 @@ input, button, select, textarea {
     #prompt, #reviewPrompt { font-size: 16px; padding: 12px; height: 110px; }
 }
 
-#answerContainer, #reviewAnswerContainer {
+#answerContainer, #reviewAnswerContainer, #mistakeAnswerContainer {
   width: 95%;
   max-width: 600px !important;
   margin: 12px auto;
@@ -104,19 +104,20 @@ input, button, select, textarea {
   transition: all 0.3s ease;
 }
 
-#answerContainer.open {
+#answerContainer.open, #mistakeAnswerContainer.open {
   border: 2px solid rgba(74, 144, 226, 0.4);
   transform: scale(1.01);
 }
 
 #answerContainer.open #answerContent, 
-#reviewAnswerContainer.open #reviewAnswerContent {
+#reviewAnswerContainer.open #reviewAnswerContent,
+#mistakeAnswerContainer.open #mistakeAnswerContent {
     max-height: 450px;
     padding: 20px;
     border-top: 1px solid rgba(0,0,0,0.05);
 }
 
-#toggleAnswer {
+#toggleAnswer, #toggleMistakeAnswer {
     width: 100%;
     padding: 18px;
     background-color: var(--secondary);
@@ -130,11 +131,11 @@ input, button, select, textarea {
     transition: background-color 0.2s ease;
 }
 
-#toggleAnswer:hover {
+#toggleAnswer:hover, #toggleMistakeAnswer:hover {
     background-color: #357abd;
 }
 
-#answerContent, #reviewAnswerContent {
+#answerContent, #reviewAnswerContent, #mistakeAnswerContent {
   padding: 0 20px;
   max-height: 0px;   
   overflow-y: auto;
@@ -662,9 +663,9 @@ body.dark-mode {
     color: #f8fafc;
 }
 
-body.dark-mode #prompt, body.dark-mode #reviewPrompt, 
+body.dark-mode #prompt, body.dark-mode #reviewPrompt, body.dark-mode #mistakePrompt,
 body.dark-mode .slot, body.dark-mode #answerContainer, 
-body.dark-mode #reviewAnswerContainer, body.dark-mode .review-slot {
+body.dark-mode #reviewAnswerContainer, body.dark-mode #mistakeAnswerContainer, body.dark-mode .review-slot {
     background: rgba(30, 41, 59, 0.9);
     border-color: rgba(255, 255, 255, 0.1);
 }
@@ -675,10 +676,9 @@ body.dark-mode .review-slot::before {
 }
 body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #334155, #1e293b); color: #f8fafc; }
 
-body.dark-mode #answerContent, body.dark-mode #reviewAnswerContent { color: #cbd5e1; }
-
-body.dark-mode #answerContent b, body.dark-mode #reviewAnswerContent b,
-body.dark-mode #answerContent strong, body.dark-mode #reviewAnswerContent strong {
+body.dark-mode #answerContent, body.dark-mode #reviewAnswerContent, body.dark-mode #mistakeAnswerContent { color: #cbd5e1; }
+body.dark-mode #answerContent b, body.dark-mode #reviewAnswerContent b, body.dark-mode #mistakeAnswerContent b,
+body.dark-mode #answerContent strong, body.dark-mode #reviewAnswerContent strong, body.dark-mode #mistakeAnswerContent strong {
     color: #ffffff; font-weight: 800;
 }
 
