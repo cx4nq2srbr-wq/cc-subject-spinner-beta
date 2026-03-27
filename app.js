@@ -67,13 +67,17 @@ let gridState = localStorage.getItem(getPrefix() + 'ccSpinnerProgress') ?
                 JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress')) : {};
 
 let allowedWeeks = localStorage.getItem(getPrefix() + 'ccAllowedWeeks') ? 
-                   JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks')) : [];
+                JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks')) : [];
 
 let blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ? 
-                   JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks')) : [];
+                JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks')) : [];
 
 let blockedSubjects = localStorage.getItem(getPrefix() + 'ccBlockedSubjects') ? 
-                   JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects')) : [];
+                JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects')) : [];
+
+let mistakesBank = localStorage.getItem(getPrefix() + 'ccMistakesBank') ? 
+                JSON.parse(localStorage.getItem(getPrefix() + 'ccMistakesBank')) : [];
+
 let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
 
 // Global User Settings
@@ -126,7 +130,10 @@ function changeCycle(cycleNum) {
     
     blockedSubjects = localStorage.getItem(getPrefix() + 'ccBlockedSubjects') ? 
                    JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects')) : [];               
-    // If it's a fresh cycle, initialize it
+    
+    mistakesBank = localStorage.getItem(getPrefix() + 'ccMistakesBank') ? 
+                   JSON.parse(localStorage.getItem(getPrefix() + 'ccMistakesBank')) : [];
+
     if (Object.keys(gridState).length === 0) {
         subjects.forEach(s => {
             gridState[s] = {};
@@ -180,6 +187,7 @@ function saveToDevice() {
   localStorage.setItem(prefix + 'ccAllowedWeeks', JSON.stringify(allowedWeeks));
   localStorage.setItem(prefix + 'ccBlockedWeeks', JSON.stringify(blockedWeeks));
   localStorage.setItem(prefix + 'ccBlockedSubjects', JSON.stringify(blockedSubjects));
+  localStorage.setItem(prefix + 'ccMistakesBank', JSON.stringify(mistakesBank));
 }
 
 function updateVh() { 
@@ -217,6 +225,8 @@ function spinBoth() {
   toggleBtn.disabled = true;
   undoBtn.disabled = true;
   
+  document.getElementById('flagBtn').disabled = true;
+
   toggleBtn.textContent = '▼ Show Answer ▼';
   document.getElementById('answerContainer').classList.remove('open');
   ansDiv.textContent = "";
@@ -296,7 +306,8 @@ function spinBoth() {
       isSpinning = false;
       spinBtn.disabled = false;
       toggleBtn.disabled = false;
-      undoBtn.disabled = false; 
+      undoBtn.disabled = false;
+      updateFlagUI();
     }
   }, finalTimeout);
 }
@@ -406,8 +417,42 @@ function undoLastSpin() {
     document.getElementById('undoBtn').disabled = true;
     
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
+    updateFlagUI();
     saveToDevice();
     buildGrid();
+}
+
+// NEW: Flagging Logic
+function toggleMistake() {
+    if (!lastSpun) return;
+    
+    // Check if the current lesson is already in the bank
+    const idx = mistakesBank.findIndex(m => m.subject === lastSpun.subject && m.week === lastSpun.week);
+    
+    if (idx !== -1) {
+        mistakesBank.splice(idx, 1); // Remove it
+    } else {
+        mistakesBank.push({ subject: lastSpun.subject, week: lastSpun.week }); // Add it
+        if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 50, 20]); // Double buzz!
+    }
+    
+    saveToDevice();
+    updateFlagUI();
+}
+
+function updateFlagUI() {
+    const flagBtn = document.getElementById('flagBtn');
+    if (!flagBtn) return;
+
+    if (!lastSpun) {
+        flagBtn.disabled = true;
+        flagBtn.classList.remove('flagged');
+        return;
+    }
+
+    flagBtn.disabled = false;
+    const isFlagged = mistakesBank.some(m => m.subject === lastSpun.subject && m.week === lastSpun.week);
+    flagBtn.classList.toggle('flagged', isFlagged);
 }
 
 /* ==========================================================================

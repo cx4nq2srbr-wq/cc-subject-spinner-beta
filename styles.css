@@ -271,7 +271,42 @@ button:disabled svg text {
     fill: rgba(255, 255, 255, 0.5);
     transition: fill 0.3s ease;
 }
-  
+
+/* NEW: Needs Work Flag Button */
+#flagBtn {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    border: 2px solid var(--secondary);
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--secondary);
+    cursor: pointer;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-bottom: 18px; /* Lifts it visually between the corner buttons */
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+#flagBtn svg { width: 24px; height: 24px; }
+
+#flagBtn.flagged {
+    background: #ef4444; 
+    border-color: #ef4444;
+    color: white;
+    transform: scale(1.05);
+}
+
+#flagBtn:disabled {
+    opacity: 0; 
+    pointer-events: none;
+    transform: scale(0.8);
+}
+
 /* ==========================================================================
    6. LESSONS GRID VIEW & CONTROLS
    ========================================================================== */
@@ -682,6 +717,9 @@ body.dark-mode .setting-text h4 { color: #f8fafc; }
 body.dark-mode .setting-text p { color: #94a3b8; }
 body.dark-mode .toggle-switch { background-color: #475569; }
 body.dark-mode .toggle-switch.on { background-color: #34c759; }
+
+body.dark-mode #flagBtn { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+body.dark-mode #flagBtn.flagged { background: #7f1d1d; border-color: #ef4444; color: #f8fafc; }
 
 /* ==========================================================================
    11. BOTTOM NAVIGATION BAR
