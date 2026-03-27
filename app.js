@@ -11,7 +11,8 @@ function switchMode(mode) {
     document.getElementById('reviewContainer').classList.toggle('active', mode === 'review');
     document.getElementById('gridContainer').classList.toggle('active', mode === 'grid');
     document.getElementById('settingsContainer').classList.toggle('active', mode === 'settings');
-
+    document.getElementById('challengeContainer').classList.toggle('active', mode === 'challenge');
+    
     // Handle nav bar highlighting
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
     const activeNav = document.getElementById('nav-' + mode);
