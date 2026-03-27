@@ -77,13 +77,13 @@ let blockedSubjects = localStorage.getItem(getPrefix() + 'ccBlockedSubjects') ?
 let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
 
 // Global User Settings
-let userSettings = JSON.parse(localStorage.getItem('appSettings')) || {
+let userSettings = Object.assign({
     muted: false,
     haptics: true,
     turbo: false,
     autoReveal: false,
-    darkMode: false,
-};
+    darkMode: false
+}, JSON.parse(localStorage.getItem('appSettings')) || {});
 
 function anyLessonsRemaining() {
   const maxWeek = getMaxWeek();
@@ -569,20 +569,20 @@ function bindWeekHeaderHandlers(){
    ========================================================================== */
 
 function updateSettingsIcons() {
-    // Toggle the iOS Sliders
+    // THE FIX: Use strict booleans (!!) so the sliders never "blindly flip"
     document.getElementById('switch-sound').classList.toggle('on', !userSettings.muted);
-    document.getElementById('switch-haptics').classList.toggle('on', userSettings.haptics);
-    document.getElementById('switch-turbo').classList.toggle('on', userSettings.turbo);
-    document.getElementById('switch-reveal').classList.toggle('on', userSettings.autoReveal);
-    document.getElementById('switch-dark').classList.toggle('on', userSettings.darkMode);
+    document.getElementById('switch-haptics').classList.toggle('on', !!userSettings.haptics);
+    document.getElementById('switch-turbo').classList.toggle('on', !!userSettings.turbo);
+    document.getElementById('switch-reveal').classList.toggle('on', !!userSettings.autoReveal);
+    document.getElementById('switch-dark').classList.toggle('on', !!userSettings.darkMode);
 
     if(!navigator.vibrate) {
         const hapticsRow = document.getElementById('row-haptics');
         if(hapticsRow) hapticsRow.style.display = 'none';
     }
 
-    document.documentElement.classList.toggle('dark-mode', userSettings.darkMode);
-    document.body.classList.toggle('dark-mode', userSettings.darkMode);
+    document.documentElement.classList.toggle('dark-mode', !!userSettings.darkMode);
+    document.body.classList.toggle('dark-mode', !!userSettings.darkMode);
 }
 
 function toggleSound() { userSettings.muted = !userSettings.muted; saveSettings(); updateSettingsIcons(); }
@@ -685,14 +685,14 @@ function handleReelScroll(e) {
         
         if (el.id === 'scrollSubject' && reviewSubjectIdx !== idx) {
             reviewSubjectIdx = Math.max(0, Math.min(idx, subjects.length - 1));
-            localStorage.setItem('reviewSubjectIdx', reviewSubjectIdx); // SAVE HERE
             updateReviewDisplay();
-            if(userSettings.haptics) navigator.vibrate(10);
+            // THE FIX: Added navigator.vibrate safety check for iOS
+            if(userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
         } else if (el.id === 'scrollWeek' && reviewWeekIdx !== idx) {
             reviewWeekIdx = Math.max(0, Math.min(idx, weeks.length - 1));
-            localStorage.setItem('reviewWeekIdx', reviewWeekIdx); // SAVE HERE
             updateReviewDisplay();
-            if(userSettings.haptics) navigator.vibrate(10);
+            // THE FIX: Added navigator.vibrate safety check for iOS
+            if(userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
         }
     }, 150);
 }
@@ -759,13 +759,12 @@ function closePicker() {
 function selectPickerItem(idx) {
     if (currentPickerType === 'subject') {
         reviewSubjectIdx = idx;
-        localStorage.setItem('reviewSubjectIdx', idx); // SAVE HERE
     } else {
         reviewWeekIdx = idx;
-        localStorage.setItem('reviewWeekIdx', idx); // SAVE HERE
     }
     updateReviewDisplay();
-    if(userSettings.haptics) navigator.vibrate(20);
+    // THE FIX: Safely check for vibration support so iOS doesn't crash before closing the menu
+    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(20);
     closePicker();
 }
 
