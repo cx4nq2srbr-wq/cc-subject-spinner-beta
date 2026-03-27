@@ -854,8 +854,8 @@ function hideDoneOverlay() {
     overlay.style.pointerEvents = 'none'; 
 }
 
-function startConfetti() {
-    const canvas = document.getElementById('confettiCanvas');
+function startConfetti(canvasId = 'confettiCanvas') {
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     isConfettiStopping = false;
@@ -923,7 +923,7 @@ function startConfetti() {
     confettiAnimationId = requestAnimationFrame(frame);
 }
 
-function stopConfetti() {
+function stopConfetti(canvasId = 'confettiCanvas') {
     if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
     confettiAnimationId = null;
     confettiParticles = null;
@@ -933,19 +933,22 @@ function stopConfetti() {
         confettiResizeHandler = null;
     }
     
-    const canvas = document.getElementById('confettiCanvas');
+    const canvas = document.getElementById(canvasId);
     if (canvas) {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    const overlay = document.getElementById('doneOverlay');
-    if (overlay) {
-        overlay.style.display = 'none';
-        overlay.style.background = 'rgba(0,0,0,0.45)';
-        overlay.style.pointerEvents = 'auto';
-        const box = overlay.querySelector('.doneBox');
-        if (box) box.style.display = 'block';
+    // Only hide the Main Grid doneOverlay if we are running the main game confetti
+    if (canvasId === 'confettiCanvas') {
+        const overlay = document.getElementById('doneOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+            overlay.style.background = 'rgba(0,0,0,0.45)';
+            overlay.style.pointerEvents = 'auto';
+            const box = overlay.querySelector('.doneBox');
+            if (box) box.style.display = 'block';
+        }
     }
 }
 
@@ -1098,4 +1101,164 @@ function finishMistakeReview() {
         stopConfetti();
         exitMistakeReview();
     }, 3500);
+}
+
+/* ==========================================================================
+   12. CHALLENGE MODES (Time Attack)
+   ========================================================================== */
+let taTimer = null;
+let taTimeLeft = 0;
+let taScoreRight = 0;
+let taScoreWrong = 0;
+let taAvailable = [];
+let taCurrent = null;
+
+function openTimeAttackMenu() {
+    document.getElementById('challengeContainer').classList.remove('active');
+    document.getElementById('taMenuContainer').classList.add('active');
+    
+    const reel = document.getElementById('taMinuteReel');
+    if (reel.innerHTML === "") {
+        for(let i=1; i<=15; i++) {
+            const div = document.createElement("div");
+            div.textContent = i;
+            reel.appendChild(div);
+        }
+        // Snap the wheel to 3 minutes by default
+        setTimeout(() => { document.getElementById('taMinuteScroll').scrollTo({ top: 160, behavior: 'auto' }); }, 50); 
+    }
+}
+
+function exitTimeAttackMenu() {
+    document.getElementById('taMenuContainer').classList.remove('active');
+    document.getElementById('challengeContainer').classList.add('active');
+}
+
+function startTimeAttack() {
+    const scroll = document.getElementById('taMinuteScroll');
+    const minutes = Math.round(scroll.scrollTop / 80) + 1; // +1 because index 0 is 1 minute
+    
+    taTimeLeft = minutes * 60;
+    taScoreRight = 0;
+    taScoreWrong = 0;
+    document.getElementById('taScoreRight').textContent = "0";
+    document.getElementById('taScoreWrong').textContent = "0";
+    updateTATimerUI();
+
+    // Build the giant flashcard deck from all allowed grid spaces
+    taAvailable = [];
+    const maxLimit = getMaxWeek();
+    subjects.forEach(s => {
+        if (blockedSubjects.includes(s)) return;
+        weeks.forEach(w => {
+            if ((w <= maxLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) {
+                taAvailable.push({ subject: s, week: w });
+            }
+        });
+    });
+
+    if (taAvailable.length === 0) {
+        alert("No lessons available! Check your grid settings.");
+        return;
+    }
+
+    document.getElementById('taMenuContainer').classList.remove('active');
+    document.getElementById('taGameContainer').classList.add('active');
+    
+    nextTAQuestion();
+    taTimer = setInterval(tickTATimer, 1000);
+}
+
+function tickTATimer() {
+    taTimeLeft--;
+    updateTATimerUI();
+    if (taTimeLeft <= 0) {
+        endTimeAttack();
+    }
+}
+
+function updateTATimerUI() {
+    const m = Math.floor(taTimeLeft / 60).toString().padStart(2, '0');
+    const s = (taTimeLeft % 60).toString().padStart(2, '0');
+    document.getElementById('taTimerDisplay').textContent = `${m}:${s}`;
+}
+
+function nextTAQuestion() {
+    if (taAvailable.length === 0) {
+        endTimeAttack(); // Triggered if they literally answer every single question
+        return;
+    }
+
+    const randIdx = Math.floor(Math.random() * taAvailable.length);
+    taCurrent = taAvailable[randIdx];
+    const lesson = lessonData[taCurrent.subject][taCurrent.week];
+
+    document.getElementById('taSubjectLabel').textContent = `${subjectIcons[taCurrent.subject]} ${taCurrent.subject} - Week ${taCurrent.week}`;
+    document.getElementById('taPrompt').textContent = lesson.p;
+    document.getElementById('taAnswerContent').innerHTML = lesson.a;
+
+    const container = document.getElementById('taAnswerContainer');
+    container.classList.remove('open');
+    document.getElementById('toggleTAAnswer').textContent = '▼ Show Answer ▼';
+}
+
+function toggleTAAnswerBtn() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    const container = document.getElementById('taAnswerContainer');
+    const btn = document.getElementById('toggleTAAnswer');
+    container.classList.toggle('open');
+    btn.textContent = container.classList.contains('open') ? '▲ Hide Answer ▲' : '▼ Show Answer ▼';
+}
+
+function processTA(isCorrect) {
+    if (taTimeLeft <= 0) return; // Prevent ghost clicks
+    
+    if (isCorrect) {
+        taScoreRight++;
+        document.getElementById('taScoreRight').textContent = taScoreRight;
+    } else {
+        taScoreWrong++;
+        document.getElementById('taScoreWrong').textContent = taScoreWrong;
+        
+        // Push the mistake directly into the Mistakes Bank for them to review later!
+        const idx = mistakesBank.findIndex(m => m.subject === taCurrent.subject && m.week === taCurrent.week);
+        if (idx === -1) {
+            mistakesBank.push({ subject: taCurrent.subject, week: taCurrent.week });
+            saveToDevice();
+            updateFlagUI(); // Keep the main spinner flag synced
+        }
+    }
+    
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
+    nextTAQuestion(); // Instant swap!
+}
+
+function quitTimeAttack() {
+    clearInterval(taTimer);
+    document.getElementById('taGameContainer').classList.remove('active');
+    document.getElementById('challengeContainer').classList.add('active');
+}
+
+function endTimeAttack() {
+    clearInterval(taTimer);
+    playVictoryChime();
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
+    
+    const total = taScoreRight + taScoreWrong;
+    const accuracy = total > 0 ? Math.round((taScoreRight / total) * 100) : 0;
+    
+    document.getElementById('taFinalScore').textContent = `${taScoreRight} / ${total}`;
+    document.getElementById('taAccuracy').textContent = `Accuracy: ${accuracy}%`;
+    
+    document.getElementById('taResultsOverlay').style.display = 'flex';
+    
+    // FIRE THE CONFETTI ON THE NEW CANVAS!
+    startConfetti('taConfettiCanvas');
+}
+
+function closeTAResults() {
+    stopConfetti('taConfettiCanvas');
+    document.getElementById('taResultsOverlay').style.display = 'none';
+    document.getElementById('taGameContainer').classList.remove('active');
+    document.getElementById('challengeContainer').classList.add('active');
 }

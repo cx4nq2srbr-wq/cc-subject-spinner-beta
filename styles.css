@@ -721,6 +721,11 @@ body.dark-mode .toggle-switch.on { background-color: #34c759; }
 body.dark-mode #flagBtn { background: #1e293b; border-color: #475569; color: #cbd5e1; }
 body.dark-mode #flagBtn.flagged { background: #7f1d1d; border-color: #ef4444; color: #f8fafc; }
 
+body.dark-mode #taPrompt, body.dark-mode #taAnswerContainer { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }
+body.dark-mode #taAnswerContent { color: #cbd5e1; }
+body.dark-mode #taAnswerContent b, body.dark-mode #taAnswerContent strong { color: #ffffff; font-weight: 800; }
+body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
+
 /* ==========================================================================
    11. BOTTOM NAVIGATION BAR
    ========================================================================== */
@@ -824,3 +829,34 @@ body.dark-mode #flagBtn.flagged { background: #7f1d1d; border-color: #ef4444; co
 }
 
 .toggle-switch.on .toggle-knob { transform: translateX(20px); }
+
+/* ==========================================================================
+   13. TIME ATTACK STYLES
+   ========================================================================== */
+#taPrompt {
+    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius); border: 2px solid rgba(74, 144, 226, 0.2); box-shadow: var(--shadow);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    width: 95%; max-width: 600px !important; height: 120px; overflow-y: auto; margin: 12px auto; padding: 18px;
+    box-sizing: border-box; font-size: 19px; font-weight: 600; transition: border-color 0.3s ease;
+}
+
+#taAnswerContainer {
+    width: 95%; max-width: 600px !important; margin: 12px auto; box-sizing: border-box;
+    background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius); border: 2px solid rgba(74, 144, 226, 0.2); box-shadow: var(--shadow);
+    overflow: hidden; transition: all 0.3s ease;
+}
+
+#taAnswerContainer.open { border: 2px solid rgba(74, 144, 226, 0.4); transform: scale(1.01); }
+#taAnswerContainer.open #taAnswerContent { max-height: 450px; padding: 20px; border-top: 1px solid rgba(0,0,0,0.05); }
+
+#toggleTAAnswer {
+    width: 100%; padding: 18px; background-color: var(--secondary); color: white; border: none;
+    font-family: inherit; font-size: 16px; font-weight: 800; text-transform: uppercase; cursor: pointer;
+}
+
+#taAnswerContent {
+    padding: 0 20px; max-height: 0px; overflow-y: auto; transition: all 0.3s ease;
+    color: var(--text-muted); font-size: 17px; white-space: pre-wrap; text-align: center; box-sizing: border-box;
+}
