@@ -4,16 +4,37 @@
 let currentMode = 'spinner'; 
 
 function switchMode(mode) {
-    currentMode = mode;
-    
-    // Toggle actual pages
+    // Toggle actual main pages
     document.getElementById('spinnerContainer').classList.toggle('active', mode === 'spinner');
     document.getElementById('reviewContainer').classList.toggle('active', mode === 'review');
     document.getElementById('gridContainer').classList.toggle('active', mode === 'grid');
     document.getElementById('settingsContainer').classList.toggle('active', mode === 'settings');
 
-    const challengeTab = document.getElementById('challengeContainer');
-    if (challengeTab) challengeTab.classList.toggle('active', mode === 'challenge');    
+    // Handle Challenge sub-pages (Fixes the overlap!)
+    const challengeIds = ['challengeContainer', 'taMenuContainer', 'taGameContainer', 'mistakeGameContainer'];
+    
+    if (mode === 'challenge') {
+        // Reactivate the specific challenge page they left off on
+        const target = document.getElementById(activeChallengePage);
+        if (target) target.classList.add('active');
+        
+        // Trigger the finishing popup if the timer ran out while they were away
+        if (pendingTAFinish) {
+            endTimeAttack();
+            pendingTAFinish = false;
+        }
+    } else {
+        // Save which challenge page is currently open, then hide it
+        challengeIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.classList.contains('active')) {
+                activeChallengePage = id; // Remember for later
+                el.classList.remove('active');
+            }
+        });
+    }
+
+    currentMode = mode;
     
     // Handle nav bar highlighting
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
@@ -27,6 +48,8 @@ function switchMode(mode) {
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let isSpinning = false;
+let activeChallengePage = 'challengeContainer'; // Remembers if they were in a menu or a game
+let pendingTAFinish = false; // Flags if the timer hit 0 on another tab
 let lastSpun = null; // The one we just spun (the "mistake")
 let previousSpun = null;  // The one BEFORE that (the "rewind destination")
 
@@ -1172,8 +1195,17 @@ function startTimeAttack() {
 function tickTATimer() {
     taTimeLeft--;
     updateTATimerUI();
+    
     if (taTimeLeft <= 0) {
-        endTimeAttack();
+        clearInterval(taTimer); // Stop the timer from going into negatives
+        
+        // Check if they are currently looking at the challenge tab
+        if (currentMode === 'challenge') {
+            endTimeAttack();
+        } else {
+            // Flag it so the popup waits until they return
+            pendingTAFinish = true; 
+        }
     }
 }
 
