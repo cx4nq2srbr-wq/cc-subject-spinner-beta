@@ -1153,7 +1153,7 @@ function openTimeAttackMenu() {
     
     const reel = document.getElementById('taMinuteReel');
     if (reel.innerHTML === "") {
-        for(let i=1; i<=15; i++) {
+        for(let i=1; i<=30; i++) {
             const div = document.createElement("div");
             div.textContent = i;
             reel.appendChild(div);
