@@ -4,6 +4,7 @@
 let currentMode = 'spinner'; 
 
 function switchMode(mode) {
+    stopVoiceover();
     // Toggle actual main pages
     document.getElementById('spinnerContainer').classList.toggle('active', mode === 'spinner');
     document.getElementById('reviewContainer').classList.toggle('active', mode === 'review');
@@ -227,6 +228,7 @@ updateVh();
    ========================================================================== */
 
 function spinBoth() {
+    stopVoiceover();
   if (getSpinLabel().toLowerCase() === 'done') { finishLesson(); return; }
   if (getSpinLabel() === "Reset") { showResetConfirm(); return; }
 
@@ -296,6 +298,8 @@ function spinBoth() {
       promptDiv.textContent = lesson.p;
       ansDiv.innerHTML = lesson.a;
       
+      prepVoiceover(subject, week, 'audioBtnMain');
+
       // Handle Auto-Reveal
       if (userSettings.autoReveal) {
           document.getElementById('answerContainer').classList.add('open');
@@ -385,6 +389,7 @@ function toggleAnswer() {
 }
 
 function undoLastSpin() {
+    stopVoiceover();
     if (!lastSpun) return;
 
     // 1. Put the "mistake" back on the grid
@@ -418,6 +423,8 @@ function undoLastSpin() {
         });
 
         void subReel.offsetHeight; 
+        
+        prepVoiceover(previousSpun.subject, previousSpun.week, 'audioBtnMain');
 
         subReel.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
         weekReel.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
@@ -785,6 +792,8 @@ function updateReviewDisplay() {
 
     document.getElementById('reviewPrompt').textContent = lesson.p;
     document.getElementById('reviewAnswerContent').innerHTML = lesson.a;
+
+    prepVoiceover(subject, week, 'audioBtnReview');
 }
 
 // --- Quick Picker Modal Logic ---
@@ -1087,6 +1096,7 @@ function spinNextMistake() {
         document.getElementById('mistakeCorrectBtn').style.opacity = '1';
         isMistakeSpinning = false;
 
+        prepVoiceover(currentMistake.subject, currentMistake.week, 'audioBtnMistake');
     }, spinDuration + 500);
 }
 
@@ -1232,6 +1242,8 @@ function nextTAQuestion() {
     const container = document.getElementById('taAnswerContainer');
     container.classList.remove('open');
     document.getElementById('toggleTAAnswer').textContent = '▼ Show Answer ▼';
+    
+    prepVoiceover(taCurrent.subject, taCurrent.week, 'audioBtnTA');
 }
 
 function toggleTAAnswerBtn() {
@@ -1293,4 +1305,90 @@ function closeTAResults() {
     document.getElementById('taResultsOverlay').style.display = 'none';
     document.getElementById('taGameContainer').classList.remove('active');
     document.getElementById('challengeContainer').classList.add('active');
+}
+
+/* ==========================================================================
+   13. VOICEOVER AUDIO ENGINE
+   ========================================================================== */
+const voiceAudio = new Audio();
+let activeVoiceBtn = null;
+let currentVoiceUrl = "";
+
+// When the audio finishes naturally, flip the pause button back to a play button
+voiceAudio.addEventListener('ended', () => {
+    if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
+    activeVoiceBtn = null;
+});
+
+function prepVoiceover(subject, week, btnId) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    
+    // Reset state
+    btn.style.display = 'none';
+    setAudioIcon(btnId, false);
+    
+    // Construct the file name (e.g., "Math" -> "math", "Timeline" -> "timeline")
+    const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const url = `audio/c${currentCycle}-${cleanSubject}-w${week}.mp3`;
+    
+    // "Ping" the server to see if the file exists without downloading it
+    fetch(url, { method: 'HEAD' })
+        .then(res => {
+            if (res.ok) {
+                btn.dataset.url = url;
+                btn.style.display = 'flex'; // It exists! Show the button.
+                setAudioIcon(btnId, false);
+            }
+        })
+        .catch(e => { /* File missing, keep button hidden */ });
+}
+
+function toggleVoiceover(e, btnId) {
+    if (e) e.stopPropagation(); // Prevents the Answer card from toggling open/closed!
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    
+    const targetUrl = btn.dataset.url;
+    
+    // If clicking the currently playing button, pause it
+    if (activeVoiceBtn === btnId && !voiceAudio.paused) {
+        voiceAudio.pause();
+        setAudioIcon(btnId, false);
+        return;
+    }
+    
+    // If playing a new file, load it
+    if (currentVoiceUrl !== targetUrl) {
+        voiceAudio.src = targetUrl;
+        currentVoiceUrl = targetUrl;
+    }
+    
+    // Reset old button icon if switching to a new card
+    if (activeVoiceBtn && activeVoiceBtn !== btnId) {
+        setAudioIcon(activeVoiceBtn, false);
+    }
+    
+    voiceAudio.play().catch(err => console.error("Audio play failed:", err));
+    activeVoiceBtn = btnId;
+    setAudioIcon(btnId, true);
+}
+
+function setAudioIcon(btnId, isPlaying) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    if (isPlaying) {
+        // Pause Icon
+        btn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+    } else {
+        // Play Icon
+        btn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+    }
+}
+
+function stopVoiceover() {
+    if (!voiceAudio.paused) {
+        voiceAudio.pause();
+        if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
+    }
 }

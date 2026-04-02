@@ -34,6 +34,7 @@
 
   <div id="answerContainer">
     <button id="toggleAnswer" onclick="toggleAnswer()">▼ Show Answer ▼</button>
+    <button id="audioBtnMain" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnMain')"></button>
     <div id="answerContent"></div>
   </div>
 
@@ -81,6 +82,7 @@
         
         <div id="reviewAnswerContainer">
             <div class="answer-header-static">ANSWER</div>
+            <button id="audioBtnReview" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnReview')"></button>
             <div id="reviewAnswerContent"></div>
         </div>
     </div>
@@ -153,6 +155,7 @@
 
     <div id="mistakeAnswerContainer">
         <button id="toggleMistakeAnswer" onclick="toggleMistakeAnswerBtn()">▼ Show Answer ▼</button>
+        <button id="audioBtnMistake" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnMistake')"></button>
         <div id="mistakeAnswerContent"></div>
     </div>
 
@@ -190,6 +193,7 @@
 
     <div id="taAnswerContainer">
         <button id="toggleTAAnswer" onclick="toggleTAAnswerBtn()">▼ Show Answer ▼</button>
+        <button id="audioBtnTA" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnTA')"></button>
         <div id="taAnswerContent"></div>
     </div>
 
