@@ -1378,10 +1378,12 @@ function setAudioIcon(btnId, isPlaying) {
     const btn = document.getElementById(btnId);
     if (!btn) return;
     if (isPlaying) {
-        // Pause Icon
+        // Add the playing class (turns the circle red) and show Pause Icon
+        btn.classList.add('playing');
         btn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
     } else {
-        // Play Icon
+        // Remove the playing class and show Play Icon
+        btn.classList.remove('playing');
         btn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
     }
 }

@@ -309,27 +309,54 @@ button:disabled svg text {
     transform: scale(0.8);
 }
 
-/* NEW: Voiceover Audio Button */
+/* NEW: Voiceover Audio Button (Circular UI) */
 .audio-btn {
     position: absolute;
-    top: 0;
-    right: 0;
-    height: 55px; /* Matches your header button height */
-    width: 65px;
-    background: transparent;
-    border: none;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%); /* Perfectly centers it vertically in the blue bar */
+    height: 42px;
+    width: 42px;
+    background: rgba(255, 255, 255, 0.25); /* Translucent white circle */
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%; /* Makes it a perfect circle */
     color: white;
-    display: none; /* Hidden until the app verifies the file exists! */
+    display: none; /* Hidden until the app verifies the file exists */
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 10;
-    transition: transform 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     -webkit-tap-highlight-color: transparent;
 }
 
-.audio-btn:active { transform: scale(0.85); }
-.audio-btn svg { width: 22px; height: 22px; fill: currentColor; }
+.audio-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.audio-btn:active { 
+    /* Keeps it perfectly centered even when shrinking on tap */
+    transform: translateY(-50%) scale(0.85); 
+}
+
+.audio-btn svg { 
+    width: 18px; 
+    height: 18px; 
+    fill: currentColor; 
+    margin-left: 3px; /* Optically centers the play triangle */
+    transition: margin 0.2s ease;
+}
+
+/* Turns red and resets centering when playing/paused */
+.audio-btn.playing {
+    background: #ef4444; 
+    border-color: #ef4444;
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
+}
+
+.audio-btn.playing svg {
+    margin-left: 0; 
+}
 /* ==========================================================================
    6. LESSONS GRID VIEW & CONTROLS
    ========================================================================== */
