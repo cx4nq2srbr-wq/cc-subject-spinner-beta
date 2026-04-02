@@ -1330,8 +1330,8 @@ function prepVoiceover(subject, week, btnId) {
     
     // Construct the file name (e.g., "Math" -> "math", "Timeline" -> "timeline")
     const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const url = `audio/c${currentCycle}-${cleanSubject}-w${week}.mp3`;
-    
+    const url = `audio/c${currentCycle}-${cleanSubject}-w${week}.m4a`;
+
     // "Ping" the server to see if the file exists without downloading it
     fetch(url, { method: 'HEAD' })
         .then(res => {
