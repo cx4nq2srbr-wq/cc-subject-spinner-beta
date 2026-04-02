@@ -312,7 +312,7 @@ button:disabled svg text {
 /* NEW: Voiceover Audio Button (Circular UI) */
 .audio-btn {
     position: absolute;
-    top: 50%;
+    top: 27px;
     right: 10px;
     transform: translateY(-50%); /* Perfectly centers it vertically in the blue bar */
     height: 42px;
