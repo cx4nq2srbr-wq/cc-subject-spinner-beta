@@ -735,9 +735,8 @@ body.dark-mode #gridContent, body.dark-mode .grid-controls-row { background: tra
 body.dark-mode #grid table { background: #020617; border-top-color: #64748b; border-left-color: #64748b; }
 body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #64748b; border-bottom-color: #64748b; }
 
-body.dark-mode #grid td { background: #1e293b; }
-body.dark-mode .completed { background: #020617 !important; color: #475569; }
-
+body.dark-mode #grid td { background: #020617; }
+body.dark-mode .completed { background: #1e293b !important; color: #64748b; }
 body.dark-mode #grid th.top-header { background: #1e293b; } 
 body.dark-mode #grid th.subjectHeader { background: #b45309; } 
 body.dark-mode #grid th.subjectHeader.blocked-header { background: #7f1d1d; } 
