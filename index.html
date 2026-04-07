@@ -127,15 +127,14 @@
     <h1 class="app-title" style="margin-top: 40px; margin-bottom: 20px;">Focus</h1>
     
     <div class="settings-menu">
-        <button class="setting-item" onclick="startMistakeReview()">
+        <button class="setting-item" onclick="startMistakeReview()" style="position: relative; overflow: visible;">
+            <span id="menuMistakeBadge" class="notification-badge" style="top: -8px; right: -8px; width: 24px; height: 24px; font-size: 12px;">0</span>
+            
             <div class="setting-text">
                 <h4>Review Mistakes</h4>
                 <p>Target the lessons that need work</p>
             </div>
-            <div style="font-size: 26px; position: relative;">
-                🎯
-                <span id="menuMistakeBadge" class="notification-badge" style="top: -8px; right: -8px; width: 22px; height: 22px; font-size: 12px;">0</span>
-            </div>
+            <div style="font-size: 26px;">🎯</div>
         </button>
         
         <button class="setting-item" onclick="openTimeAttackMenu()">
@@ -311,7 +310,7 @@
         <span>Review</span>
     </button>
     <button class="nav-item" id="nav-challenge" onclick="switchMode('challenge')" style="position: relative;">
-        <span id="navMistakeBadge" class="notification-badge" style="top: 2px; right: 15px;">0</span>
+        <span id="navMistakeBadge" class="notification-badge" style="top: 2px; right: 10px;">0</span>       
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         <span>Focus</span>
     </button> 
