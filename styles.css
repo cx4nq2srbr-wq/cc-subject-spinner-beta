@@ -651,51 +651,65 @@ button:disabled svg text {
     margin: 0 auto;
 }
 
-.review-controls {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin: 20px 0;
+.review-controls-new {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 95%;
+    max-width: 450px;
+    margin: 20px 0;
 }
 
-.ctrl-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
+.review-nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    border: 2px solid rgba(74, 144, 226, 0.2);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 4px;
 }
 
-.review-slot {
-    position: relative; 
+.review-nav-arrow {
+    background: transparent;
+    border: none;
+    color: var(--secondary);
+    padding: 10px;
     cursor: pointer;
-    overflow-y: auto;
-    scroll-snap-type: y mandatory;
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.review-slot::after { 
-    display: none; 
+.review-nav-arrow svg { width: 24px; height: 24px; }
+.review-nav-arrow:active { background: rgba(74, 144, 226, 0.1); transform: scale(0.95); }
+
+.review-nav-label {
+    flex: 1;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 10px;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.review-slot::before {
-    content: "";
-    position: -webkit-sticky;
-    position: sticky;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 80px;
-    background: linear-gradient(rgba(0,0,0,0.05) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.05) 100%);
-    pointer-events: none;
-    z-index: 5;
-    display: block;
-    margin-bottom: -80px; /* Pulls the reel text up underneath the shadow */
+#reviewContainer {
+    width: 100%; height: 100%; padding: 0; margin: 0; box-sizing: border-box; overflow: hidden;
 }
 
-.review-slot::-webkit-scrollbar { display: none; }
-.review-slot .reel { transition: none !important; transform: none !important; }
-.review-slot .reel div { height: 80px; scroll-snap-align: start; }
+#reviewContainer.active {
+    display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden;
+}
 
 #reviewContainer {
     width: 100%; height: 100%; padding: 0; margin: 0; box-sizing: border-box; overflow: hidden;
@@ -744,10 +758,9 @@ body.dark-mode #reviewAnswerContainer, body.dark-mode #mistakeAnswerContainer, b
 }
 
 body.dark-mode .slot::after { background: linear-gradient(rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%); }
-body.dark-mode .review-slot::before { 
-    background: linear-gradient(rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%); 
-}
 body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #334155, #1e293b); color: #f8fafc; }
+body.dark-mode .review-nav-row { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }
+body.dark-mode .review-nav-label { color: #f8fafc; }
 
 body.dark-mode #answerContent, body.dark-mode #reviewAnswerContent, body.dark-mode #mistakeAnswerContent { color: #cbd5e1; }
 body.dark-mode #answerContent b, body.dark-mode #reviewAnswerContent b, body.dark-mode #mistakeAnswerContent b,
@@ -791,7 +804,7 @@ body.dark-mode .toggle-switch { background-color: #475569; }
 body.dark-mode .toggle-switch.on { background-color: #34c759; }
 
 body.dark-mode #flagBtn, body.dark-mode #reviewFlagBtn { background: #1e293b; border-color: #475569; color: #cbd5e1; }
-body.dark-mode #flagBtn.flagged { background: #7f1d1d; border-color: #ef4444; color: #f8fafc; }
+body.dark-mode #flagBtn.flagged, body.dark-mode #reviewFlagBtn.flagged { background: #7f1d1d; border-color: #ef4444; color: #f8fafc; }
 body.dark-mode .notification-badge { border-color: rgba(15, 23, 42, 0.95); }
 
 body.dark-mode #taPrompt, body.dark-mode #taAnswerContainer { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }

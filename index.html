@@ -64,17 +64,25 @@
 
 <div id="reviewContainer" class="view-container">
     <div class="review-layout">
-        <div class="review-controls">
-            <div class="ctrl-group">
-                <div class="slot review-slot" id="scrollSubject" onclick="openPicker('subject')">
-                    <div class="reel" id="reviewSubjectReel"></div>
-                </div>
+        <div class="review-controls-new">
+            <div class="review-nav-row">
+                <button class="review-nav-arrow" onclick="changeReviewSubject(-1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button class="review-nav-label" onclick="openPicker('subject')" id="reviewSubjectLabel">🌍 Geography</button>
+                <button class="review-nav-arrow" onclick="changeReviewSubject(1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
             </div>
-
-            <div class="ctrl-group">
-                <div class="slot review-slot" id="scrollWeek" onclick="openPicker('week')">
-                    <div class="reel" id="reviewWeekReel"></div>
-                </div>
+            
+            <div class="review-nav-row">
+                <button class="review-nav-arrow" onclick="changeReviewWeek(-1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button class="review-nav-label" onclick="openPicker('week')" id="reviewWeekLabel">Week 1</button>
+                <button class="review-nav-arrow" onclick="changeReviewWeek(1)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
             </div>
         </div>
 

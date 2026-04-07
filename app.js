@@ -777,57 +777,23 @@ function resetGridConfirmed() {
    ========================================================================== */
 let reviewSubjectIdx = localStorage.getItem('reviewSubjectIdx') ? parseInt(localStorage.getItem('reviewSubjectIdx')) : 0;
 let reviewWeekIdx = localStorage.getItem('reviewWeekIdx') ? parseInt(localStorage.getItem('reviewWeekIdx')) : 0;
-let scrollTimeout;
 
 function initReviewMode() {
-    const subReel = document.getElementById('reviewSubjectReel');
-    const weekReel = document.getElementById('reviewWeekReel');
-    const scrollSub = document.getElementById('scrollSubject');
-    const scrollWeek = document.getElementById('scrollWeek');
-
-    subReel.innerHTML = "";
-    subjects.forEach(s => {
-        const div = document.createElement("div");
-        div.textContent = `${subjectIcons[s]} ${s}`;
-        subReel.appendChild(div);
-    });
-
-    weekReel.innerHTML = "";
-    weeks.forEach(w => {
-        const div = document.createElement("div");
-        div.textContent = "Week " + w;
-        weekReel.appendChild(div);
-    });
-
-    // Attach native scroll listeners to track finger swipes
-    if (!scrollSub.dataset.listening) {
-        scrollSub.addEventListener('scroll', handleReelScroll);
-        scrollWeek.addEventListener('scroll', handleReelScroll);
-        scrollSub.dataset.listening = "true";
-    }
-
     updateReviewDisplay();
 }
 
-function handleReelScroll(e) {
-    clearTimeout(scrollTimeout);
-    // Wait for the finger swipe/bounce to finish before updating the screen
-    scrollTimeout = setTimeout(() => {
-        const el = e.target;
-        const idx = Math.round(el.scrollTop / 80);
-        
-        if (el.id === 'scrollSubject' && reviewSubjectIdx !== idx) {
-            reviewSubjectIdx = Math.max(0, Math.min(idx, subjects.length - 1));
-            updateReviewDisplay();
-            // THE FIX: Added navigator.vibrate safety check for iOS
-            if(userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-        } else if (el.id === 'scrollWeek' && reviewWeekIdx !== idx) {
-            reviewWeekIdx = Math.max(0, Math.min(idx, weeks.length - 1));
-            updateReviewDisplay();
-            // THE FIX: Added navigator.vibrate safety check for iOS
-            if(userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-        }
-    }, 150);
+// Direction is 1 (Next) or -1 (Prev)
+function changeReviewSubject(dir) {
+    // Math logic to perfectly loop around the array if they go past the ends
+    reviewSubjectIdx = (reviewSubjectIdx + dir + subjects.length) % subjects.length;
+    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    updateReviewDisplay();
+}
+
+function changeReviewWeek(dir) {
+    reviewWeekIdx = (reviewWeekIdx + dir + weeks.length) % weeks.length;
+    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    updateReviewDisplay();
 }
 
 function updateReviewDisplay() {
@@ -835,21 +801,16 @@ function updateReviewDisplay() {
     const week = weeks[reviewWeekIdx];
     const lesson = lessonData[subject][week];
 
-    // Safely force scroll position if it was changed via the Modal or Cycle change
-    const scrollSub = document.getElementById('scrollSubject');
-    const scrollWeek = document.getElementById('scrollWeek');
-    if (Math.round(scrollSub.scrollTop / 80) !== reviewSubjectIdx) {
-        scrollSub.scrollTo({ top: reviewSubjectIdx * 80, behavior: 'smooth' });
-    }
-    if (Math.round(scrollWeek.scrollTop / 80) !== reviewWeekIdx) {
-        scrollWeek.scrollTo({ top: reviewWeekIdx * 80, behavior: 'smooth' });
-    }
+    // Update Text Labels
+    document.getElementById('reviewSubjectLabel').innerHTML = `${subjectIcons[subject]} ${subject}`;
+    document.getElementById('reviewWeekLabel').textContent = `Week ${week}`;
 
+    // Update Card Content
     document.getElementById('reviewPrompt').textContent = lesson.p;
     document.getElementById('reviewAnswerContent').innerHTML = lesson.a;
 
     prepVoiceover(subject, week, 'audioBtnReview');
-    updateFlagUI();
+    updateFlagUI(); // Ensure flag color updates when scrolling!
 }
 
 // --- Quick Picker Modal Logic ---
