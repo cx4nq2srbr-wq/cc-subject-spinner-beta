@@ -5,6 +5,9 @@ to do list
 
     Review page
         - "select subject" and "select week" popups don't go away when i tap on a subject on MAC OS.
+    
+    Focus page
+        x fix audio to stop when the check or x button is pressed.
 
     Lessons page
         - 
@@ -18,6 +21,7 @@ Future updates
     - prevent screen rotation?
 
     + Add the audio files to each lesson
+        *cycle 2 90% complete (latin)
 
     + focus lesson (mark a lesson the child struggles with for easier review)
 
