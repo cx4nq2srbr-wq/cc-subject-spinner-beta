@@ -391,7 +391,7 @@ const cycleData = {
       21: { p: "What are the original languages of the Old Testament?", a: "Hebrew and Aramaic" },
       22: { p: "Who was the Emperor of Rome when Jesus was born?", a: "Caesar Augustus" },
       23: { p: "What age was Jesus when he started teaching alongside the Jewish leaders in the temple?", a: "12 years old" },
-      24: { p: "How many OT prophecies did Jesus fulfill?", a: "Over 100!" }
+      24: { p: "How many Old Testament prophecies did Jesus fulfill?", a: "Over 100!" }
     },
     "Timeline": {
       1: { p: "Age of Ancient Empires - Minoans and Mycenaeans", a: "AGE OF ANCIENT EMPIRES (Creation to circa 450 AD), Creation and the Fall, The Flood and the Tower of Babel, Mesopotamia and Sumer, Egyptians, (3000 BC) Indus River Valley Civilization, Minoans and Mycenaeans" },

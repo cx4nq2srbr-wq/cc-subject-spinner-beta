@@ -1142,6 +1142,7 @@ function finishMistakeReview() {
    ========================================================================== */
 let taTimer = null;
 let taTimeLeft = 0;
+let taTotalStartingTime = 0; // NEW: To calculate elapsed speedrun time
 let taScoreRight = 0;
 let taScoreWrong = 0;
 let taAvailable = [];
@@ -1170,29 +1171,30 @@ function exitTimeAttackMenu() {
 
 function startTimeAttack() {
     const scroll = document.getElementById('taMinuteScroll');
-    const minutes = Math.round(scroll.scrollTop / 80) + 1; // +1 because index 0 is 1 minute
+    const minutes = Math.round(scroll.scrollTop / 80) + 1; 
     
     taTimeLeft = minutes * 60;
+    taTotalStartingTime = taTimeLeft;
     taScoreRight = 0;
     taScoreWrong = 0;
     document.getElementById('taScoreRight').textContent = "0";
     document.getElementById('taScoreWrong').textContent = "0";
     updateTATimerUI();
 
-    // Build the giant flashcard deck from all allowed grid spaces
+    // NEW: Build the deck from allowed spaces that are NOT YET COMPLETED!
     taAvailable = [];
     const maxLimit = getMaxWeek();
     subjects.forEach(s => {
         if (blockedSubjects.includes(s)) return;
         weeks.forEach(w => {
-            if ((w <= maxLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) {
+            if ((w <= maxLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w]) {
                 taAvailable.push({ subject: s, week: w });
             }
         });
     });
 
     if (taAvailable.length === 0) {
-        alert("No lessons available! Check your grid settings.");
+        alert("Your grid is already finished! Reset the grid on the Lessons tab to play Time Attack.");
         return;
     }
 
@@ -1208,13 +1210,11 @@ function tickTATimer() {
     updateTATimerUI();
     
     if (taTimeLeft <= 0) {
-        clearInterval(taTimer); // Stop the timer from going into negatives
+        clearInterval(taTimer);
         
-        // Check if they are currently looking at the challenge tab
         if (currentMode === 'challenge') {
-            endTimeAttack();
+            endTimeAttack(false); // False = Time ran out naturally
         } else {
-            // Flag it so the popup waits until they return
             pendingTAFinish = true; 
         }
     }
@@ -1228,7 +1228,7 @@ function updateTATimerUI() {
 
 function nextTAQuestion() {
     if (taAvailable.length === 0) {
-        endTimeAttack(); // Triggered if they literally answer every single question
+        endTimeAttack(true); // True = They cleared the board early!
         return;
     }
 
@@ -1256,26 +1256,47 @@ function toggleTAAnswerBtn() {
 }
 
 function processTA(isCorrect) {
-    if (taTimeLeft <= 0) return; // Prevent ghost clicks
+    if (taTimeLeft <= 0) return; 
     
     if (isCorrect) {
         taScoreRight++;
         document.getElementById('taScoreRight').textContent = taScoreRight;
+        
+        // NEW: Mark it complete on the grid!
+        gridState[taCurrent.subject][taCurrent.week] = false;
+        
+        // Handle Latin twin weeks for cycle 2
+        if (taCurrent.subject === "Latin" && currentCycle === 2) {
+            const group = latinTwinGroups.find(g => g.includes(taCurrent.week));
+            if (group) {
+                group.forEach(twinWeek => {
+                    gridState["Latin"][twinWeek] = false;
+                    // Remove twin weeks from the active deck
+                    taAvailable = taAvailable.filter(item => !(item.subject === "Latin" && group.includes(item.week)));
+                });
+            }
+        }
+        
+        // Slice the current lesson completely out of the active deck
+        taAvailable = taAvailable.filter(item => !(item.subject === taCurrent.subject && item.week === taCurrent.week));
+        
+        saveToDevice();
+        buildGrid(); // Update the visual grid silently in the background
+        
     } else {
         taScoreWrong++;
         document.getElementById('taScoreWrong').textContent = taScoreWrong;
         
-        // Push the mistake directly into the Mistakes Bank for them to review later!
         const idx = mistakesBank.findIndex(m => m.subject === taCurrent.subject && m.week === taCurrent.week);
         if (idx === -1) {
             mistakesBank.push({ subject: taCurrent.subject, week: taCurrent.week });
             saveToDevice();
-            updateFlagUI(); // Keep the main spinner flag synced
+            updateFlagUI(); 
         }
     }
     
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
-    nextTAQuestion(); // Instant swap!
+    nextTAQuestion(); 
 }
 
 function quitTimeAttack() {
@@ -1284,7 +1305,7 @@ function quitTimeAttack() {
     document.getElementById('challengeContainer').classList.add('active');
 }
 
-function endTimeAttack() {
+function endTimeAttack(clearedBoard = false) {
     clearInterval(taTimer);
     playVictoryChime();
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
@@ -1292,12 +1313,27 @@ function endTimeAttack() {
     const total = taScoreRight + taScoreWrong;
     const accuracy = total > 0 ? Math.round((taScoreRight / total) * 100) : 0;
     
+    const titleEl = document.getElementById('taResultsTitle');
+    const subtitleEl = document.getElementById('taResultsSubtitle');
+    
+    // NEW: Handle the early Victory display
+    if (clearedBoard) {
+        const elapsed = taTotalStartingTime - taTimeLeft;
+        const m = Math.floor(elapsed / 60);
+        const s = (elapsed % 60).toString().padStart(2, '0');
+        titleEl.textContent = "Board Cleared!";
+        subtitleEl.textContent = `You finished the lesson in only ${m}:${s}!`;
+        subtitleEl.style.display = 'block';
+    } else {
+        titleEl.textContent = "Time's Up!";
+        subtitleEl.style.display = 'none';
+    }
+    
     document.getElementById('taFinalScore').textContent = `${taScoreRight} / ${total}`;
     document.getElementById('taAccuracy').textContent = `Accuracy: ${accuracy}%`;
     
     document.getElementById('taResultsOverlay').style.display = 'flex';
     
-    // FIRE THE CONFETTI ON THE NEW CANVAS!
     startConfetti('taConfettiCanvas');
 }
 

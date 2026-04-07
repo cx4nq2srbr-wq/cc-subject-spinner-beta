@@ -224,8 +224,10 @@
 <div id="taResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); z-index: 5000;">
     <canvas id="taConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
     <div class="confirmBox" style="position: relative; z-index: 5002;">
-        <h2 style="margin-top:0; color: var(--primary);">Time's Up!</h2>
+        <h2 id="taResultsTitle" style="margin-top:0; color: var(--primary);">Time's Up!</h2>
         <div style="font-size: 48px; margin: 10px 0;">⏰</div>
+        <p id="taResultsSubtitle" style="font-size: 16px; font-weight: 800; color: #22c55e; margin: -5px 0 15px 0; display: none;">You finished the lesson in only 00:00!</p>
+        
         <p style="font-size: 18px; font-weight: 800; color: var(--text-main);">Score: <span id="taFinalScore" style="color: var(--secondary);">0 / 0</span></p>
         <p id="taAccuracy" style="font-size: 16px; font-weight: 700; color: var(--text-muted); margin-bottom: 25px;">Accuracy: 0%</p>
         <button onclick="closeTAResults()" style="background: var(--secondary); color: white; padding: 12px 30px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 16px;">Awesome!</button>
