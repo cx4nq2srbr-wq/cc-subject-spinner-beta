@@ -76,6 +76,15 @@
                     <div class="reel" id="reviewWeekReel"></div>
                 </div>
             </div>
+
+            <div class="ctrl-group" style="justify-content: center; margin-left: 5px;">
+                <button id="reviewFlagBtn" onclick="toggleMistakeFromReview()">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                      <line x1="4" y1="22" x2="4" y2="15"></line>
+                   </svg>
+                </button>
+            </div>
         </div>
 
         <div id="reviewPrompt" class="prompt-card-style"></div> 
@@ -123,7 +132,10 @@
                 <h4>Review Mistakes</h4>
                 <p>Target the lessons that need work</p>
             </div>
-            <div style="font-size: 26px;">🎯</div>
+            <div style="font-size: 26px; position: relative;">
+                🎯
+                <span id="menuMistakeBadge" class="notification-badge" style="top: -8px; right: -8px; width: 22px; height: 22px; font-size: 12px;">0</span>
+            </div>
         </button>
         
         <button class="setting-item" onclick="openTimeAttackMenu()">
@@ -294,9 +306,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
         <span>Spinner</span>
     </button>
-    <button class="nav-item" id="nav-review" onclick="switchMode('review')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-        <span>Review</span>
+    <button class="nav-item" id="nav-challenge" onclick="switchMode('challenge')" style="position: relative;">
+        <span id="navMistakeBadge" class="notification-badge" style="top: 2px; right: 15px;">0</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span>Focus</span>
     </button>
     <button class="nav-item" id="nav-challenge" onclick="switchMode('challenge')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>

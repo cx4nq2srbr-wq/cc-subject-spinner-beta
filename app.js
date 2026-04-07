@@ -175,6 +175,7 @@ function changeCycle(cycleNum) {
     if (currentMode === 'review') {
         updateReviewDisplay();
     }
+    updateFlagUI();
 }
 
 // --- Window Load & App Config ---
@@ -205,6 +206,7 @@ window.onload = function() {
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(m => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = m.version; })
     .catch(() => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = "not available"; });
+    updateFlagUI();
 };
 
 function saveToDevice() {
@@ -473,19 +475,72 @@ function toggleMistake() {
     updateFlagUI();
 }
 
-function updateFlagUI() {
-    const flagBtn = document.getElementById('flagBtn');
-    if (!flagBtn) return;
+// NEW: Flagging from Review Mode
+function toggleMistakeFromReview() {
+    const subject = subjects[reviewSubjectIdx];
+    const week = weeks[reviewWeekIdx];
 
-    if (!lastSpun) {
-        flagBtn.disabled = true;
-        flagBtn.classList.remove('flagged');
-        return;
+    const idx = mistakesBank.findIndex(m => m.subject === subject && m.week === week);
+    
+    if (idx !== -1) {
+        mistakesBank.splice(idx, 1);
+    } else {
+        mistakesBank.push({ subject, week });
+        if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 50, 20]);
+    }
+    
+    saveToDevice();
+    updateFlagUI(); 
+}
+
+function updateFlagUI() {
+    // 1. Sync Main Spinner Flag
+    const flagBtn = document.getElementById('flagBtn');
+    if (flagBtn) {
+        if (!lastSpun) {
+            flagBtn.disabled = true;
+            flagBtn.classList.remove('flagged');
+        } else {
+            flagBtn.disabled = false;
+            const isFlagged = mistakesBank.some(m => m.subject === lastSpun.subject && m.week === lastSpun.week);
+            flagBtn.classList.toggle('flagged', isFlagged);
+        }
     }
 
-    flagBtn.disabled = false;
-    const isFlagged = mistakesBank.some(m => m.subject === lastSpun.subject && m.week === lastSpun.week);
-    flagBtn.classList.toggle('flagged', isFlagged);
+    // 2. Sync Review Mode Flag
+    const reviewFlagBtn = document.getElementById('reviewFlagBtn');
+    if (reviewFlagBtn) {
+        const subject = subjects[reviewSubjectIdx];
+        const week = weeks[reviewWeekIdx];
+        const isFlagged = mistakesBank.some(m => m.subject === subject && m.week === week);
+        reviewFlagBtn.classList.toggle('flagged', isFlagged);
+    }
+
+    // 3. Sync Notification Badges
+    updateBadgeCounts();
+}
+
+function updateBadgeCounts() {
+    const count = mistakesBank.length;
+    const navBadge = document.getElementById('navMistakeBadge');
+    const menuBadge = document.getElementById('menuMistakeBadge');
+    
+    if (navBadge) {
+        const oldText = navBadge.textContent;
+        navBadge.textContent = count;
+        navBadge.style.display = count > 0 ? 'flex' : 'none';
+        
+        // Satisfying "pop" animation when the number goes up!
+        if (count > parseInt(oldText || 0)) {
+            navBadge.style.transform = 'scale(1.4)';
+            setTimeout(() => navBadge.style.transform = 'scale(1)', 200);
+        }
+    }
+    
+    if (menuBadge) {
+        menuBadge.textContent = count;
+        menuBadge.style.display = count > 0 ? 'flex' : 'none';
+    }
 }
 
 /* ==========================================================================
@@ -794,6 +849,7 @@ function updateReviewDisplay() {
     document.getElementById('reviewAnswerContent').innerHTML = lesson.a;
 
     prepVoiceover(subject, week, 'audioBtnReview');
+    updateFlagUI();
 }
 
 // --- Quick Picker Modal Logic ---
@@ -1123,6 +1179,7 @@ function processMistake(isCorrect) {
     }
     
     spinNextMistake();
+    updateFlagUI();
 }
 
 function finishMistakeReview() {
