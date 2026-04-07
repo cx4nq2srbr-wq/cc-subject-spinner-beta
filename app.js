@@ -1316,7 +1316,7 @@ function endTimeAttack(clearedBoard = false) {
     const titleEl = document.getElementById('taResultsTitle');
     const subtitleEl = document.getElementById('taResultsSubtitle');
     
-    // NEW: Handle the early Victory display
+    // Handle the early Victory display
     if (clearedBoard) {
         const elapsed = taTotalStartingTime - taTimeLeft;
         const m = Math.floor(elapsed / 60);
@@ -1324,6 +1324,23 @@ function endTimeAttack(clearedBoard = false) {
         titleEl.textContent = "Board Cleared!";
         subtitleEl.textContent = `You finished the lesson in only ${m}:${s}!`;
         subtitleEl.style.display = 'block';
+
+        // NEW: Automatically reset the grid in the background!
+        subjects.forEach(s => {
+            weeks.forEach(w => gridState[s][w] = true);
+        });
+        saveToDevice();
+        buildGrid();
+        
+        // Ensure the main spinner button resets to "SPIN" (not "DONE")
+        const mainSpinBtn = document.getElementById('spinBtn');
+        if (mainSpinBtn) {
+            mainSpinBtn.style.background = "var(--primary)"; 
+            mainSpinBtn.disabled = false;
+            setSpinLabel('SPIN');
+            mainSpinBtn.style.fontSize = '';
+        }
+
     } else {
         titleEl.textContent = "Time's Up!";
         subtitleEl.style.display = 'none';
