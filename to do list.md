@@ -5,12 +5,8 @@ to do list
 
     Review page
         - "select subject" and "select week" popups don't go away when i tap on a subject on MAC OS.
-        x fix audio to stop when lesson change button is pressed.
-        - in "select subject" some of the icons are beside and some are above. make them all the same.
-    
+        
     Focus page
-        x fix audio to stop when the check or x button is pressed.
-
 
     Lessons page
         - 
@@ -26,8 +22,5 @@ Future updates
     + Add the audio files to each lesson
         *cycle 2 90% complete (latin)
 
-    + focus lesson (mark a lesson the child struggles with for easier review)
-
-    + add a challenge mode for timed review that counts the lessons you complete in a select amount of time. (celebration at the end) 
 
   
