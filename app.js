@@ -797,6 +797,7 @@ function changeReviewWeek(dir) {
 }
 
 function updateReviewDisplay() {
+    stopVoiceover();
     const subject = subjects[reviewSubjectIdx];
     const week = weeks[reviewWeekIdx];
     const lesson = lessonData[subject][week];
@@ -828,9 +829,8 @@ function openPicker(type) {
         grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))';
         subjects.forEach((s, i) => {
             const btn = document.createElement('button');
-            // THE FIX: Using clean CSS classes instead of hardcoded inline styles!
             btn.className = `picker-btn ${i === reviewSubjectIdx ? 'selected' : ''}`;
-            btn.innerHTML = `${subjectIcons[s]} ${s}`;
+            btn.innerHTML = `<span style="display: block; font-size: 24px; margin-bottom: 4px;">${subjectIcons[s]}</span><span style="line-height: 1.2;">${s}</span>`;
             btn.onclick = () => selectPickerItem(i);
             grid.appendChild(btn);
         });
@@ -1059,11 +1059,13 @@ function startMistakeReview() {
 }
 
 function exitMistakeReview() {
+    stopVoiceover();
     document.getElementById('mistakeGameContainer').classList.remove('active');
     document.getElementById('challengeContainer').classList.add('active');
 }
 
 function spinNextMistake() {
+    stopVoiceover();
     if (mistakeQueue.length === 0) {
         finishMistakeReview();
         return;
@@ -1245,6 +1247,7 @@ function updateTATimerUI() {
 }
 
 function nextTAQuestion() {
+    stopVoiceover();
     if (taAvailable.length === 0) {
         endTimeAttack(true); // True = They cleared the board early!
         return;
@@ -1318,12 +1321,14 @@ function processTA(isCorrect) {
 }
 
 function quitTimeAttack() {
+    stopVoiceover();
     clearInterval(taTimer);
     document.getElementById('taGameContainer').classList.remove('active');
     document.getElementById('challengeContainer').classList.add('active');
 }
 
 function endTimeAttack(clearedBoard = false) {
+    stopVoiceover();
     clearInterval(taTimer);
     playVictoryChime();
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
