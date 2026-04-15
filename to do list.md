@@ -16,11 +16,39 @@ to do list
         +
 
 Future updates
+    + add geography maps for fun geography minigame.
 
     - prevent screen rotation?
 
     + Add the audio files to each lesson
-        *cycle 2 90% complete (latin)
+            TO DO       DONE
+    Cycle 1
+            Latin
+                        Bible
+            English
+                        Geography
+            History
+                        Timeline
+            Science
+                        Math
+    Cycle 2
+            Latin
+                        Bible
+                        English
+                        Geography
+                        History
+                        Timeline
+                        Science
+                        Math
+    Cycle 3
+            Latin
+            Bible
+            English
+            Geography
+            History
+                        Timeline
+            Science
+                        Math
 
 
   

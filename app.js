@@ -232,7 +232,6 @@ updateVh();
 function spinBoth() {
     stopVoiceover();
   if (getSpinLabel().toLowerCase() === 'done') { finishLesson(); return; }
-  if (getSpinLabel() === "Reset") { showResetConfirm(); return; }
 
   if (isSpinning) return;
   if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15); 
@@ -243,11 +242,15 @@ function spinBoth() {
   );
 
   if (availableSubjects.length === 0) {
-    setSpinLabel('Reset');
-    spinBtn.style.background = "#64748b";
-    spinBtn.style.fontSize = "14px";
-    return;
-  }
+        setSpinLabel('Done');
+        const sBtn = document.getElementById('spinBtn');
+        if(sBtn) {
+            sBtn.style.background = '#22c55e';
+            sBtn.style.fontSize = '14px';
+        }
+        finishLesson(); // Pop the confetti and show the Reset box!
+        return;
+    }
 
   // Lock State
   isSpinning = true;
