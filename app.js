@@ -943,52 +943,132 @@ function startConfetti(canvasId = 'confettiCanvas') {
     confettiResizeHandler = resize;
     window.addEventListener('resize', confettiResizeHandler);
 
-    const w = canvas.width, h = canvas.height;
+    // THE FIX: The Randomizer!
+    const styles = ['confetti', 'fireworks', 'emojis'];
+    const activeStyle = styles[Math.floor(Math.random() * styles.length)];
+    
     const colors = ['#ef4444','#f97316','#f59e0b','#22c55e','#06b6d4','#6366f1','#ec4899'];
+    const emojiList = ['📜', '📖', '🌍', '⚔️', '🏛️', '🔢', '🧪', '⏳'];
     const parts = [];
 
-    for (let i = 0; i < 140; i++) {
-        parts.push({
-            x: Math.random() * w,
-            y: Math.random() * -h,
-            vx: (Math.random() - 0.5) * 4,
-            vy: Math.random() * 3 + 2,
-            r: Math.random() * 8 + 4,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            rot: Math.random() * 360,
-            vr: (Math.random() - 0.5) * 10
-        });
+    // Pre-load particles for Confetti and Emojis
+    if (activeStyle === 'confetti' || activeStyle === 'emojis') {
+        for (let i = 0; i < 100; i++) {
+            parts.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * -canvas.height,
+                vx: (Math.random() - 0.5) * 4,
+                vy: Math.random() * 3 + 2,
+                r: Math.random() * 8 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                emoji: emojiList[Math.floor(Math.random() * emojiList.length)],
+                size: Math.random() * 20 + 20,
+                rot: Math.random() * 360,
+                vr: (Math.random() - 0.5) * 10
+            });
+        }
     }
-    confettiParticles = parts;
 
     function frame() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        for (let p of parts) {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.02; // Gravity
-            p.rot += p.vr;
-            
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate(p.rot * Math.PI / 180);
-            ctx.fillStyle = p.color;
-            ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
-            ctx.restore();
+        if (activeStyle === 'confetti') {
+            for (let p of parts) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.02; // Gravity
+                p.rot += p.vr;
+                
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
+                ctx.restore();
 
-            if (p.y > canvas.height + 20) {
-                if (!isConfettiStopping) {
-                    p.y = -10;
-                    p.x = Math.random() * canvas.width;
-                    p.vy = Math.random() * 3 + 2;
+                if (p.y > canvas.height + 20) {
+                    if (!isConfettiStopping) {
+                        p.y = -10;
+                        p.x = Math.random() * canvas.width;
+                        p.vy = Math.random() * 3 + 2;
+                    }
                 }
             }
-        }
+            if (isConfettiStopping && parts.every(p => p.y > canvas.height + 20)) { stopConfetti(canvasId); return; }
+        
+        } else if (activeStyle === 'emojis') {
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            for (let p of parts) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.02; // Gravity
+                p.rot += p.vr;
 
-        if (isConfettiStopping && parts.every(p => p.y > canvas.height + 20)) {
-            stopConfetti();
-            return; 
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.font = `${p.size}px Arial`;
+                ctx.fillText(p.emoji, 0, 0);
+                ctx.restore();
+
+                if (p.y > canvas.height + 40) {
+                    if (!isConfettiStopping) {
+                        p.y = -40;
+                        p.x = Math.random() * canvas.width;
+                        p.vy = Math.random() * 3 + 2;
+                    }
+                }
+            }
+            if (isConfettiStopping && parts.every(p => p.y > canvas.height + 40)) { stopConfetti(canvasId); return; }
+        
+        } else if (activeStyle === 'fireworks') {
+            ctx.globalCompositeOperation = 'lighter';
+            
+            // Randomly spawn new firework bursts
+            if (Math.random() < 0.06 && !isConfettiStopping) {
+                const bx = Math.random() * canvas.width;
+                const by = Math.random() * (canvas.height * 0.5); // Explode in the top half of the screen
+                const fColor = colors[Math.floor(Math.random() * colors.length)];
+                for (let i = 0; i < 40; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 5 + 2;
+                    parts.push({
+                        x: bx, y: by,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        color: fColor,
+                        alpha: 1,
+                        decay: Math.random() * 0.015 + 0.015,
+                        r: Math.random() * 3 + 1
+                    });
+                }
+            }
+
+            for (let i = parts.length - 1; i >= 0; i--) {
+                let p = parts[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.05; // Gravity
+                p.vx *= 0.94; // Air friction slows the explosion down
+                p.alpha -= p.decay; // Fade out over time
+
+                if (p.alpha <= 0) {
+                    parts.splice(i, 1);
+                    continue;
+                }
+
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.globalAlpha = 1; 
+            ctx.globalCompositeOperation = 'source-over'; 
+
+            if (isConfettiStopping && parts.length === 0) { stopConfetti(canvasId); return; }
         }
 
         confettiAnimationId = requestAnimationFrame(frame);
