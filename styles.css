@@ -562,7 +562,7 @@ button:disabled svg text {
   z-index: 4000;
 }
 
-#doneOverlay .doneBox, #taResultsOverlay .doneBox {
+#doneOverlay .doneBox, #taResultsOverlay .doneBox, #mistakeResultsOverlay .doneBox {
   position: relative;
   background: #fff;
   padding: 18px;
@@ -575,7 +575,7 @@ button:disabled svg text {
   z-index: 2;
 }
 
-#doneOverlay canvas, #taResultsOverlay canvas {
+#doneOverlay canvas, #taResultsOverlay canvas, #mistakeResultsOverlay canvas {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   width: 100%; height: 100%;
@@ -583,7 +583,7 @@ button:disabled svg text {
   z-index: 1;
 }
 
-#doneOverlay .doneActions, #taResultsOverlay .doneActions { 
+#doneOverlay .doneActions, #taResultsOverlay .doneActions, #mistakeResultsOverlay .doneActions { 
     position: relative; 
     z-index: 2; 
 }
@@ -747,8 +747,12 @@ button:disabled svg text {
 html.dark-mode { background-color: #0f172a; }
 
 body.dark-mode {
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(30, 41, 59, 0.9);
+    
     background: radial-gradient(circle at top, #1e293b, #0f172a);
-    color: #f8fafc;
+    color: var(--text-main);
 }
 
 body.dark-mode #prompt, body.dark-mode #reviewPrompt, body.dark-mode #mistakePrompt,
@@ -786,9 +790,14 @@ body.dark-mode .maxWeekControl { background: #334155; border-color: #475569; col
 body.dark-mode .maxWeekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
 
 body.dark-mode #reviewPickerOverlay > div, body.dark-mode .confirmBox, body.dark-mode .doneBox { background: #1e293b !important; color: #f8fafc !important; }
+body.dark-mode .doneBox p { color: #f8fafc !important; }
+body.dark-mode #taAccuracy { color: #94a3b8 !important; }
 body.dark-mode #pickerTitle { color: #f8fafc !important; }
-body.dark-mode #reviewPickerOverlay button[onclick="closePicker()"] { background: #0f172a !important; color: #cbd5e1 !important; }
-
+body.dark-mode #reviewPickerOverlay button[onclick="closePicker()"],
+body.dark-mode #resetConfirmOverlay button[onclick="hideResetConfirm()"] { 
+    background: #0f172a !important; 
+    color: #cbd5e1 !important; 
+}
 body.dark-mode .picker-btn { background: #334155; border-color: #475569; color: #cbd5e1; }
 
 body.dark-mode .picker-btn.selected { background: #cbd5e1; border-color: #cbd5e1; color: #0f172a; }

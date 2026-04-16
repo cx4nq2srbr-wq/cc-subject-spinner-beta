@@ -161,14 +161,7 @@
         <span id="mistakesRemaining" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Remaining: 0</span>
     </div>
 
-    <div class="rollerBox" style="margin-top: 0;">
-        <div class="slot">
-            <div class="reel" id="mistakeSubjectReel"></div>
-        </div>
-        <div class="slot">
-            <div class="reel" id="mistakeWeekReel"></div>
-        </div>
-    </div>
+    <div id="mistakeSubjectLabel" style="font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
 
     <div id="mistakePrompt"></div>
 
@@ -256,6 +249,22 @@
             
             <div style="display:flex; justify-content:center;">
                 <button onclick="closeTAResults()" style="background:#22c55e; color:white; border:none; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer; width: 100%; font-size: 16px;">Awesome!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="mistakeResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
+    <canvas id="mistakeConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
+    
+    <div class="doneBox" style="position: relative; z-index: 5002;">
+        <div class="doneActions">
+            <h3 style="margin-top:0; color: var(--secondary); font-size: 24px;">Deck Cleared!</h3>
+            <div style="font-size: 48px; margin: 10px 0;">🎯</div>
+            <p style="font-size: 18px; font-weight: 800; color: var(--text-main);">You mastered your mistakes.</p>
+            
+            <div style="display:flex; justify-content:center; margin-top:20px;">
+                <button onclick="closeMistakeResults()" style="background:#22c55e; color:white; border:none; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer; width: 100%; font-size: 16px;">Awesome!</button>
             </div>
         </div>
     </div>
