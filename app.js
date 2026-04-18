@@ -1637,32 +1637,42 @@ function initMapHitboxes() {
     if (!svg) return;
 
     mapTargets = [];
-    // Find every element in the SVG that has an ID
     const allElements = svg.querySelectorAll('[id]');
 
+    // A "Blacklist" of garbage names Figma auto-generates
+    const figmaJunk = ['vector', 'group', 'mask', 'clip', 'path', 'ellipse', 'rect', 'line', 'polygon', 'def', 'image'];
+
     allElements.forEach(el => {
-        const id = el.getAttribute('id');
+        const rawId = el.getAttribute('id');
+        const lowercaseId = rawId.toLowerCase();
         
-        // Auto-Scanner: Look for the lowercase IDs you typed in Figma!
-        // We ignore Figma's default IDs like "Vector_1" or "Group"
-        if (id && id === id.toLowerCase() && !id.includes(' ') && !id.startsWith('vector') && !id.startsWith('group')) {
-            mapTargets.push(id);
+        // Does this ID start with any of Figma's junk names?
+        const isJunk = figmaJunk.some(junk => lowercaseId.startsWith(junk));
+
+        // If it's NOT junk, and it's one of your lowercase hitboxes (e.g. "london")
+        if (!isJunk && rawId === lowercaseId && !rawId.includes(' ')) {
+            mapTargets.push(rawId);
             
-            // 1. Make the blob invisible!
+            // 1. Make YOUR blob totally invisible!
             el.style.opacity = '0'; 
             el.style.cursor = 'pointer';
+            
+            // Ensure the invisible shape is still physically clickable
+            el.style.pointerEvents = 'all';
 
             // 2. Add the tap listener
-            // We clone and replace to avoid adding multiple listeners if they play twice
             const newEl = el.cloneNode(true);
             el.parentNode.replaceChild(newEl, el);
             
             newEl.addEventListener('click', (e) => {
                 e.stopPropagation(); // Stop the click from registering on things underneath
-                handleMapClick(id, newEl);
+                handleMapClick(rawId, newEl);
             });
         }
     });
+    
+    // This will print a list of everything it found to your browser's console!
+    console.log("Successfully loaded map targets:", mapTargets);
 }
 
 function nextMapQuestion() {
