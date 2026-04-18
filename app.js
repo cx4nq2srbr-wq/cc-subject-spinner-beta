@@ -1690,6 +1690,31 @@ function nextMapQuestion() {
     // Pick a random location from the ones you drew!
     currentMapTarget = mapTargets[Math.floor(Math.random() * mapTargets.length)];
     
+    // --- THE GHOST TRICK LOGIC ---
+    // These are the overlay categories that sit on top of countries
+    const overlays = ['peninsula', 'mountains', 'river'];
+
+    // What category is the current target? (If it's none of the above, it's a 'base' country/city/sea)
+    let activeOverlay = overlays.find(o => currentMapTarget.includes(o)) || 'base';
+
+    // Make the overlapping layers ghosts unless we are actively looking for them
+    mapTargets.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        // Check if this specific shape is an overlay
+        const isShapeOverlay = overlays.find(o => id.includes(o));
+
+        if (isShapeOverlay && isShapeOverlay !== activeOverlay) {
+            // It's an overlay, but NOT the one we are looking for. Turn it into a ghost!
+            el.style.pointerEvents = 'none';
+        } else {
+            // It's a base country/city, OR it's the exact overlay we want. Make it solid!
+            el.style.pointerEvents = 'all';
+        }
+    });
+    // -----------------------------
+
     // Clean up the text for display (e.g., "seine_river" -> "Seine River")
     const cleanName = currentMapTarget.split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
