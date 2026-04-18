@@ -1622,6 +1622,11 @@ function startMapGame() {
     mapScore = 0;
     document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScore}`;
 
+    const wrapper = document.getElementById('svgMapWrapper');
+    if (wrapper.innerHTML.trim() === '') {
+        wrapper.innerHTML = europeMap;
+    }
+    
     initMapHitboxes();
     nextMapQuestion();
 }
