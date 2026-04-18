@@ -1607,3 +1607,107 @@ function stopVoiceover() {
         if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
     }
 }
+
+/* ==========================================================================
+   14. MAP GAME LOGIC (TEST MODE)
+   ========================================================================== */
+let mapTargets = [];
+let currentMapTarget = null;
+let mapScore = 0;
+
+function startMapGame() {
+    document.getElementById('challengeContainer').classList.remove('active');
+    document.getElementById('mapGameContainer').classList.add('active');
+    activeChallengePage = 'mapGameContainer';
+    mapScore = 0;
+    document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScore}`;
+
+    initMapHitboxes();
+    nextMapQuestion();
+}
+
+function exitMapGame() {
+    document.getElementById('mapGameContainer').classList.remove('active');
+    document.getElementById('challengeContainer').classList.add('active');
+    activeChallengePage = 'challengeContainer';
+}
+
+function initMapHitboxes() {
+    const svg = document.querySelector('#svgMapWrapper svg');
+    if (!svg) return;
+
+    mapTargets = [];
+    // Find every element in the SVG that has an ID
+    const allElements = svg.querySelectorAll('[id]');
+
+    allElements.forEach(el => {
+        const id = el.getAttribute('id');
+        
+        // Auto-Scanner: Look for the lowercase IDs you typed in Figma!
+        // We ignore Figma's default IDs like "Vector_1" or "Group"
+        if (id && id === id.toLowerCase() && !id.includes(' ') && !id.startsWith('vector') && !id.startsWith('group')) {
+            mapTargets.push(id);
+            
+            // 1. Make the blob invisible!
+            el.style.opacity = '0'; 
+            el.style.cursor = 'pointer';
+
+            // 2. Add the tap listener
+            // We clone and replace to avoid adding multiple listeners if they play twice
+            const newEl = el.cloneNode(true);
+            el.parentNode.replaceChild(newEl, el);
+            
+            newEl.addEventListener('click', (e) => {
+                e.stopPropagation(); // Stop the click from registering on things underneath
+                handleMapClick(id, newEl);
+            });
+        }
+    });
+}
+
+function nextMapQuestion() {
+    if (mapTargets.length === 0) {
+        document.getElementById('mapPrompt').textContent = "Map not loaded or no hitboxes found!";
+        return;
+    }
+    
+    // Pick a random location from the ones you drew!
+    currentMapTarget = mapTargets[Math.floor(Math.random() * mapTargets.length)];
+    
+    // Clean up the text for display (e.g., "seine_river" -> "Seine River")
+    const cleanName = currentMapTarget.split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+    document.getElementById('mapPrompt').textContent = `Find: ${cleanName}`;
+}
+
+function handleMapClick(clickedId, element) {
+    if (clickedId === currentMapTarget) {
+        // WIN!
+        if (userSettings.haptics && navigator.vibrate) navigator.vibrate([30, 50, 30]);
+        playVictoryChime();
+        mapScore++;
+        document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScore}`;
+        
+        // Flash the invisible shape green!
+        element.classList.remove('flash-correct');
+        void element.offsetWidth; // Trigger reflow to restart animation
+        element.classList.add('flash-correct');
+
+        setTimeout(nextMapQuestion, 1000);
+    } else {
+        // LOSE
+        if (userSettings.haptics && navigator.vibrate) navigator.vibrate(50);
+        playSound(200, 'triangle', 0.1, 0.05); // Error buzz
+        
+        // Clean up the wrong answer for the prompt
+        const wrongName = clickedId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        document.getElementById('mapPrompt').textContent = `Oops! That's ${wrongName}. Try again!`;
+        
+        setTimeout(() => {
+            const rightName = currentMapTarget.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            document.getElementById('mapPrompt').textContent = `Find: ${rightName}`;
+        }, 2000);
+    }
+}

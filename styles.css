@@ -988,3 +988,24 @@ body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 .review-slot::-webkit-scrollbar { display: none; }
 .review-slot .reel { transition: none !important; transform: none !important; }
 .review-slot .reel div { height: 80px; scroll-snap-align: start; }
+
+/* ==========================================================================
+   14. MAP GAME STYLES
+   ========================================================================== */
+#svgMapWrapper svg {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    touch-action: pan-x pan-y; /* Allows scrolling and zooming */
+}
+
+/* The pulse animation for a correct tap! */
+@keyframes correctFlash {
+    0% { opacity: 0; fill: #22c55e; }
+    50% { opacity: 0.6; fill: #22c55e; }
+    100% { opacity: 0; fill: #22c55e; }
+}
+
+.flash-correct {
+    animation: correctFlash 1s ease-out;
+}
