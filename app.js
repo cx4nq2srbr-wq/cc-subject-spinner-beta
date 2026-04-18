@@ -1626,7 +1626,7 @@ function startMapGame() {
     if (wrapper.innerHTML.trim() === '') {
         wrapper.innerHTML = europeMap;
     }
-    
+
     initMapHitboxes();
     nextMapQuestion();
 }
@@ -1644,18 +1644,19 @@ function initMapHitboxes() {
     mapTargets = [];
     const allElements = svg.querySelectorAll('[id]');
 
-    // A "Blacklist" of garbage names Figma auto-generates
-    const figmaJunk = ['vector', 'group', 'mask', 'clip', 'path', 'ellipse', 'rect', 'line', 'polygon', 'def', 'image'];
+    // An expanded blacklist of garbage names Figma auto-generates
+    const figmaJunk = ['vector', 'group', 'mask', 'clip', 'path', 'ellipse', 'rect', 'line', 'polygon', 'def', 'image', 'frame'];
 
     allElements.forEach(el => {
         const rawId = el.getAttribute('id');
         const lowercaseId = rawId.toLowerCase();
         
-        // Does this ID start with any of Figma's junk names?
+        // Is it on the blacklist?
         const isJunk = figmaJunk.some(junk => lowercaseId.startsWith(junk));
 
-        // If it's NOT junk, and it's one of your lowercase hitboxes (e.g. "london")
-        if (!isJunk && rawId === lowercaseId && !rawId.includes(' ')) {
+        // FIX: Removed the strict lowercase rule!
+        // Now, as long as it's not Figma junk, and it's longer than 1 letter, we accept it!
+        if (!isJunk && rawId.length > 1) {
             mapTargets.push(rawId);
             
             // 1. Make YOUR blob totally invisible!

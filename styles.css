@@ -32,7 +32,6 @@ body {
   height: 100vh; 
   padding: env(safe-area-inset-top, 20px) 15px calc(65px + env(safe-area-inset-bottom, 0px)) 15px;
   overflow: hidden; 
-  touch-action: pan-y;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior: none;
   
