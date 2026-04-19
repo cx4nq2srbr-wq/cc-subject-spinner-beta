@@ -1624,10 +1624,21 @@ function startMapGame() {
     mapScore = 0;
     document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScore}`;
 
+    // Show the two-finger reminder pill
+    const reminder = document.getElementById('twoFingerReminder');
+    if (reminder) {
+        reminder.style.display = 'flex';
+        reminder.style.opacity = '1';
+    }
+
     const wrapper = document.getElementById('svgMapWrapper');
     if (wrapper.innerHTML.trim() === '') {
         wrapper.innerHTML = europeMap;
     }
+
+    // Dismiss the reminder on their first touch
+    wrapper.addEventListener('touchstart', hideMapReminder, { once: true });
+    wrapper.addEventListener('mousedown', hideMapReminder, { once: true });
 
     const svg = document.querySelector('#svgMapWrapper svg');
     if (svg) {
@@ -1636,10 +1647,15 @@ function startMapGame() {
                 maxZoom: 6,
                 minZoom: 1,
                 bounds: true,
-                boundsPadding: 0.1
+                boundsPadding: 0.1,
+                // NEW: Require two fingers to pan!
+                beforeTouch: function(e) {
+                    // If it's a single touch, ignore panzoom (returns true) so the user can tap.
+                    // If it's two touches, return false so panzoom takes over!
+                    return e.touches.length === 1;
+                }
             });
 
-            // NEW: Listen to the panzoom brain to see if it's a drag
             mapPanZoom.on('panstart', () => { isMapDragging = true; });
             mapPanZoom.on('panend', () => { setTimeout(() => { isMapDragging = false; }, 50); });
 
@@ -1651,6 +1667,14 @@ function startMapGame() {
 
     initMapHitboxes();
     nextMapQuestion();
+}
+
+function hideMapReminder() {
+    const reminder = document.getElementById('twoFingerReminder');
+    if (reminder) {
+        reminder.style.opacity = '0';
+        setTimeout(() => reminder.style.display = 'none', 300);
+    }
 }
 
 function exitMapGame() {
