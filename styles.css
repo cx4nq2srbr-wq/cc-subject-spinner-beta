@@ -1018,7 +1018,3 @@ body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 .flash-correct {
     animation: correctFlash 1s ease-out;
 }
-
-#image_background {
-    display: none !important;
-}
