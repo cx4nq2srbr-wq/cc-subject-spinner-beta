@@ -1615,6 +1615,7 @@ let mapTargets = [];
 let currentMapTarget = null;
 let mapScore = 0;
 let mapPanZoom = null;
+let isMapDragging = false;
 
 function startMapGame() {
     document.getElementById('challengeContainer').classList.remove('active');
@@ -1628,24 +1629,25 @@ function startMapGame() {
         wrapper.innerHTML = europeMap;
     }
 
-    // --- NEW: Initialize the Pinch-to-Zoom logic ---
     const svg = document.querySelector('#svgMapWrapper svg');
     if (svg) {
         if (!mapPanZoom) {
-            // First time loading: build the zoom handler
             mapPanZoom = panzoom(svg, {
                 maxZoom: 6,
                 minZoom: 1,
                 bounds: true,
                 boundsPadding: 0.1
             });
+
+            // NEW: Listen to the panzoom brain to see if it's a drag
+            mapPanZoom.on('panstart', () => { isMapDragging = true; });
+            mapPanZoom.on('panend', () => { setTimeout(() => { isMapDragging = false; }, 50); });
+
         } else {
-            // Returning to the game later: reset the zoom back to normal
             mapPanZoom.moveTo(0, 0);
             mapPanZoom.zoomAbs(0, 0, 1);
         }
     }
-    // -----------------------------------------------
 
     initMapHitboxes();
     nextMapQuestion();
@@ -1690,10 +1692,16 @@ function initMapHitboxes() {
             const newEl = el.cloneNode(true);
             el.parentNode.replaceChild(newEl, el);
             
-            newEl.addEventListener('click', (e) => {
-                e.stopPropagation(); // Stop the click from registering on things underneath
+            // We bind to both Click (for mouse) and TouchEnd (for fingers)
+            const handleTap = (e) => {
+                if (isMapDragging) return; // If they were dragging, ignore the tap!
+                e.stopPropagation();
+                if (e.cancelable) e.preventDefault(); // Stop double-firing on phones
                 handleMapClick(rawId, newEl);
-            });
+            };
+
+            newEl.addEventListener('click', handleTap);
+            newEl.addEventListener('touchend', handleTap);
         }
     });
     

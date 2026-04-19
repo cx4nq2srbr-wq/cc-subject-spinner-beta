@@ -994,8 +994,8 @@ body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 #svgMapWrapper {
     width: 100%;
     flex: 1;
-    overflow: hidden; /* Hide the ugly native scrollbars! */
-    background: white;
+    overflow: hidden;
+    background: #dbeafe;
     border-top: 2px solid rgba(74, 144, 226, 0.2);
     box-shadow: inset 0 10px 20px rgba(0,0,0,0.05);
     touch-action: none; /* Tells the browser: "Let the JS handle the touch math" */
@@ -1003,8 +1003,7 @@ body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 
 #svgMapWrapper svg {
     width: 100%;
-    height: auto;
-    /* Removed min-width so it fits the screen perfectly at 1x zoom */
+    height: 100%;
     user-select: none; 
     -webkit-user-select: none;
 }
