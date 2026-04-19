@@ -1744,7 +1744,7 @@ function nextMapQuestion() {
     
     // --- THE GHOST TRICK LOGIC ---
     // These are the overlay categories that sit on top of countries
-    const overlays = ['peninsula', 'mountains', 'river'];
+    const overlays = ['peninsula', 'mountains', 'river', 'alps'];
 
     // What category is the current target? (If it's none of the above, it's a 'base' country/city/sea)
     let activeOverlay = overlays.find(o => currentMapTarget.includes(o)) || 'base';
