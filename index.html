@@ -243,6 +243,9 @@
 <div id="mapGameContainer" class="view-container">
     <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
         <button onclick="exitMapGame()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+        
+        <button onclick="nextMapQuestion()" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--text-muted); font-weight: 800; font-size: 14px; border-radius: 8px; padding: 6px 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">Skip ⏭️</button>
+        
         <span id="mapScoreDisplay" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Score: 0</span>
     </div>
 
@@ -250,7 +253,7 @@
 
     <div id="svgMapWrapper" style="width: 100%; flex: 1; overflow: auto; background: white; border-top: 2px solid rgba(74, 144, 226, 0.2); box-shadow: inset 0 10px 20px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: flex-start;">
         
-        </div>
+    </div>
 </div>
 
 <div id="taResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
