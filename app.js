@@ -1669,6 +1669,7 @@ function startMapGame() {
     nextMapQuestion();
 }
 
+// NEW: Helper function to gracefully fade out the reminder pill
 function hideMapReminder() {
     const reminder = document.getElementById('twoFingerReminder');
     if (reminder) {
