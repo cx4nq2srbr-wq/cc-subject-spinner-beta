@@ -1692,8 +1692,7 @@ function initMapHitboxes() {
     const allElements = svg.querySelectorAll('[id]');
 
     // An expanded blacklist of garbage names Figma auto-generates
-    const figmaJunk = ['vector', 'group', 'mask', 'clip', 'path', 'ellipse', 'rect', 'line', 'polygon', 'def', 'image', 'frame'];
-
+    const figmaJunk = ['vector', 'group', 'mask', 'clip', 'path', 'ellipse', 'rect', 'line', 'polygon', 'def', 'image', 'frame', 'c2-europe'];
     allElements.forEach(el => {
         const rawId = el.getAttribute('id');
         const lowercaseId = rawId.toLowerCase();
