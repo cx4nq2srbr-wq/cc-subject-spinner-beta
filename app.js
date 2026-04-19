@@ -1614,6 +1614,7 @@ function stopVoiceover() {
 let mapTargets = [];
 let currentMapTarget = null;
 let mapScore = 0;
+let mapPanZoom = null;
 
 function startMapGame() {
     document.getElementById('challengeContainer').classList.remove('active');
@@ -1626,6 +1627,25 @@ function startMapGame() {
     if (wrapper.innerHTML.trim() === '') {
         wrapper.innerHTML = europeMap;
     }
+
+    // --- NEW: Initialize the Pinch-to-Zoom logic ---
+    const svg = document.querySelector('#svgMapWrapper svg');
+    if (svg) {
+        if (!mapPanZoom) {
+            // First time loading: build the zoom handler
+            mapPanZoom = panzoom(svg, {
+                maxZoom: 6,
+                minZoom: 1,
+                bounds: true,
+                boundsPadding: 0.1
+            });
+        } else {
+            // Returning to the game later: reset the zoom back to normal
+            mapPanZoom.moveTo(0, 0);
+            mapPanZoom.zoomAbs(0, 0, 1);
+        }
+    }
+    // -----------------------------------------------
 
     initMapHitboxes();
     nextMapQuestion();

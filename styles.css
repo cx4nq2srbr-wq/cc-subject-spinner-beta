@@ -994,20 +994,17 @@ body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 #svgMapWrapper {
     width: 100%;
     flex: 1;
-    overflow: auto; /* Allows scrolling */
+    overflow: hidden; /* Hide the ugly native scrollbars! */
     background: white;
     border-top: 2px solid rgba(74, 144, 226, 0.2);
     box-shadow: inset 0 10px 20px rgba(0,0,0,0.05);
-    /* The magic touches for smooth panning and zooming on mobile */
-    touch-action: pan-x pan-y pinch-zoom;
-    -webkit-overflow-scrolling: touch; 
+    touch-action: none; /* Tells the browser: "Let the JS handle the touch math" */
 }
 
 #svgMapWrapper svg {
     width: 100%;
-    min-width: 800px; /* Forces the map to be large enough to pan around */
     height: auto;
-    /* Prevent accidental text selection while tapping fast */
+    /* Removed min-width so it fits the screen perfectly at 1x zoom */
     user-select: none; 
     -webkit-user-select: none;
 }
