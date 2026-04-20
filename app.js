@@ -1612,8 +1612,10 @@ function stopVoiceover() {
    14. MAP GAME LOGIC (TEST MODE)
    ========================================================================== */
 let mapTargets = [];
+let availableMapTargets = [];
 let currentMapTarget = null;
-let mapScore = 0;
+let mapScoreRight = 0;
+let mapAttempts = 0;
 let mapPanZoom = null;
 let isMapDragging = false;
 
@@ -1621,10 +1623,12 @@ function startMapGame() {
     document.getElementById('challengeContainer').classList.remove('active');
     document.getElementById('mapGameContainer').classList.add('active');
     activeChallengePage = 'mapGameContainer';
-    mapScore = 0;
-    document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScore}`;
+    
+    // NEW: Reset Score
+    mapScoreRight = 0;
+    mapAttempts = 0;
+    document.getElementById('mapScoreDisplay').textContent = `Score: 0 / 0`;
 
-    // Show the two-finger reminder pill
     const reminder = document.getElementById('twoFingerReminder');
     if (reminder) {
         reminder.style.display = 'flex';
@@ -1636,7 +1640,6 @@ function startMapGame() {
         wrapper.innerHTML = europeMap;
     }
 
-    // Dismiss the reminder on their first touch
     wrapper.addEventListener('touchstart', hideMapReminder, { once: true });
     wrapper.addEventListener('mousedown', hideMapReminder, { once: true });
 
@@ -1648,10 +1651,7 @@ function startMapGame() {
                 minZoom: 1,
                 bounds: true,
                 boundsPadding: 0.1,
-                // NEW: Require two fingers to pan!
                 beforeTouch: function(e) {
-                    // If it's a single touch, ignore panzoom (returns true) so the user can tap.
-                    // If it's two touches, return false so panzoom takes over!
                     return e.touches.length === 1;
                 }
             });
@@ -1666,6 +1666,8 @@ function startMapGame() {
     }
 
     initMapHitboxes();
+    
+    availableMapTargets = [...mapTargets];
     nextMapQuestion();
 }
 
@@ -1734,40 +1736,37 @@ function initMapHitboxes() {
 }
 
 function nextMapQuestion() {
-    if (mapTargets.length === 0) {
-        document.getElementById('mapPrompt').textContent = "Map not loaded or no hitboxes found!";
+    if (availableMapTargets.length === 0) {
+        document.getElementById('mapPrompt').textContent = "Map Cleared! Awesome job!";
+        // Play the big victory chime when the whole map is done!
+        playVictoryChime(); 
         return;
     }
     
-    // Pick a random location from the ones you drew!
-    currentMapTarget = mapTargets[Math.floor(Math.random() * mapTargets.length)];
+    // Pick a random location from the AVAILABLE ones
+    const randIdx = Math.floor(Math.random() * availableMapTargets.length);
+    currentMapTarget = availableMapTargets[randIdx];
+    
+    // Remove it from the available pool so it's never asked again!
+    availableMapTargets.splice(randIdx, 1);
     
     // --- THE GHOST TRICK LOGIC ---
-    // These are the overlay categories that sit on top of countries
     const overlays = ['peninsula', 'mountains', 'river', 'alps'];
-
-    // What category is the current target? (If it's none of the above, it's a 'base' country/city/sea)
     let activeOverlay = overlays.find(o => currentMapTarget.includes(o)) || 'base';
 
-    // Make the overlapping layers ghosts unless we are actively looking for them
     mapTargets.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-
-        // Check if this specific shape is an overlay
         const isShapeOverlay = overlays.find(o => id.includes(o));
 
         if (isShapeOverlay && isShapeOverlay !== activeOverlay) {
-            // It's an overlay, but NOT the one we are looking for. Turn it into a ghost!
             el.style.pointerEvents = 'none';
         } else {
-            // It's a base country/city, OR it's the exact overlay we want. Make it solid!
             el.style.pointerEvents = 'all';
         }
     });
     // -----------------------------
 
-    // Clean up the text for display (e.g., "seine_river" -> "Seine River")
     const cleanName = currentMapTarget.split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
@@ -1776,25 +1775,33 @@ function nextMapQuestion() {
 }
 
 function handleMapClick(clickedId, element) {
+    // Add an attempt to the counter
+    mapAttempts++;
+    
     if (clickedId === currentMapTarget) {
         // WIN!
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate([30, 50, 30]);
-        playVictoryChime();
-        mapScore++;
-        document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScore}`;
         
-        // Flash the invisible shape green!
+        // NEW: The short spinner chime!
+        playSound(988, 'triangle', 0.1, 0.03);
+        setTimeout(() => playSound(1319, 'triangle', 0.2, 0.03), 100);
+        
+        mapScoreRight++;
+        document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
+        
         element.classList.remove('flash-correct');
-        void element.offsetWidth; // Trigger reflow to restart animation
+        void element.offsetWidth; 
         element.classList.add('flash-correct');
 
         setTimeout(nextMapQuestion, 1000);
     } else {
         // LOSE
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate(50);
-        playSound(200, 'triangle', 0.1, 0.05); // Error buzz
+        playSound(200, 'triangle', 0.1, 0.05); 
         
-        // Clean up the wrong answer for the prompt
+        // Update the denominator on a wrong guess too
+        document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
+        
         const wrongName = clickedId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         document.getElementById('mapPrompt').textContent = `Oops! That's ${wrongName}. Try again!`;
         
