@@ -1624,13 +1624,14 @@ function startMapGame() {
     document.getElementById('mapGameContainer').classList.add('active');
     activeChallengePage = 'mapGameContainer';
     
-    // NEW: Reset Score
     mapScoreRight = 0;
     mapAttempts = 0;
     document.getElementById('mapScoreDisplay').textContent = `Score: 0 / 0`;
 
     const reminder = document.getElementById('twoFingerReminder');
     if (reminder) {
+        // NEW: Updated instructions!
+        reminder.innerHTML = `<span style="margin-right: 10px; font-size: 24px;">🗺️</span> Drag to pan, pinch to zoom`;
         reminder.style.display = 'flex';
         reminder.style.opacity = '1';
     }
@@ -1650,10 +1651,7 @@ function startMapGame() {
                 maxZoom: 6,
                 minZoom: 1,
                 bounds: true,
-                boundsPadding: 0.1,
-                beforeTouch: function(e) {
-                    return e.touches.length === 1;
-                }
+                boundsPadding: 0.1
             });
 
             mapPanZoom.on('panstart', () => { isMapDragging = true; });
