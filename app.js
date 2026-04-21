@@ -1622,7 +1622,6 @@ let isMapProcessing = false;
 let mapPromptTimeout = null;
 
 function startMapGame() {
-    // NEW: Wake up the audio engine so iOS doesn't mute the ding!
     if (audioCtx.state === 'suspended') audioCtx.resume();
 
     document.getElementById('challengeContainer').classList.remove('active');
@@ -1655,18 +1654,40 @@ function startMapGame() {
         if (!mapPanZoom) {
             mapPanZoom = panzoom(svg, {
                 maxZoom: 6,
-                minZoom: 1,
+                minZoom: 1, // 1 = Let them zoom out to see the full map!
                 bounds: true,
                 boundsPadding: 0.1
             });
 
             mapPanZoom.on('panstart', () => { isMapDragging = true; });
             mapPanZoom.on('panend', () => { setTimeout(() => { isMapDragging = false; }, 50); });
+        } 
+        
+        // --- NEW: Dynamic Zoom to Fit Vertically ---
+        
+        // 1. Reset the map to 1.0 scale (fit to width)
+        mapPanZoom.moveTo(0, 0);
+        mapPanZoom.zoomAbs(0, 0, 1);
 
-        } else {
-            mapPanZoom.moveTo(0, 0);
-            mapPanZoom.zoomAbs(0, 0, 1);
+        // 2. Read the map's native aspect ratio from the SVG code
+        const viewBox = svg.getAttribute('viewBox');
+        if (viewBox) {
+            const vbParts = viewBox.split(' ');
+            const vbWidth = parseFloat(vbParts[2]);
+            const vbHeight = parseFloat(vbParts[3]);
+            
+            // 3. Calculate what height the browser shrank the map to
+            const renderedHeight = wrapper.clientWidth * (vbHeight / vbWidth);
+            
+            // 4. Calculate the multiplier needed to make the map fill the screen vertically
+            const verticalZoom = wrapper.clientHeight / renderedHeight;
+
+            // 5. If the map has empty ocean on top/bottom, zoom in until it touches the edges!
+            if (verticalZoom > 1) {
+                mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, verticalZoom);
+            }
         }
+        // -------------------------------------------
     }
 
     initMapHitboxes();
