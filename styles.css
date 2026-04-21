@@ -1010,9 +1010,9 @@ body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 
 /* The pulse animation for a correct tap! */
 @keyframes correctFlash {
-    0% { opacity: 0; fill: #22c55e; }
-    50% { opacity: 0.6; fill: #22c55e; }
-    100% { opacity: 0; fill: #22c55e; }
+    0% { opacity: 0 !important; fill: #22c55e !important; }
+    50% { opacity: 0.6 !important; fill: #22c55e !important; }
+    100% { opacity: 0 !important; fill: #22c55e !important; }
 }
 
 .flash-correct {

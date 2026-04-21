@@ -1618,19 +1618,25 @@ let mapScoreRight = 0;
 let mapAttempts = 0;
 let mapPanZoom = null;
 let isMapDragging = false;
+let isMapProcessing = false;
+let mapPromptTimeout = null;
 
 function startMapGame() {
+    // NEW: Wake up the audio engine so iOS doesn't mute the ding!
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
     document.getElementById('challengeContainer').classList.remove('active');
     document.getElementById('mapGameContainer').classList.add('active');
     activeChallengePage = 'mapGameContainer';
     
     mapScoreRight = 0;
     mapAttempts = 0;
+    isMapProcessing = false;
+    clearTimeout(mapPromptTimeout);
     document.getElementById('mapScoreDisplay').textContent = `Score: 0 / 0`;
 
     const reminder = document.getElementById('twoFingerReminder');
     if (reminder) {
-        // NEW: Updated instructions!
         reminder.innerHTML = `<span style="margin-right: 10px; font-size: 24px;">🗺️</span> Drag to pan, pinch to zoom`;
         reminder.style.display = 'flex';
         reminder.style.opacity = '1';
@@ -1679,6 +1685,8 @@ function hideMapReminder() {
 }
 
 function exitMapGame() {
+    clearTimeout(mapPromptTimeout); // Stop timers if they leave early
+    isMapProcessing = false;
     document.getElementById('mapGameContainer').classList.remove('active');
     document.getElementById('challengeContainer').classList.add('active');
     activeChallengePage = 'challengeContainer';
@@ -1773,14 +1781,17 @@ function nextMapQuestion() {
 }
 
 function handleMapClick(clickedId, element) {
-    // Add an attempt to the counter
+    if (isMapProcessing) return; // Prevent chaotic rapid-tapping!
+
     mapAttempts++;
     
     if (clickedId === currentMapTarget) {
         // WIN!
+        isMapProcessing = true; // Lock the map!
+        clearTimeout(mapPromptTimeout); // Cancel any lingering "Oops!" messages
+
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate([30, 50, 30]);
         
-        // NEW: The short spinner chime!
         playSound(988, 'triangle', 0.1, 0.03);
         setTimeout(() => playSound(1319, 'triangle', 0.2, 0.03), 100);
         
@@ -1791,19 +1802,26 @@ function handleMapClick(clickedId, element) {
         void element.offsetWidth; 
         element.classList.add('flash-correct');
 
-        setTimeout(nextMapQuestion, 1000);
+        // Wait 1 second, then unlock the map and move to the next question
+        mapPromptTimeout = setTimeout(() => {
+            isMapProcessing = false; 
+            nextMapQuestion();
+        }, 1000);
+
     } else {
         // LOSE
+        clearTimeout(mapPromptTimeout); // Cancel previous timers so they don't cross over
+
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate(50);
         playSound(200, 'triangle', 0.1, 0.05); 
         
-        // Update the denominator on a wrong guess too
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
         
         const wrongName = clickedId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         document.getElementById('mapPrompt').textContent = `Oops! That's ${wrongName}. Try again!`;
         
-        setTimeout(() => {
+        // Let them keep guessing instantly, but revert the text after 2 seconds
+        mapPromptTimeout = setTimeout(() => {
             const rightName = currentMapTarget.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             document.getElementById('mapPrompt').textContent = `Find: ${rightName}`;
         }, 2000);
