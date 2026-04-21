@@ -618,15 +618,6 @@ button:disabled svg text {
 /* ========================================================================== 
    8. VIEW MANAGEMENT
    ========================================================================== */
-.version-tag {
-    position: absolute; 
-    top: env(safe-area-inset-top, 10px);
-    right: 15px; 
-    font-size: 11px; 
-    color: #cbd5e1;  
-    opacity: 0.8;    
-}
-
 .view-container {
     display: none; 
     flex-direction: column;

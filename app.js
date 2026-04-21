@@ -1130,13 +1130,33 @@ if ('serviceWorker' in navigator) {
         const newWorker = reg.installing;
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            alert("New version available! Click OK to update."); 
-            window.location.reload();
+            // Unlocked the new UI!
+            showUpdateAvailable();
           }
         });
       });
     });
   });
+}
+
+// NEW: Show the badges and buttons!
+function showUpdateAvailable() {
+    const badge = document.getElementById('navUpdateBadge');
+    if (badge) {
+        badge.style.display = 'flex';
+        // Add a satisfying pop animation
+        badge.style.transform = 'scale(1.4)';
+        setTimeout(() => badge.style.transform = 'scale(1)', 200);
+    }
+    
+    const updateBtn = document.getElementById('updateAppBtn');
+    if (updateBtn) updateBtn.style.display = 'block';
+}
+
+// NEW: The user clicked "Update"
+function applyUpdate() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(20);
+    window.location.reload();
 }
 
 /* ==========================================================================
