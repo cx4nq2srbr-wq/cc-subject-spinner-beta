@@ -5,7 +5,7 @@ let currentMode = 'spinner';
 
 function switchMode(mode) {
     stopVoiceover();
-    const challengeIds = ['challengeContainer', 'taMenuContainer', 'taGameContainer', 'mistakeGameContainer'];
+    const challengeIds = ['challengeContainer', 'taMenuContainer', 'taGameContainer', 'mistakeGameContainer', 'mapGameContainer'];
 
     // THE FIX: Double-tap logic to return to the Focus menu
     if (mode === 'challenge' && currentMode === 'challenge') {
