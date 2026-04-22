@@ -1122,6 +1122,8 @@ bindHoldButton('increaseWeek', increaseWeek);
 bindHoldButton('decreaseWeek', decreaseWeek);
 
 // --- PWA Service Worker ---
+let waitingServiceWorker = null; // NEW: Holds the update in the waiting room!
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./service-worker.js').then(reg => {
@@ -1130,8 +1132,11 @@ if ('serviceWorker' in navigator) {
         const newWorker = reg.installing;
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // Unlocked the new UI!
+            
+            // Save the worker so our button can talk to it!
+            waitingServiceWorker = newWorker; 
             showUpdateAvailable();
+            
           }
         });
       });
@@ -1143,7 +1148,6 @@ function showUpdateAvailable() {
     const badge = document.getElementById('navUpdateBadge');
     if (badge) {
         badge.style.display = 'flex';
-        // Add a satisfying pop animation
         badge.style.transform = 'scale(1.4)';
         setTimeout(() => badge.style.transform = 'scale(1)', 200);
     }
@@ -1151,7 +1155,6 @@ function showUpdateAvailable() {
     const updateBtn = document.getElementById('updateAppBtn');
     if (updateBtn) updateBtn.style.display = 'block';
 
-    // Peek at the server's newest manifest file to see what version is waiting!
     fetch('manifest.json', { cache: 'no-store' })
         .then(r => r.ok ? r.json() : Promise.reject())
         .then(m => {
@@ -1167,7 +1170,12 @@ function showUpdateAvailable() {
 
 function applyUpdate() {
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(20);
-    window.location.reload();
+    
+    // Tell the Service Worker to apply the update, then reload!
+    if (waitingServiceWorker) {
+        waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' });
+    }
+    setTimeout(() => window.location.reload(), 200);
 }
 
 /* ==========================================================================
