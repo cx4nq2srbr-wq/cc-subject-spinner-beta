@@ -1139,7 +1139,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// NEW: Show the badges and buttons!
 function showUpdateAvailable() {
     const badge = document.getElementById('navUpdateBadge');
     if (badge) {
@@ -1151,9 +1150,21 @@ function showUpdateAvailable() {
     
     const updateBtn = document.getElementById('updateAppBtn');
     if (updateBtn) updateBtn.style.display = 'block';
+
+    // Peek at the server's newest manifest file to see what version is waiting!
+    fetch('manifest.json', { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(m => {
+            const newVerDisplay = document.getElementById('new-version-display');
+            const newVerText = document.getElementById('new-version');
+            if (newVerDisplay && newVerText && m.version) {
+                newVerText.textContent = m.version;
+                newVerDisplay.style.display = 'inline';
+            }
+        })
+        .catch(err => console.log("Could not fetch incoming version number."));
 }
 
-// NEW: The user clicked "Update"
 function applyUpdate() {
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(20);
     window.location.reload();
