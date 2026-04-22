@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cc-spinner-v4.0.11 beta'; // Increment this (v1.1, v1.2) to force an update
+const CACHE_NAME = 'cc-spinner-v4.0.12 beta'; // Bumped version to trigger the update!
 const ASSETS = [
   './',
   './index.html',
@@ -9,12 +9,12 @@ const ASSETS = [
   './icon.png'
 ];
 
-// 1. Install & Skip Waiting
+// 1. Install (Removed skipWaiting so the update politely waits in the background!)
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
-    }).then(() => self.skipWaiting()) // Forces the new service worker to take over
+    })
   );
 });
 
@@ -34,7 +34,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Network-First Strategy (The Fix)
+// 3. Network-First Strategy
 // This checks the internet for the new HTML first. If offline, it uses the cache.
 self.addEventListener('fetch', (event) => {
   event.respondWith(
@@ -42,4 +42,12 @@ self.addEventListener('fetch', (event) => {
       return caches.match(event.request);
     })
   );
+});
+
+// 4. NEW: The Waiting Room Lock
+// Listens for the signal from our green "UPDATE" button in app.js
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
