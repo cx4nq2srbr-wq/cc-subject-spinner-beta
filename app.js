@@ -1660,6 +1660,8 @@ let isMapDragging = false;
 let isMapProcessing = false;
 let mapPromptTimeout = null;
 let mapDragTimeout = null;
+let touchStartX = 0;
+let touchStartY = 0;
 
 function startMapGame() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1688,6 +1690,13 @@ function startMapGame() {
 
     wrapper.addEventListener('touchstart', hideMapReminder, { once: true });
     wrapper.addEventListener('mousedown', hideMapReminder, { once: true });
+
+    wrapper.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 0) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+    }, { passive: true });
 
     const svg = document.querySelector('#svgMapWrapper svg');
     if (svg) {
@@ -1796,11 +1805,21 @@ function initMapHitboxes() {
             const newEl = el.cloneNode(true);
             el.parentNode.replaceChild(newEl, el);
             
-            // We bind to both Click (for mouse) and TouchEnd (for fingers)
             const handleTap = (e) => {
-                if (isMapDragging) return; // If they were dragging, ignore the tap!
+                // NEW: Did they swipe? Check the math!
+                if (e.type === 'touchend' && e.changedTouches.length > 0) {
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    
+                    // If the finger moved more than 10 pixels, it's a swipe. Ignore the tap!
+                    if (Math.hypot(endX - touchStartX, endY - touchStartY) > 10) {
+                        return; 
+                    }
+                }
+
+                if (isMapDragging) return; // Fallback lock
                 e.stopPropagation();
-                if (e.cancelable) e.preventDefault(); // Stop double-firing on phones
+                if (e.cancelable) e.preventDefault(); 
                 handleMapClick(rawId, newEl);
             };
 
@@ -1859,8 +1878,8 @@ function handleMapClick(clickedId, element) {
     
     if (clickedId === currentMapTarget) {
         // WIN!
-        isMapProcessing = true; // Lock the map!
-        clearTimeout(mapPromptTimeout); // Cancel any lingering "Oops!" messages
+        isMapProcessing = true; 
+        clearTimeout(mapPromptTimeout); 
 
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate([30, 50, 30]);
         
@@ -1870,11 +1889,20 @@ function handleMapClick(clickedId, element) {
         mapScoreRight++;
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
         
-        element.classList.remove('flash-correct');
-        void element.offsetWidth; 
-        element.classList.add('flash-correct');
+        // --- NEW: Bulletproof JS Animation ---
+        element.style.transition = 'none'; // Stop any old transitions
+        element.style.opacity = '0.8';     // Punch the opacity up instantly!
+        element.classList.add('flash-correct'); // Turn the fill green
+        
+        setTimeout(() => {
+            element.style.transition = 'opacity 1s ease-out'; // Tell it to fade smoothly
+            element.style.opacity = '0'; // Drop back to zero
+            
+            // Clean up the green class after the fade is fully done
+            setTimeout(() => element.classList.remove('flash-correct'), 1000);
+        }, 50);
+        // -------------------------------------
 
-        // Wait 1 second, then unlock the map and move to the next question
         mapPromptTimeout = setTimeout(() => {
             isMapProcessing = false; 
             nextMapQuestion();
