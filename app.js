@@ -1659,6 +1659,7 @@ let mapPanZoom = null;
 let isMapDragging = false;
 let isMapProcessing = false;
 let mapPromptTimeout = null;
+let mapDragTimeout = null;
 
 function startMapGame() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1691,16 +1692,27 @@ function startMapGame() {
     const svg = document.querySelector('#svgMapWrapper svg');
     if (svg) {
         if (!mapPanZoom) {
-            mapPanZoom = panzoom(svg, {
-                maxZoom: 6,
-                minZoom: 1, // 1 = Let them zoom out to see the full map!
-                bounds: true,
-                boundsPadding: 0.1
-            });
+                mapPanZoom = panzoom(svg, {
+                    maxZoom: 6,
+                    minZoom: 1,
+                    bounds: true,
+                    boundsPadding: 0.1
+                });
 
-            mapPanZoom.on('panstart', () => { isMapDragging = true; });
-            mapPanZoom.on('panend', () => { setTimeout(() => { isMapDragging = false; }, 50); });
-        } 
+                // NEW: Bulletproof drag and zoom locking!
+                mapPanZoom.on('panstart', () => { isMapDragging = true; });
+                
+                mapPanZoom.on('zoom', () => { 
+                    isMapDragging = true; 
+                    clearTimeout(mapDragTimeout);
+                    mapDragTimeout = setTimeout(() => { isMapDragging = false; }, 400);
+                });
+                
+                mapPanZoom.on('panend', () => { 
+                    clearTimeout(mapDragTimeout);
+                    mapDragTimeout = setTimeout(() => { isMapDragging = false; }, 400); 
+                });
+            }
         
         // --- NEW: Dynamic Zoom to Fit Vertically ---
         
