@@ -999,13 +999,21 @@ body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
     -webkit-user-select: none;
 }
 
-/* The pulse animation for a correct tap! */
-@keyframes correctFlash {
-    0% { opacity: 0 !important; fill: #22c55e !important; }
-    50% { opacity: 0.6 !important; fill: #22c55e !important; }
-    100% { opacity: 0 !important; fill: #22c55e !important; }
+/* 1. The class applied to the map shape when tapped */
+.flash-correct {
+    /* Trigger the clean animation */
+    animation: correctFlash 1s ease-out forwards !important;
 }
 
-.flash-correct {
-    animation: correctFlash 1s ease-out;
+/* 2. Force the shape AND any inner lines grouped inside it to be green! */
+.flash-correct, .flash-correct * {
+    fill: #22c55e !important;
+    stroke: #22c55e !important;
+}
+
+/* 3. The clean animation (NO !important tags here, Safari hates them!) */
+@keyframes correctFlash {
+    0% { opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0; }
 }
