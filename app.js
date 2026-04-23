@@ -1834,9 +1834,7 @@ function initMapHitboxes() {
 
 function nextMapQuestion() {
     if (availableMapTargets.length === 0) {
-        document.getElementById('mapPrompt').textContent = "Map Cleared! Awesome job!";
-        // Play the big victory chime when the whole map is done!
-        playVictoryChime(); 
+        finishMapGame(); 
         return;
     }
     
@@ -1926,4 +1924,29 @@ function handleMapClick(clickedId, element) {
             document.getElementById('mapPrompt').textContent = `Find: ${rightName}`;
         }, 2000);
     }
+}
+
+function finishMapGame() {
+    // 1. Play sounds and haptics
+    playVictoryChime();
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
+    
+    // 2. Calculate the math
+    const accuracy = mapAttempts > 0 ? Math.round((mapScoreRight / mapAttempts) * 100) : 0;
+    
+    // 3. Inject the math into the HTML
+    document.getElementById('mapFinalScore').textContent = `${mapScoreRight} / ${mapAttempts}`;
+    document.getElementById('mapAccuracy').textContent = `Accuracy: ${accuracy}%`;
+    
+    // 4. Show the overlay and pop the confetti!
+    document.getElementById('mapResultsOverlay').style.display = 'flex';
+    startConfetti('mapConfettiCanvas');
+}
+
+function closeMapResults() {
+    stopConfetti('mapConfettiCanvas');
+    document.getElementById('mapResultsOverlay').style.display = 'none';
+    
+    // Clean up the map game and go back to the menu!
+    exitMapGame(); 
 }
