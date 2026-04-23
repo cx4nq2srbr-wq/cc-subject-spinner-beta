@@ -153,11 +153,12 @@
         </button>
         <button class="setting-item" onclick="startMapGame()">
 
-        <div class="setting-text">
-            <h4>Map Explorer (Test)</h4>
-            <p>Test your Figma hitboxes!</p>
-        </div>
-        <div style="font-size: 26px;">🗺️</div>
+        <button class="setting-item" onclick="openMapMenu()">
+            <div class="setting-text">
+                <h4>Map Explorer</h4>
+                <p>Master your geography</p>
+            </div>
+            <div style="font-size: 26px;">🗺️</div>
         </button>
     </div>
 </div>
@@ -238,6 +239,17 @@
         </button>
         
     </div>
+</div>
+
+<div id="mapMenuContainer" class="view-container">
+    <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
+        <button onclick="exitMapMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+    </div>
+    
+    <h2 style="color: var(--primary); margin-top: 20px;">Select a Map</h2>
+    <p style="color: var(--text-muted); font-weight: 800; margin-top: -10px; margin-bottom: 30px;">Cycle <span id="mapMenuCycleDisplay">2</span></p>
+    
+    <div id="mapSelectionList" style="display: flex; flex-direction: column; gap: 15px; width: 90%; max-width: 400px; margin: 0 auto;"></div>
 </div>
 
 <div id="mapGameContainer" class="view-container">

@@ -5,7 +5,7 @@ let currentMode = 'spinner';
 
 function switchMode(mode) {
     stopVoiceover();
-    const challengeIds = ['challengeContainer', 'taMenuContainer', 'taGameContainer', 'mistakeGameContainer', 'mapGameContainer'];
+    const challengeIds = ['challengeContainer', 'taMenuContainer', 'taGameContainer', 'mistakeGameContainer', 'mapMenuContainer', 'mapGameContainer'];
 
     // THE FIX: Double-tap logic to return to the Focus menu
     if (mode === 'challenge' && currentMode === 'challenge') {
@@ -1648,8 +1648,61 @@ function stopVoiceover() {
 }
 
 /* ==========================================================================
-   14. MAP GAME LOGIC (TEST MODE)
+   14. MAP GAME LOGIC
    ========================================================================== */
+// Our new Map Database! You can easily paste new SVG strings in here later.
+const mapDatabase = {
+    1: [
+        // { id: 'c1_africa', name: 'Africa & Middle East', svg: africaMapSVG }
+    ],
+    2: [
+        { id: 'c2_europe', name: 'Europe', svg: europeMap },
+        // { id: 'c2_world', name: 'World Map', svg: worldMapSVG }
+    ],
+    3: [
+        // { id: 'c3_us', name: 'United States', svg: usMapSVG }
+    ]
+};
+
+function openMapMenu() {
+    document.getElementById('challengeContainer').classList.remove('active');
+    document.getElementById('mapMenuContainer').classList.add('active');
+    activeChallengePage = 'mapMenuContainer';
+    
+    document.getElementById('mapMenuCycleDisplay').textContent = currentCycle;
+    
+    const list = document.getElementById('mapSelectionList');
+    list.innerHTML = ''; // Clear old buttons
+    
+    const availableMaps = mapDatabase[currentCycle] || [];
+    
+    if (availableMaps.length === 0) {
+        list.innerHTML = `<p style="color: var(--text-muted); font-weight: bold;">Maps for Cycle ${currentCycle} coming soon!</p>`;
+        return;
+    }
+    
+    // Generate a button for every map in the current cycle
+    availableMaps.forEach(mapObj => {
+        const btn = document.createElement('button');
+        btn.className = 'setting-item'; // Reuse your awesome button styling
+        btn.onclick = () => startMapGame(mapObj.svg);
+        btn.innerHTML = `
+            <div class="setting-text" style="text-align: left;">
+                <h4>${mapObj.name}</h4>
+                <p>Tap to practice</p>
+            </div>
+            <div style="font-size: 24px; color: var(--primary);">➔</div>
+        `;
+        list.appendChild(btn);
+    });
+}
+
+function exitMapMenu() {
+    document.getElementById('mapMenuContainer').classList.remove('active');
+    document.getElementById('challengeContainer').classList.add('active');
+    activeChallengePage = 'challengeContainer';
+}
+
 let mapTargets = [];
 let availableMapTargets = [];
 let currentMapTarget = null;
@@ -1663,10 +1716,11 @@ let mapDragTimeout = null;
 let touchStartX = 0;
 let touchStartY = 0;
 
-function startMapGame() {
+function startMapGame(selectedMapSvg) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
 
-    document.getElementById('challengeContainer').classList.remove('active');
+    // Hide the Menu, show the Game
+    document.getElementById('mapMenuContainer').classList.remove('active');
     document.getElementById('mapGameContainer').classList.add('active');
     activeChallengePage = 'mapGameContainer';
     
@@ -1685,7 +1739,7 @@ function startMapGame() {
 
     const wrapper = document.getElementById('svgMapWrapper');
     if (wrapper.innerHTML.trim() === '') {
-        wrapper.innerHTML = europeMap;
+        wrapper.innerHTML = selectedMapSvg;
     }
 
     wrapper.addEventListener('touchstart', hideMapReminder, { once: true });
@@ -1774,62 +1828,77 @@ function exitMapGame() {
 }
 
 function initMapHitboxes() {
+    mapTargets = [];
     const svg = document.querySelector('#svgMapWrapper svg');
     if (!svg) return;
 
-    mapTargets = [];
-    const allElements = svg.querySelectorAll('[id]');
+    // Grab the current Max Week from the global Lesson Grid display
+    const maxWeekDisplay = document.getElementById('maxWeekDisplay');
+    const currentMaxWeek = maxWeekDisplay ? parseInt(maxWeekDisplay.textContent) : 24;
 
-    // An expanded blacklist of garbage names Figma auto-generates
-    const figmaJunk = ['vector', 'group', 'mask', 'clip', 'path', 'ellipse', 'rect', 'line', 'polygon', 'def', 'image', 'frame', 'c2-europe'];
-    allElements.forEach(el => {
+    // Find every element in the SVG that has an ID
+    const interactables = svg.querySelectorAll('[id]');
+
+    interactables.forEach(el => {
         const rawId = el.getAttribute('id');
-        const lowercaseId = rawId.toLowerCase();
         
-        // Is it on the blacklist?
-        const isJunk = figmaJunk.some(junk => lowercaseId.startsWith(junk));
+        // Ignore Figma's junk layers (like "Vector", "Group", or masks)
+        if (!rawId || rawId.startsWith('Vector') || rawId.startsWith('Group') || rawId.startsWith('mask')) return;
 
-        // FIX: Removed the strict lowercase rule!
-        // Now, as long as it's not Figma junk, and it's longer than 1 letter, we accept it!
-        if (!isJunk && rawId.length > 1) {
-            mapTargets.push(rawId);
-            
-            // 1. Make YOUR blob totally invisible!
-            el.style.opacity = '0'; 
-            el.style.cursor = 'pointer';
-            
-            // Ensure the invisible shape is still physically clickable
-            el.style.pointerEvents = 'all';
+        let displayName = rawId;
+        let isEligible = true;
 
-            // 2. Add the tap listener
-            const newEl = el.cloneNode(true);
-            el.parentNode.replaceChild(newEl, el);
+        // NEW: Check if the ID uses our "w[number]_[name]" format (e.g., w3_france)
+        const weekMatch = rawId.match(/^w(\d+)_(.+)/i);
+        
+        if (weekMatch) {
+            const weekNum = parseInt(weekMatch[1]); // Extract the '3'
+            const rawName = weekMatch[2];           // Extract the 'france'
+
+            // If the week is higher than our max week, exclude it from the game!
+            if (weekNum > currentMaxWeek) {
+                isEligible = false;
+            } else {
+                // Clean up the name for the prompt: "english_channel" -> "English Channel"
+                displayName = rawName
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, char => char.toUpperCase());
+            }
+        } else {
+            // Fallback: If you haven't renamed a layer yet, just clean up its normal name
+            // (This keeps the game from breaking while you update your Figma files!)
+            displayName = displayName
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, char => char.toUpperCase());
+        }
+
+        // If it passed the week test, add it to the game!
+        if (isEligible) {
+            mapTargets.push(rawId); // Save the raw ID for the logic
             
+            // Give it the invisible pointer class so the user knows it's clickable
+            el.classList.add('map-target');
+            
+            // Add the distance-checking tap listener we built earlier
             const handleTap = (e) => {
-                // NEW: Did they swipe? Check the math!
                 if (e.type === 'touchend' && e.changedTouches.length > 0) {
                     const endX = e.changedTouches[0].clientX;
                     const endY = e.changedTouches[0].clientY;
-                    
-                    // If the finger moved more than 10 pixels, it's a swipe. Ignore the tap!
-                    if (Math.hypot(endX - touchStartX, endY - touchStartY) > 10) {
-                        return; 
-                    }
+                    if (Math.hypot(endX - touchStartX, endY - touchStartY) > 10) return; 
                 }
 
-                if (isMapDragging) return; // Fallback lock
+                if (isMapDragging) return; 
                 e.stopPropagation();
                 if (e.cancelable) e.preventDefault(); 
-                handleMapClick(rawId, newEl);
+                
+                // Pass the raw ID and the display name to our click handler
+                handleMapClick(rawId, el);
             };
 
-            newEl.addEventListener('click', handleTap);
-            newEl.addEventListener('touchend', handleTap);
+            el.addEventListener('mousedown', handleTap);
+            el.addEventListener('touchend', handleTap, { passive: false });
         }
     });
-    
-    // This will print a list of everything it found to your browser's console!
-    console.log("Successfully loaded map targets:", mapTargets);
 }
 
 function nextMapQuestion() {
@@ -1860,9 +1929,18 @@ function nextMapQuestion() {
             el.style.pointerEvents = 'all';
         }
     });
-    // -----------------------------
 
-    const cleanName = currentMapTarget.split('_')
+    // --- NEW: Strip the week prefix before formatting! ---
+    let displayTarget = currentMapTarget;
+    
+    // Check if the ID starts with "w" + number + "_"
+    const weekMatch = displayTarget.match(/^w\d+_(.+)/i);
+    if (weekMatch) {
+        displayTarget = weekMatch[1]; // Keep only the "english_channel" part
+    }
+
+    // Capitalize and remove underscores (your original clean logic!)
+    const cleanName = displayTarget.split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 
