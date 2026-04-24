@@ -1774,9 +1774,8 @@ function startMapGame(selectedMapSvg) {
     }
 
     const wrapper = document.getElementById('svgMapWrapper');
-    if (wrapper.innerHTML.trim() === '') {
-        wrapper.innerHTML = selectedMapSvg;
-    }
+    // THE FIX 1: Always inject the new map, destroying the old one!
+    wrapper.innerHTML = selectedMapSvg;
 
     wrapper.addEventListener('touchstart', hideMapReminder, { once: true });
     wrapper.addEventListener('mousedown', hideMapReminder, { once: true });
@@ -1794,64 +1793,64 @@ function startMapGame(selectedMapSvg) {
 
     const svg = document.querySelector('#svgMapWrapper svg');
     if (svg) {
-        if (!mapPanZoom) {
-                mapPanZoom = panzoom(svg, {
-                    maxZoom: 6,
-                    minZoom: 1,
-                    bounds: true,
-                    boundsPadding: 0.1
-                });
-
-                // THE HYBRID TRICK: Fast GPU while moving, crisp vectors when stopped!
-                mapPanZoom.on('panstart', () => { 
-                    isMapDragging = true; 
-                    svg.style.willChange = 'transform'; // Turn ON fast GPU mode
-                });
-                
-                mapPanZoom.on('zoom', () => { 
-                    isMapDragging = true; 
-                    svg.style.willChange = 'transform'; // Turn ON fast GPU mode
-                    clearTimeout(mapDragTimeout);
-                    mapDragTimeout = setTimeout(() => { 
-                        isMapDragging = false; 
-                        svg.style.willChange = 'auto'; // Turn OFF GPU, snap to HD!
-                    }, 400);
-                });
-                
-                mapPanZoom.on('panend', () => { 
-                    clearTimeout(mapDragTimeout);
-                    mapDragTimeout = setTimeout(() => { 
-                        isMapDragging = false; 
-                        svg.style.willChange = 'auto'; // Turn OFF GPU, snap to HD!
-                    }, 400); 
-                });
-            }
-        
-        // --- NEW: Dynamic Zoom to Fit Vertically ---
-        
-        // 1. Reset the map to 1.0 scale (fit to width)
-        mapPanZoom.moveTo(0, 0);
-        mapPanZoom.zoomAbs(0, 0, 1);
-
-        // 2. Read the map's native aspect ratio from the SVG code
+        // THE FIX 2: Calculate the perfect minimum zoom BEFORE building the engine
+        let dynamicMinZoom = 1;
         const viewBox = svg.getAttribute('viewBox');
         if (viewBox) {
             const vbParts = viewBox.split(' ');
             const vbWidth = parseFloat(vbParts[2]);
             const vbHeight = parseFloat(vbParts[3]);
             
-            // 3. Calculate what height the browser shrank the map to
             const renderedHeight = wrapper.clientWidth * (vbHeight / vbWidth);
-            
-            // 4. Calculate the multiplier needed to make the map fill the screen vertically
             const verticalZoom = wrapper.clientHeight / renderedHeight;
-
-            // 5. If the map has empty ocean on top/bottom, zoom in until it touches the edges!
+            
+            // If the screen is taller than the map, force the minimum zoom to fill it!
             if (verticalZoom > 1) {
-                mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, verticalZoom);
+                dynamicMinZoom = verticalZoom;
             }
         }
-        // -------------------------------------------
+        
+        // Destroy the old map engine if one exists (prevents memory leaks when changing maps!)
+        if (mapPanZoom) {
+            mapPanZoom.dispose();
+            mapPanZoom = null;
+        }
+
+        // Build the tightly-bound engine
+        mapPanZoom = panzoom(svg, {
+            maxZoom: 6,
+            minZoom: dynamicMinZoom, // Physically block zooming out too far
+            bounds: true,
+            boundsPadding: 0 // Hard wall, no rubber-banding into the blue!
+        });
+
+        // The Hybrid Trick (Fast GPU moving, HD vectors stopped)
+        mapPanZoom.on('panstart', () => { 
+            isMapDragging = true; 
+            svg.style.willChange = 'transform'; 
+        });
+        
+        mapPanZoom.on('zoom', () => { 
+            isMapDragging = true; 
+            svg.style.willChange = 'transform'; 
+            clearTimeout(mapDragTimeout);
+            mapDragTimeout = setTimeout(() => { 
+                isMapDragging = false; 
+                svg.style.willChange = 'auto'; 
+            }, 400);
+        });
+        
+        mapPanZoom.on('panend', () => { 
+            clearTimeout(mapDragTimeout);
+            mapDragTimeout = setTimeout(() => { 
+                isMapDragging = false; 
+                svg.style.willChange = 'auto'; 
+            }, 400); 
+        });
+        
+        // Instantly snap to our perfect zoom
+        mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, dynamicMinZoom);
+        mapPanZoom.moveTo(0, 0); 
     }
 
     initMapHitboxes();
