@@ -1750,6 +1750,7 @@ let mapPromptTimeout = null;
 let mapDragTimeout = null;
 let touchStartX = 0;
 let touchStartY = 0;
+let isMapTouchTracked = false;
 
 function startMapGame(selectedMapSvg) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1780,15 +1781,22 @@ function startMapGame(selectedMapSvg) {
     wrapper.addEventListener('touchstart', hideMapReminder, { once: true });
     wrapper.addEventListener('mousedown', hideMapReminder, { once: true });
 
-    wrapper.addEventListener('touchstart', (e) => {
-        if (e.touches.length > 0) {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }
-    }, { passive: true });
+    if (!isMapTouchTracked) {
+        wrapper.addEventListener('touchstart', (e) => {
+            // Ignore the math if they use two fingers to zoom!
+            if (e.touches.length === 1) { 
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+        isMapTouchTracked = true;
+    }
 
     const svg = document.querySelector('#svgMapWrapper svg');
     if (svg) {
+        svg.style.willChange = 'transform';
+        svg.style.transform = 'translateZ(0)';
+        
         if (!mapPanZoom) {
                 mapPanZoom = panzoom(svg, {
                     maxZoom: 6,
