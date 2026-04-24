@@ -49,11 +49,11 @@ Future updates
             Latin
             Bible
             English
-            Geography
+            Geography*
             History
                         Timeline
             Science
                         Math
 
-
+*needs to be changed to canadian geography
   

@@ -1668,17 +1668,15 @@ const mapDatabase = {
 
 // --- NEW: Universal Name Cleaner ---
 function formatMapTargetName(rawId) {
-    let name = rawId;
+    // 1. Convert to a string and trim any accidental spaces
+    let name = String(rawId).trim();
     
-    // Bulletproof Regex: Catches w13_norway, w13 norway, w13-norway, or w13norway!
-    const weekMatch = name.match(/^w\d+[_\-\s]*(.+)/i);
-    if (weekMatch) {
-        name = weekMatch[1]; // Strip the w13 part
-    }
-
-    // Split the remaining string by spaces, underscores, or hyphens, then capitalize!
+    // 2. Aggressively search and destroy the "w3_", "W3 ", or "w03-" at the start
+    name = name.replace(/^w\d+[_\-\s]*/i, '');
+    
+    // 3. Format whatever is left into clean, capitalized words!
     return name.split(/[_\-\s]+/)
-        .filter(word => word.length > 0) // Prevent double-spaces from causing errors
+        .filter(word => word.length > 0) 
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
@@ -1927,11 +1925,8 @@ function nextMapQuestion() {
         return;
     }
     
-    // Pick a random location from the AVAILABLE ones
     const randIdx = Math.floor(Math.random() * availableMapTargets.length);
     currentMapTarget = availableMapTargets[randIdx];
-    
-    // Remove it from the available pool so it's never asked again!
     availableMapTargets.splice(randIdx, 1);
     
     // --- THE GHOST TRICK LOGIC ---
@@ -1949,21 +1944,9 @@ function nextMapQuestion() {
             el.style.pointerEvents = 'all';
         }
     });
+    // -----------------------------
 
-    // --- NEW: Strip the week prefix before formatting! ---
-    let displayTarget = currentMapTarget;
-    
-    // Check if the ID starts with "w" + number + "_"
-    const weekMatch = displayTarget.match(/^w\d+_(.+)/i);
-    if (weekMatch) {
-        displayTarget = weekMatch[1]; // Keep only the "english_channel" part
-    }
-
-    // Capitalize and remove underscores (your original clean logic!)
-    const cleanName = displayTarget.split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-
+    // THE FIX: Get the clean name and push it to the screen!
     const cleanName = formatMapTargetName(currentMapTarget);
     document.getElementById('mapPrompt').textContent = `Find: ${cleanName}`;
 }
@@ -2007,7 +1990,7 @@ function handleMapClick(clickedId, element) {
 
     } else {
         // WRONG!
-        clearTimeout(mapPromptTimeout); // Cancel previous timers so they don't cross over
+        clearTimeout(mapPromptTimeout); 
 
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate(50);
         playSound(200, 'triangle', 0.1, 0.05); 
@@ -2015,12 +1998,11 @@ function handleMapClick(clickedId, element) {
         mapAttempts++;
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
         
-        // 1. Tell them what they actually tapped
         const cleanClickedName = formatMapTargetName(clickedId);
         document.getElementById('mapPrompt').textContent = `Oops! That's ${cleanClickedName}. Try again!`;
         
-        // 2. Bring back the original question after 2 seconds
         mapPromptTimeout = setTimeout(() => {
+            // THE FIX: Use the helper here too so the "W3" doesn't return after 2 seconds!
             const rightName = formatMapTargetName(currentMapTarget);
             document.getElementById('mapPrompt').textContent = `Find: ${rightName}`;
         }, 2000);
