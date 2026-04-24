@@ -1,7 +1,7 @@
 {
   "name": "Classical Conversations Lesson Spinner",
   "short_name": "CC Spinner",
-  "version": "4.0.25 beta",
+  "version": "4.0.26 beta",
   "start_url": "./index.html",
   "background_color": "#cce7ff",
   "display": "standalone",

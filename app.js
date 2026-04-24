@@ -1969,6 +1969,8 @@ function handleMapClick(clickedId, element) {
         mapScoreRight++;
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
         
+        document.getElementById('mapPrompt').textContent = "Correct!";
+
         // --- NEW: Bulletproof JS Animation ---
         element.style.transition = 'none'; // Stop any old transitions
         element.style.opacity = '0.8';     // Punch the opacity up instantly!
