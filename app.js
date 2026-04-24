@@ -1650,17 +1650,19 @@ function stopVoiceover() {
 /* ==========================================================================
    14. MAP GAME LOGIC
    ========================================================================== */
-// Our new Map Database! You can easily paste new SVG strings in here later.
+// Our upgraded Map Database with "Coming Soon" flags!
 const mapDatabase = {
     1: [
-        // { id: 'c1_africa', name: 'Africa & Middle East', svg: africaMapSVG }
+        { id: 'c1_africa', name: 'Africa', svg: null, comingSoon: true },
+        { id: 'c1_world', name: 'World', svg: null, comingSoon: true }
     ],
     2: [
-        { id: 'c2_europe', name: 'Europe', svg: europeMap },
-        // { id: 'c2_world', name: 'World Map', svg: worldMapSVG }
+        { id: 'c2_europe', name: 'Europe', svg: europeMap, comingSoon: false },
+        { id: 'c2_world', name: 'World', svg: null, comingSoon: true }
     ],
     3: [
-        // { id: 'c3_us', name: 'United States', svg: usMapSVG }
+        { id: 'c3_us', name: 'United States', svg: null, comingSoon: true },
+        { id: 'c3_canada', name: 'Canada', svg: null, comingSoon: true }
     ]
 };
 
@@ -1684,15 +1686,33 @@ function openMapMenu() {
     // Generate a button for every map in the current cycle
     availableMaps.forEach(mapObj => {
         const btn = document.createElement('button');
-        btn.className = 'setting-item'; // Reuse your awesome button styling
-        btn.onclick = () => startMapGame(mapObj.svg);
-        btn.innerHTML = `
-            <div class="setting-text" style="text-align: left;">
-                <h4>${mapObj.name}</h4>
-                <p>Tap to practice</p>
-            </div>
-            <div style="font-size: 24px; color: var(--primary);">➔</div>
-        `;
+        btn.className = 'setting-item'; 
+        
+        if (mapObj.comingSoon) {
+            // NEW: Greyed out "Coming Soon" styling
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'default';
+            btn.style.pointerEvents = 'none'; // Completely blocks clicks
+            
+            btn.innerHTML = `
+                <div class="setting-text" style="text-align: left;">
+                    <h4>${mapObj.name}</h4>
+                    <p style="color: var(--primary); font-weight: 800;">Coming Soon</p>
+                </div>
+                <div style="font-size: 22px; opacity: 0.5;">🔒</div>
+            `;
+        } else {
+            // Normal active styling
+            btn.onclick = () => startMapGame(mapObj.svg);
+            btn.innerHTML = `
+                <div class="setting-text" style="text-align: left;">
+                    <h4>${mapObj.name}</h4>
+                    <p>Tap to practice</p>
+                </div>
+                <div style="font-size: 24px; color: var(--primary);">➔</div>
+            `;
+        }
+        
         list.appendChild(btn);
     });
 }
