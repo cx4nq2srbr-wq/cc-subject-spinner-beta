@@ -1862,28 +1862,27 @@ function initMapHitboxes() {
     interactables.forEach(el => {
         const rawId = el.getAttribute('id');
         
-        // Ignore obvious junk immediately
         if (!rawId || rawId.startsWith('Vector') || rawId.startsWith('Group') || rawId.startsWith('mask')) return;
 
-        // NEW: STRICT pattern matching! Look for w[number]_[name]
-        const weekMatch = rawId.match(/^w(\d+)_(.+)/i);
-        
-        // If the ID DOES NOT have our "w3_" prefix, completely ignore it! (This destroys "clip_3265")
+        const weekMatch = rawId.match(/^w(\d+)[_\-\s]+(.+)/i);
         if (!weekMatch) return;
+
+        // THE FIX: Instantly hide ALL correctly labeled game pieces, regardless of what week they are!
+        el.style.opacity = '0';
 
         const weekNum = parseInt(weekMatch[1]);
         const rawName = weekMatch[2];
 
-        // If the week is higher than our max week, completely ignore it!
-        if (weekNum > currentMaxWeek) return;
+        // If the week is higher than our max week, disable clicks and abort!
+        if (weekNum > currentMaxWeek) {
+            el.style.pointerEvents = 'none'; // Ensures it doesn't block clicks to the base map
+            return;
+        }
 
-        // If it survived all the filters, it's a valid map target! Add it to the array.
+        // If it survived the Max Week check, add it to the game!
         mapTargets.push(rawId);
         
         el.classList.add('map-target');
-        
-        // THE FIX: Force Figma's colored shapes to be invisible until the user clicks them!
-        el.style.opacity = '0';
         
         // Add the distance-checking tap listener
         const handleTap = (e) => {
@@ -1897,7 +1896,6 @@ function initMapHitboxes() {
             e.stopPropagation();
             if (e.cancelable) e.preventDefault(); 
             
-            // Pass the raw ID and the element to our click handler
             handleMapClick(rawId, el);
         };
 
