@@ -1773,16 +1773,20 @@ function startMapGame(selectedMapSvg) {
         reminder.style.opacity = '1';
     }
 
+    // THE FIX 1: Safely shut down the old engine BEFORE destroying its HTML!
+    if (typeof mapPanZoom !== 'undefined' && mapPanZoom) {
+        mapPanZoom.dispose();
+        mapPanZoom = null;
+    }
+
     const wrapper = document.getElementById('svgMapWrapper');
-    // THE FIX 1: Always inject the new map, destroying the old one!
-    wrapper.innerHTML = selectedMapSvg;
+    wrapper.innerHTML = selectedMapSvg; // Now it's safe to swap the map
 
     wrapper.addEventListener('touchstart', hideMapReminder, { once: true });
     wrapper.addEventListener('mousedown', hideMapReminder, { once: true });
 
     if (!isMapTouchTracked) {
         wrapper.addEventListener('touchstart', (e) => {
-            // Ignore the math if they use two fingers to zoom!
             if (e.touches.length === 1) { 
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
@@ -1793,35 +1797,30 @@ function startMapGame(selectedMapSvg) {
 
     const svg = document.querySelector('#svgMapWrapper svg');
     if (svg) {
-        // THE FIX 2: Calculate the perfect minimum zoom BEFORE building the engine
-        let dynamicMinZoom = 1;
+        let initialZoom = 1;
         const viewBox = svg.getAttribute('viewBox');
         if (viewBox) {
-            const vbParts = viewBox.split(' ');
-            const vbWidth = parseFloat(vbParts[2]);
-            const vbHeight = parseFloat(vbParts[3]);
-            
-            const renderedHeight = wrapper.clientWidth * (vbHeight / vbWidth);
-            const verticalZoom = wrapper.clientHeight / renderedHeight;
-            
-            // If the screen is taller than the map, force the minimum zoom to fill it!
-            if (verticalZoom > 1) {
-                dynamicMinZoom = verticalZoom;
+            // Safer split in case Figma exports with commas or extra spaces
+            const vbParts = viewBox.split(/[\s,]+/);
+            if (vbParts.length >= 4) {
+                const vbWidth = parseFloat(vbParts[2]);
+                const vbHeight = parseFloat(vbParts[3]);
+                
+                const renderedHeight = wrapper.clientWidth * (vbHeight / vbWidth);
+                const verticalZoom = wrapper.clientHeight / renderedHeight;
+                
+                if (verticalZoom > 1) {
+                    initialZoom = verticalZoom;
+                }
             }
         }
-        
-        // Destroy the old map engine if one exists (prevents memory leaks when changing maps!)
-        if (mapPanZoom) {
-            mapPanZoom.dispose();
-            mapPanZoom = null;
-        }
 
-        // Build the tightly-bound engine
+        // Build the engine with the proper physics padding!
         mapPanZoom = panzoom(svg, {
             maxZoom: 6,
-            minZoom: dynamicMinZoom, // Physically block zooming out too far
+            minZoom: initialZoom, // Still cuts off the blue space!
             bounds: true,
-            boundsPadding: 0 // Hard wall, no rubber-banding into the blue!
+            boundsPadding: 0.1    // THE FIX 2: Restores the smooth momentum math
         });
 
         // The Hybrid Trick (Fast GPU moving, HD vectors stopped)
@@ -1849,7 +1848,7 @@ function startMapGame(selectedMapSvg) {
         });
         
         // Instantly snap to our perfect zoom
-        mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, dynamicMinZoom);
+        mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, initialZoom);
         mapPanZoom.moveTo(0, 0); 
     }
 
