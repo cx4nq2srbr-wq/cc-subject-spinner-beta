@@ -1794,9 +1794,6 @@ function startMapGame(selectedMapSvg) {
 
     const svg = document.querySelector('#svgMapWrapper svg');
     if (svg) {
-        svg.style.willChange = 'transform';
-        svg.style.transform = 'translateZ(0)';
-        
         if (!mapPanZoom) {
                 mapPanZoom = panzoom(svg, {
                     maxZoom: 6,
