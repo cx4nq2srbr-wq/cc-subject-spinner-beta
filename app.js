@@ -1802,18 +1802,28 @@ function startMapGame(selectedMapSvg) {
                     boundsPadding: 0.1
                 });
 
-                // NEW: Bulletproof drag and zoom locking!
-                mapPanZoom.on('panstart', () => { isMapDragging = true; });
+                // THE HYBRID TRICK: Fast GPU while moving, crisp vectors when stopped!
+                mapPanZoom.on('panstart', () => { 
+                    isMapDragging = true; 
+                    svg.style.willChange = 'transform'; // Turn ON fast GPU mode
+                });
                 
                 mapPanZoom.on('zoom', () => { 
                     isMapDragging = true; 
+                    svg.style.willChange = 'transform'; // Turn ON fast GPU mode
                     clearTimeout(mapDragTimeout);
-                    mapDragTimeout = setTimeout(() => { isMapDragging = false; }, 400);
+                    mapDragTimeout = setTimeout(() => { 
+                        isMapDragging = false; 
+                        svg.style.willChange = 'auto'; // Turn OFF GPU, snap to HD!
+                    }, 400);
                 });
                 
                 mapPanZoom.on('panend', () => { 
                     clearTimeout(mapDragTimeout);
-                    mapDragTimeout = setTimeout(() => { isMapDragging = false; }, 400); 
+                    mapDragTimeout = setTimeout(() => { 
+                        isMapDragging = false; 
+                        svg.style.willChange = 'auto'; // Turn OFF GPU, snap to HD!
+                    }, 400); 
                 });
             }
         
