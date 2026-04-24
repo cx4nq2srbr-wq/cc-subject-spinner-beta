@@ -1862,62 +1862,47 @@ function initMapHitboxes() {
     interactables.forEach(el => {
         const rawId = el.getAttribute('id');
         
-        // Ignore Figma's junk layers (like "Vector", "Group", or masks)
+        // Ignore obvious junk immediately
         if (!rawId || rawId.startsWith('Vector') || rawId.startsWith('Group') || rawId.startsWith('mask')) return;
 
-        let displayName = rawId;
-        let isEligible = true;
-
-        // NEW: Check if the ID uses our "w[number]_[name]" format (e.g., w3_france)
+        // NEW: STRICT pattern matching! Look for w[number]_[name]
         const weekMatch = rawId.match(/^w(\d+)_(.+)/i);
         
-        if (weekMatch) {
-            const weekNum = parseInt(weekMatch[1]); // Extract the '3'
-            const rawName = weekMatch[2];           // Extract the 'france'
+        // If the ID DOES NOT have our "w3_" prefix, completely ignore it! (This destroys "clip_3265")
+        if (!weekMatch) return;
 
-            // If the week is higher than our max week, exclude it from the game!
-            if (weekNum > currentMaxWeek) {
-                isEligible = false;
-            } else {
-                // Clean up the name for the prompt: "english_channel" -> "English Channel"
-                displayName = rawName
-                    .replace(/_/g, ' ')
-                    .replace(/\b\w/g, char => char.toUpperCase());
+        const weekNum = parseInt(weekMatch[1]);
+        const rawName = weekMatch[2];
+
+        // If the week is higher than our max week, completely ignore it!
+        if (weekNum > currentMaxWeek) return;
+
+        // If it survived all the filters, it's a valid map target! Add it to the array.
+        mapTargets.push(rawId);
+        
+        el.classList.add('map-target');
+        
+        // THE FIX: Force Figma's colored shapes to be invisible until the user clicks them!
+        el.style.opacity = '0';
+        
+        // Add the distance-checking tap listener
+        const handleTap = (e) => {
+            if (e.type === 'touchend' && e.changedTouches.length > 0) {
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                if (Math.hypot(endX - touchStartX, endY - touchStartY) > 10) return; 
             }
-        } else {
-            // Fallback: If you haven't renamed a layer yet, just clean up its normal name
-            // (This keeps the game from breaking while you update your Figma files!)
-            displayName = displayName
-                .replace(/_/g, ' ')
-                .replace(/\b\w/g, char => char.toUpperCase());
-        }
 
-        // If it passed the week test, add it to the game!
-        if (isEligible) {
-            mapTargets.push(rawId); // Save the raw ID for the logic
+            if (isMapDragging) return; 
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault(); 
             
-            // Give it the invisible pointer class so the user knows it's clickable
-            el.classList.add('map-target');
-            
-            // Add the distance-checking tap listener we built earlier
-            const handleTap = (e) => {
-                if (e.type === 'touchend' && e.changedTouches.length > 0) {
-                    const endX = e.changedTouches[0].clientX;
-                    const endY = e.changedTouches[0].clientY;
-                    if (Math.hypot(endX - touchStartX, endY - touchStartY) > 10) return; 
-                }
+            // Pass the raw ID and the element to our click handler
+            handleMapClick(rawId, el);
+        };
 
-                if (isMapDragging) return; 
-                e.stopPropagation();
-                if (e.cancelable) e.preventDefault(); 
-                
-                // Pass the raw ID and the display name to our click handler
-                handleMapClick(rawId, el);
-            };
-
-            el.addEventListener('mousedown', handleTap);
-            el.addEventListener('touchend', handleTap, { passive: false });
-        }
+        el.addEventListener('mousedown', handleTap);
+        el.addEventListener('touchend', handleTap, { passive: false });
     });
 }
 
