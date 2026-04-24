@@ -1666,6 +1666,23 @@ const mapDatabase = {
     ]
 };
 
+// --- NEW: Universal Name Cleaner ---
+function formatMapTargetName(rawId) {
+    let name = rawId;
+    
+    // Bulletproof Regex: Catches w13_norway, w13 norway, w13-norway, or w13norway!
+    const weekMatch = name.match(/^w\d+[_\-\s]*(.+)/i);
+    if (weekMatch) {
+        name = weekMatch[1]; // Strip the w13 part
+    }
+
+    // Split the remaining string by spaces, underscores, or hyphens, then capitalize!
+    return name.split(/[_\-\s]+/)
+        .filter(word => word.length > 0) // Prevent double-spaces from causing errors
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
 function openMapMenu() {
     document.getElementById('challengeContainer').classList.remove('active');
     document.getElementById('mapMenuContainer').classList.add('active');
@@ -1947,6 +1964,7 @@ function nextMapQuestion() {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 
+    const cleanName = formatMapTargetName(currentMapTarget);
     document.getElementById('mapPrompt').textContent = `Find: ${cleanName}`;
 }
 
@@ -1956,7 +1974,7 @@ function handleMapClick(clickedId, element) {
     mapAttempts++;
     
     if (clickedId === currentMapTarget) {
-        // WIN!
+        // CORRECT!
         isMapProcessing = true; 
         clearTimeout(mapPromptTimeout); 
 
@@ -1988,20 +2006,22 @@ function handleMapClick(clickedId, element) {
         }, 1000);
 
     } else {
-        // LOSE
+        // WRONG!
         clearTimeout(mapPromptTimeout); // Cancel previous timers so they don't cross over
 
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate(50);
         playSound(200, 'triangle', 0.1, 0.05); 
         
+        mapAttempts++;
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
         
-        const wrongName = clickedId.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        document.getElementById('mapPrompt').textContent = `Oops! That's ${wrongName}. Try again!`;
+        // 1. Tell them what they actually tapped
+        const cleanClickedName = formatMapTargetName(clickedId);
+        document.getElementById('mapPrompt').textContent = `Oops! That's ${cleanClickedName}. Try again!`;
         
-        // Let them keep guessing instantly, but revert the text after 2 seconds
+        // 2. Bring back the original question after 2 seconds
         mapPromptTimeout = setTimeout(() => {
-            const rightName = currentMapTarget.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            const rightName = formatMapTargetName(currentMapTarget);
             document.getElementById('mapPrompt').textContent = `Find: ${rightName}`;
         }, 2000);
     }
