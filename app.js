@@ -1800,7 +1800,6 @@ function startMapGame(selectedMapSvg) {
         let initialZoom = 1;
         const viewBox = svg.getAttribute('viewBox');
         if (viewBox) {
-            // Safer split in case Figma exports with commas or extra spaces
             const vbParts = viewBox.split(/[\s,]+/);
             if (vbParts.length >= 4) {
                 const vbWidth = parseFloat(vbParts[2]);
@@ -1815,37 +1814,32 @@ function startMapGame(selectedMapSvg) {
             }
         }
 
-        // Build the engine with the proper physics padding!
+        // Build the engine with a tiny 5% bounce for smooth momentum!
         mapPanZoom = panzoom(svg, {
             maxZoom: 6,
-            minZoom: initialZoom, // Still cuts off the blue space!
+            minZoom: initialZoom,
             bounds: true,
-            boundsPadding: 0.1    // THE FIX 2: Restores the smooth momentum math
+            boundsPadding: 0.05 
         });
 
-        // The Hybrid Trick (Fast GPU moving, HD vectors stopped)
-        mapPanZoom.on('panstart', () => { 
-            isMapDragging = true; 
-            svg.style.willChange = 'transform'; 
-        });
-        
-        mapPanZoom.on('zoom', () => { 
-            isMapDragging = true; 
-            svg.style.willChange = 'transform'; 
+        // THE FIX: CPU-Friendly GPU Toggle
+        const goFast = () => {
+            if (svg.style.willChange !== 'transform') {
+                svg.style.willChange = 'transform';
+            }
             clearTimeout(mapDragTimeout);
-            mapDragTimeout = setTimeout(() => { 
-                isMapDragging = false; 
-                svg.style.willChange = 'auto'; 
-            }, 400);
-        });
-        
-        mapPanZoom.on('panend', () => { 
+        };
+
+        const goHD = () => {
             clearTimeout(mapDragTimeout);
-            mapDragTimeout = setTimeout(() => { 
-                isMapDragging = false; 
-                svg.style.willChange = 'auto'; 
-            }, 400); 
-        });
+            mapDragTimeout = setTimeout(() => {
+                svg.style.willChange = 'auto';
+            }, 150); // Faster 150ms recovery prevents ghost-stutters!
+        };
+
+        mapPanZoom.on('panstart', goFast);
+        mapPanZoom.on('zoom', goFast);
+        mapPanZoom.on('panend', goHD);
         
         // Instantly snap to our perfect zoom
         mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, initialZoom);
