@@ -2,7 +2,6 @@ const europeMap = `
 
 <svg width="3001" height="2069" viewBox="0 0 3001 2069" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="C2-Europe" clip-path="url(#clip0_77_35)">
-<rect width="3000.5" height="2069" fill="#6A8ECD" fill-opacity="0.52"/>
 <g id="image_background" clip-path="url(#clip1_77_35)">
 <g id="Group">
 <g id="Clip path group">
