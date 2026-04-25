@@ -1749,22 +1749,33 @@ function startMapGame(selectedMapSvg) {
     if (svg) {
         let initialZoom = 1;
         const viewBox = svg.getAttribute('viewBox');
+
         if (viewBox) {
-            const vbParts = viewBox.split(/[\s,]+/);
-            if (vbParts.length >= 4) {
+            // Safer regex to catch any weird formatting Figma might export
+            const vbParts = viewBox.match(/[\d\.]+/g);
+            if (vbParts && vbParts.length >= 4) {
                 const vbWidth = parseFloat(vbParts[2]);
                 const vbHeight = parseFloat(vbParts[3]);
-                
-                const renderedHeight = wrapper.clientWidth * (vbHeight / vbWidth);
-                const verticalZoom = wrapper.clientHeight / renderedHeight;
-                
-                if (verticalZoom > 1) {
-                    initialZoom = verticalZoom;
+
+                // THE FIX: Strip Figma's hardcoded sizes
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+
+                // Force the SVG DOM element to perfectly match the screen's exact pixel width
+                const targetWidth = wrapper.clientWidth;
+                const targetHeight = targetWidth * (vbHeight / vbWidth);
+
+                svg.style.width = targetWidth + 'px';
+                svg.style.height = targetHeight + 'px';
+
+                // If the map is shorter than the screen, calculate the exact zoom needed to stretch it to the top/bottom!
+                if (targetHeight < wrapper.clientHeight) {
+                    initialZoom = wrapper.clientHeight / targetHeight;
                 }
             }
         }
 
-        // Build the engine with a tiny 5% bounce for smooth momentum!
+        // Build the engine with the proper physics padding!
         mapPanZoom = panzoom(svg, {
             maxZoom: 6,
             minZoom: initialZoom,
@@ -1772,7 +1783,7 @@ function startMapGame(selectedMapSvg) {
             boundsPadding: 0.05 
         });
 
-        // THE FIX: CPU-Friendly GPU Toggle
+        // CPU-Friendly GPU Toggle
         const goFast = () => {
             if (svg.style.willChange !== 'transform') {
                 svg.style.willChange = 'transform';
@@ -1784,7 +1795,7 @@ function startMapGame(selectedMapSvg) {
             clearTimeout(mapDragTimeout);
             mapDragTimeout = setTimeout(() => {
                 svg.style.willChange = 'auto';
-            }, 150); // Faster 150ms recovery prevents ghost-stutters!
+            }, 150); 
         };
 
         mapPanZoom.on('panstart', goFast);
@@ -1795,11 +1806,6 @@ function startMapGame(selectedMapSvg) {
         mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, initialZoom);
         mapPanZoom.moveTo(0, 0); 
     }
-
-    initMapHitboxes();
-    
-    availableMapTargets = [...mapTargets];
-    nextMapQuestion();
 }
 
 // NEW: Helper function to gracefully fade out the reminder pill

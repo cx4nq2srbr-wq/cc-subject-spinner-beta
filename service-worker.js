@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cc-spinner-v4.0.32 beta'; // Bumped version to trigger the update!
+const CACHE_NAME = 'cc-spinner-v4.0.33 beta'; // Bumped version to trigger this new update!
 const ASSETS = [
   './',
   './index.html',
@@ -9,8 +9,10 @@ const ASSETS = [
   './icon.png'
 ];
 
-// 1. Install (Removed skipWaiting so the update politely waits in the background!)
+// 1. Install (Aggressive Update: Force the new version to skip the waiting room!)
 self.addEventListener('install', (event) => {
+  self.skipWaiting(); // THE FIX: Instantly take over!
+  
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
@@ -42,12 +44,4 @@ self.addEventListener('fetch', (event) => {
       return caches.match(event.request);
     })
   );
-});
-
-// 4. NEW: The Waiting Room Lock
-// Listens for the signal from our green "UPDATE" button in app.js
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });
