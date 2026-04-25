@@ -11,7 +11,6 @@ to do list
     Focus page
         + multiple choice mode?
         + map game (ongoing)
-            - green blobs don't show up when i tap an item correctly.
             - i want to use two fingers to pan around the map but not select. right now, when i zoom with two fingers, i often get dinged with a wrong answer as it things i've tapped on something when i release my fingers from zooming.
 
     Lessons page
