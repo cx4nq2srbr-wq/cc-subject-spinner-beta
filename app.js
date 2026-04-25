@@ -1122,60 +1122,10 @@ bindHoldButton('increaseWeek', increaseWeek);
 bindHoldButton('decreaseWeek', decreaseWeek);
 
 // --- PWA Service Worker ---
-let waitingServiceWorker = null; // NEW: Holds the update in the waiting room!
-
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').then(reg => {
-      reg.update(); 
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            
-            // Save the worker so our button can talk to it!
-            waitingServiceWorker = newWorker; 
-            showUpdateAvailable();
-            
-          }
-        });
-      });
-    });
+    navigator.serviceWorker.register('./service-worker.js');
   });
-}
-
-function showUpdateAvailable() {
-    const badge = document.getElementById('navUpdateBadge');
-    if (badge) {
-        badge.style.display = 'flex';
-        badge.style.transform = 'scale(1.4)';
-        setTimeout(() => badge.style.transform = 'scale(1)', 200);
-    }
-    
-    const updateBtn = document.getElementById('updateAppBtn');
-    if (updateBtn) updateBtn.style.display = 'block';
-
-    fetch('manifest.json', { cache: 'no-store' })
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then(m => {
-            const newVerDisplay = document.getElementById('new-version-display');
-            const newVerText = document.getElementById('new-version');
-            if (newVerDisplay && newVerText && m.version) {
-                newVerText.textContent = m.version;
-                newVerDisplay.style.display = 'inline';
-            }
-        })
-        .catch(err => console.log("Could not fetch incoming version number."));
-}
-
-function applyUpdate() {
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(20);
-    
-    // Tell the Service Worker to apply the update, then reload!
-    if (waitingServiceWorker) {
-        waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' });
-    }
-    setTimeout(() => window.location.reload(), 200);
 }
 
 /* ==========================================================================

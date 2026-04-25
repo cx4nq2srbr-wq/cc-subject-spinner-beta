@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cc-spinner-v4.0.30 beta'; // Bumped version to trigger the update!
+const CACHE_NAME = 'cc-spinner-v4.0.31 beta'; // Bumped version to trigger the update!
 const ASSETS = [
   './',
   './index.html',
