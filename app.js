@@ -1826,6 +1826,10 @@ function startMapGame(selectedMapSvg) {
         mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, initialZoom);
         mapPanZoom.moveTo(0, 0); 
     }
+
+    initMapHitboxes();
+    availableMapTargets = [...mapTargets];
+    nextMapQuestion();
 }
 
 // NEW: Helper function to gracefully fade out the reminder pill
