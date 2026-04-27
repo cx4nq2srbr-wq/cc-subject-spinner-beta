@@ -1932,18 +1932,16 @@ function nextMapQuestion() {
             el.style.pointerEvents = 'all';
         }
     });
-    // -----------------------------
-
-    // THE FIX: Get the clean name and push it to the screen!
+   
     const cleanName = formatMapTargetName(currentMapTarget);
     document.getElementById('mapPrompt').textContent = `Find: ${cleanName}`;
 }
 
 function handleMapClick(clickedId, element) {
     const now = Date.now();
-    if (now - lastMapClickTime < 100) return; 
+    if (now - lastMapClickTime < 500) return; 
     lastMapClickTime = now;
-    
+
     if (isMapProcessing) return; // Prevent chaotic rapid-tapping!
 
     mapAttempts++;
