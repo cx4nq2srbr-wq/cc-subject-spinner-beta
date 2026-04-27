@@ -1123,9 +1123,29 @@ bindHoldButton('decreaseWeek', decreaseWeek);
 
 // --- PWA Service Worker ---
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js');
-  });
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').then(reg => {
+            
+            // 1. Force the phone to check for updates the millisecond the app loads
+            reg.update();
+
+            // 2. Force the phone to check for updates EVERY time you minimize and reopen the app!
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    reg.update();
+                }
+            });
+        });
+    });
+
+    // 3. Silently reload the app if the new worker just installed in the background
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+            window.location.reload();
+            refreshing = true;
+        }
+    });
 }
 
 /* ==========================================================================
