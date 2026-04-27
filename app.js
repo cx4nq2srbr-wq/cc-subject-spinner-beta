@@ -1938,12 +1938,14 @@ function nextMapQuestion() {
 }
 
 function handleMapClick(clickedId, element) {
+    // Speed limit to prevent accidental double-taps
     const now = Date.now();
     if (now - lastMapClickTime < 500) return; 
     lastMapClickTime = now;
 
-    if (isMapProcessing) return; // Prevent chaotic rapid-tapping!
+    if (isMapProcessing) return; 
 
+    // THE FIX: We only increment this exactly ONCE per tap!
     mapAttempts++;
     
     if (clickedId === currentMapTarget) {
@@ -1959,21 +1961,17 @@ function handleMapClick(clickedId, element) {
         mapScoreRight++;
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
         
-        document.getElementById('mapPrompt').textContent = "Correct!";
+        document.getElementById('mapPrompt').textContent = "✅ Correct!";
 
-        // --- NEW: Bulletproof JS Animation ---
-        element.style.transition = 'none'; // Stop any old transitions
-        element.style.opacity = '0.8';     // Punch the opacity up instantly!
-        element.classList.add('flash-correct'); // Turn the fill green
+        element.style.transition = 'none'; 
+        element.style.opacity = '0.8';     
+        element.classList.add('flash-correct'); 
         
         setTimeout(() => {
-            element.style.transition = 'opacity 1s ease-out'; // Tell it to fade smoothly
-            element.style.opacity = '0'; // Drop back to zero
-            
-            // Clean up the green class after the fade is fully done
+            element.style.transition = 'opacity 1s ease-out'; 
+            element.style.opacity = '0'; 
             setTimeout(() => element.classList.remove('flash-correct'), 1000);
         }, 50);
-        // -------------------------------------
 
         mapPromptTimeout = setTimeout(() => {
             isMapProcessing = false; 
@@ -1987,14 +1985,13 @@ function handleMapClick(clickedId, element) {
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate(50);
         playSound(200, 'triangle', 0.1, 0.05); 
         
-        mapAttempts++;
+        // THE FIX: The duplicate mapAttempts++ was deleted from right here!
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
         
         const cleanClickedName = formatMapTargetName(clickedId);
         document.getElementById('mapPrompt').textContent = `Oops! That's ${cleanClickedName}. Try again!`;
         
         mapPromptTimeout = setTimeout(() => {
-            // THE FIX: Use the helper here too so the "W3" doesn't return after 2 seconds!
             const rightName = formatMapTargetName(currentMapTarget);
             document.getElementById('mapPrompt').textContent = `Find: ${rightName}`;
         }, 2000);
