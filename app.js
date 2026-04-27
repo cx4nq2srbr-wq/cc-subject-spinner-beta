@@ -1721,6 +1721,7 @@ let mapDragTimeout = null;
 let touchStartX = 0;
 let touchStartY = 0;
 let isMapTouchTracked = false;
+let lastMapClickTime = 0;
 
 function startMapGame(selectedMapSvg) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1939,6 +1940,10 @@ function nextMapQuestion() {
 }
 
 function handleMapClick(clickedId, element) {
+    const now = Date.now();
+    if (now - lastMapClickTime < 100) return; 
+    lastMapClickTime = now;
+    
     if (isMapProcessing) return; // Prevent chaotic rapid-tapping!
 
     mapAttempts++;
