@@ -2074,7 +2074,7 @@ function nextTriviaQuestion() {
     // Pull the next custom question from the deck
     currentTrivia = triviaQueue.shift();
 
-    document.getElementById('triviaSubjectLabel').textContent = `${subjectIcons[currentTrivia.subject]} ${currentTrivia.subject} - Week ${currentTrivia.week}`;
+    document.getElementById('triviaSubjectLabel').textContent = `${subjectIcons[currentTrivia.subject]} ${currentTrivia.subject}`;
     document.getElementById('triviaPrompt').textContent = currentTrivia.q;
 
     // Map the custom options to our button logic
@@ -2095,8 +2095,6 @@ function nextTriviaQuestion() {
         btn.className = 'trivia-option-btn'; // Reset colors from previous question
         btn.onclick = () => processTriviaAnswer(i, allOptions[i].isCorrect, btn);
     }
-    
-    prepVoiceover(currentTrivia.subject, currentTrivia.week, 'audioBtnTrivia');
 }
 
 function processTriviaAnswer(index, isCorrect, btnElement) {
