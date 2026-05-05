@@ -1941,7 +1941,7 @@ function handleMapClick(clickedId, element) {
         mapScoreRight++;
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
         
-        document.getElementById('mapPrompt').textContent = "✅ Correct!";
+        document.getElementById('mapPrompt').textContent = "Correct!";
 
         element.style.transition = 'none'; 
         element.style.opacity = '0.8';     
