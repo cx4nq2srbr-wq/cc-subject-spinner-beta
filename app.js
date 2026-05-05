@@ -857,18 +857,48 @@ function openPicker(type) {
             btn.onclick = () => selectPickerItem(i);
             grid.appendChild(btn);
         });
-    } else {
+    } else if (type === 'week') {
         title.textContent = 'Select Week';
         grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(60px, 1fr))';
         weeks.forEach((w, i) => {
             const btn = document.createElement('button');
-            // THE FIX: Same clean class logic here!
             btn.className = `picker-btn ${i === reviewWeekIdx ? 'selected' : ''}`;
             btn.textContent = w;
             btn.onclick = () => selectPickerItem(i);
             grid.appendChild(btn);
         });
+    } else if (type === 'taMinutes') {
+        title.textContent = 'Select Minutes';
+        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(60px, 1fr))';
+        
+        // Find out what is currently selected on the wheel
+        const scroll = document.getElementById('taMinuteScroll');
+        const currentIdx = Math.round(scroll.scrollTop / 80);
+
+        for(let i = 1; i <= 60; i++) {
+            const btn = document.createElement('button');
+            btn.className = `picker-btn ${i - 1 === currentIdx ? 'selected' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => selectPickerItem(i - 1);
+            grid.appendChild(btn);
+        }
+    } else if (type === 'triviaCount') {
+        title.textContent = 'Select Amount';
+        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(80px, 1fr))';
+        
+        // Find out what is currently selected on the wheel
+        const scroll = document.getElementById('triviaCountScroll');
+        const currentIdx = Math.round(scroll.scrollTop / 80);
+
+        currentTriviaIncrements.forEach((val, i) => {
+            const btn = document.createElement('button');
+            btn.className = `picker-btn ${i === currentIdx ? 'selected' : ''}`;
+            btn.textContent = val;
+            btn.onclick = () => selectPickerItem(i);
+            grid.appendChild(btn);
+        });
     }
+    
     overlay.style.display = 'flex';
 }
 
@@ -879,11 +909,16 @@ function closePicker() {
 function selectPickerItem(idx) {
     if (currentPickerType === 'subject') {
         reviewSubjectIdx = idx;
-    } else {
+        updateReviewDisplay();
+    } else if (currentPickerType === 'week') {
         reviewWeekIdx = idx;
+        updateReviewDisplay();
+    } else if (currentPickerType === 'taMinutes') {
+        document.getElementById('taMinuteScroll').scrollTo({ top: idx * 80, behavior: 'smooth' });
+    } else if (currentPickerType === 'triviaCount') {
+        document.getElementById('triviaCountScroll').scrollTo({ top: idx * 80, behavior: 'smooth' });
     }
-    updateReviewDisplay();
-    // THE FIX: Safely check for vibration support so iOS doesn't crash before closing the menu
+    
     if(userSettings.haptics && navigator.vibrate) navigator.vibrate(20);
     closePicker();
 }
@@ -2012,6 +2047,7 @@ let currentTrivia = null;
 let triviaScoreRight = 0;
 let triviaScoreWrong = 0;
 let isTriviaProcessing = false;
+let currentTriviaIncrements = []; // <--- NEW: Saves the list for the popup picker
 
 function openTriviaMenu() {
     document.getElementById('challengeContainer').classList.remove('active');
@@ -2049,15 +2085,15 @@ function openTriviaMenu() {
     }
 
     const maxQ = fullTriviaDeck.length;
-    let increments = [];
+    currentTriviaIncrements = []; // <--- NEW: Reset the global list
     
     // Create increments of 5 up to the max
     for (let i = 5; i < maxQ; i += 5) {
-        increments.push(i);
+        currentTriviaIncrements.push(i);
     }
-    increments.push(`All (${maxQ})`);
+    currentTriviaIncrements.push(`All (${maxQ})`);
 
-    increments.forEach((val) => {
+    currentTriviaIncrements.forEach((val) => {
         const div = document.createElement("div");
         div.textContent = val;
         div.dataset.val = (typeof val === 'number') ? val : maxQ;
