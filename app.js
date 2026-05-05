@@ -2179,6 +2179,10 @@ function nextTriviaQuestion() {
         const btn = document.getElementById(`triviaBtn${i}`);
         btn.innerHTML = allOptions[i].text;
         btn.className = 'trivia-option-btn'; // Reset colors from previous question
+        
+        // NEW: Tag the button so we can easily find it later!
+        btn.dataset.correct = allOptions[i].isCorrect; 
+        
         btn.onclick = () => processTriviaAnswer(i, allOptions[i].isCorrect, btn);
     }
 }
@@ -2220,7 +2224,7 @@ function processTriviaAnswer(index, isCorrect, btnElement) {
         // Highlight the correct answer with a thick green border
         for (let i = 0; i < 4; i++) {
             const checkBtn = document.getElementById(`triviaBtn${i}`);
-            if (checkBtn.onclick.toString().includes('true')) {
+            if (checkBtn.dataset.correct === 'true') { // THE FIX: Look for our hidden data tag!
                 checkBtn.classList.add('correct-reveal');
             }
         }
