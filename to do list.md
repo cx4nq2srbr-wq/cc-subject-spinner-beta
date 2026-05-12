@@ -27,13 +27,13 @@ Future updates
     + Add the audio files to each lesson
             TO DO       DONE
     Cycle 1
-            Latin
+                        Latin
                         Bible
-            English
+                        English
                         Geography
-            History
+                        History
                         Timeline
-            Science
+                        Science
                         Math
     Cycle 2
             Latin
