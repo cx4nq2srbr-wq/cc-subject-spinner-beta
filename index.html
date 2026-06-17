@@ -171,93 +171,69 @@
 </div>
 
 <div id="mistakeGameContainer" class="view-container">
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitMistakeReview()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
-        <span id="mistakesRemaining" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Remaining: 0</span>
+    <div class="focus-top-bar">
+        <button class="focus-nav-btn back" onclick="exitMistakeReview()">← Back</button>
+        <span id="mistakesRemaining" class="focus-status-text">Remaining: 0</span>
     </div>
 
-    <div id="mistakeSubjectLabel" style="font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
+    <div id="mistakeSubjectLabel" class="focus-subject-label">Subject - Week</div>
 
     <div id="mistakePrompt"></div>
+    <div id="mistakeAnswerContainer">...</div>
 
-    <div id="mistakeAnswerContainer">
-        <button id="toggleMistakeAnswer" onclick="toggleMistakeAnswerBtn()">▼ Show Answer ▼</button>
-        <button id="audioBtnMistake" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnMistake')"></button>
-        <div id="mistakeAnswerContent"></div>
-    </div>
-
-    <div style="display: flex; gap: 15px; margin-top: auto; margin-bottom: 20px; width: 90%; max-width: 400px; justify-content: center;">
-        <button id="mistakeNeedsWorkBtn" onclick="processMistake(false)" disabled style="flex: 1; height: 65px; border-radius: 16px; border: none; background: #ef4444; color: white; font-weight: 800; font-size: 16px; opacity: 0.5; transition: 0.2s; cursor: pointer; box-shadow: 0 4px 15px rgba(239,68,68,0.3);">Needs Work</button>
-        <button id="mistakeCorrectBtn" onclick="processMistake(true)" disabled style="flex: 1; height: 65px; border-radius: 16px; border: none; background: #22c55e; color: white; font-weight: 800; font-size: 16px; opacity: 0.5; transition: 0.2s; cursor: pointer; box-shadow: 0 4px 15px rgba(34,197,94,0.3);">Correct</button>
+    <div class="focus-mistake-actions">
+        <button id="mistakeNeedsWorkBtn" class="focus-action-btn red" onclick="processMistake(false)" disabled style="opacity: 0.5;">Needs Work</button>
+        <button id="mistakeCorrectBtn" class="focus-action-btn green" onclick="processMistake(true)" disabled style="opacity: 0.5;">Correct</button>
     </div>
 </div>
 
 <div id="taMenuContainer" class="view-container">
-    <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitTimeAttackMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+    <div class="focus-top-bar">
+        <button class="focus-nav-btn back" onclick="exitTimeAttackMenu()">← Back</button>
     </div>
     
-    <h2 style="color: var(--primary); margin-top: 20px;">Set Timer</h2>
-    
-    <div class="rollerBox" style="margin: 30px 0;">
-        <div class="slot review-slot" id="taMinuteScroll" style="width: 80px;" onclick="openPicker('taMinutes')">
-            <div class="reel" id="taMinuteReel"></div>
-        </div>
-        <div style="display: flex; align-items: center; font-size: 20px; font-weight: 800; color: var(--text-main);">MINUTES</div>
-    </div>
-    
-    <button onclick="startTimeAttack()" style="background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">START</button>
+    <button class="focus-start-btn" onclick="startTimeAttack()">START</button>
 </div>
 
 <div id="taGameContainer" class="view-container">
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="quitTimeAttack()" style="background: none; border: none; color: #ef4444; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">Quit</button>
-        <div style="font-size: 14px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Time Attack</div>
+    <div class="focus-top-bar">
+        <button class="focus-nav-btn quit" onclick="quitTimeAttack()">✖ Quit</button>
+        <div class="focus-status-text">Time Attack</div>
     </div>
 
-    <div id="taSubjectLabel" style="font-size: 14px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
+    <div id="taSubjectLabel" class="focus-subject-label">Subject - Week</div>
+    
     <div id="taPrompt"></div>
+    <div id="taAnswerContainer">...</div>
 
-    <div id="taAnswerContainer">
-        <button id="toggleTAAnswer" onclick="toggleTAAnswerBtn()">▼ Show Answer ▼</button>
-        <button id="audioBtnTA" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnTA')"></button>
-        <div id="taAnswerContent"></div>
-    </div>
-
-    <div style="display: flex; align-items: center; justify-content: space-between; width: 95%; max-width: 450px; margin: auto 0 20px 0; padding: 0 10px; box-sizing: border-box;">
-        
-        <button id="taNeedsWorkBtn" onclick="processTA(false)" style="width: 70px; height: 70px; border-radius: 20px; border: none; background: #ef4444; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(239,68,68,0.3); transition: transform 0.1s ease;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 36px; height: 36px;">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
+    <div class="focus-ta-actions">
+        <button id="taNeedsWorkBtn" class="focus-action-btn red" onclick="processTA(false)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 36px; height: 36px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
         
         <div id="taScoreWrong" style="font-size: 26px; font-weight: 800; color: #ef4444;">0</div>
-        
         <div id="taTimerDisplay" style="font-size: 38px; font-weight: 800; color: var(--text-main); font-variant-numeric: tabular-nums; width: 120px; text-align: center;">00:00</div>
-        
         <div id="taScoreRight" style="font-size: 26px; font-weight: 800; color: #22c55e;">0</div>
         
-        <button id="taCorrectBtn" onclick="processTA(true)" style="width: 70px; height: 70px; border-radius: 20px; border: none; background: #22c55e; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(34,197,94,0.3); transition: transform 0.1s ease;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 38px; height: 38px;">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
+        <button id="taCorrectBtn" class="focus-action-btn green" onclick="processTA(true)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 38px; height: 38px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </button>
-        
     </div>
 </div>
 
 <div id="mapMenuContainer" class="view-container">
-    <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitMapMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+    <div class="focus-top-bar">
+        <button class="focus-nav-btn back" onclick="exitMapMenu()">← Back</button>
     </div>
-    
-    <h2 style="color: var(--primary); margin-top: 20px;">Select a Map</h2>
-    <p style="color: var(--text-muted); font-weight: 800; margin-top: -10px; margin-bottom: 30px;">Cycle <span id="mapMenuCycleDisplay">2</span></p>
-    
-    <div id="mapSelectionList" style="display: flex; flex-direction: column; gap: 15px; width: 90%; max-width: 400px; margin: 0 auto;"></div>
-</div>
+    </div>
+
+<div id="mapGameContainer" class="view-container">
+    <div class="focus-top-bar">
+        <button class="focus-nav-btn quit" onclick="exitMapGame()">✖ Quit</button>
+        <button onclick="nextMapQuestion()" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--text-muted); font-weight: 800; font-size: 14px; border-radius: 8px; padding: 6px 14px; cursor: pointer;">Skip ⏭️</button>
+        <span id="mapScoreDisplay" class="focus-status-text">Score: 0</span>
+    </div>
+    </div>
 
 <div id="mapGameContainer" class="view-container">
     <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
@@ -278,37 +254,21 @@
 </div>
 
 <div id="triviaMenuContainer" class="view-container">
-    <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitTriviaMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+    <div class="focus-top-bar">
+        <button class="focus-nav-btn back" onclick="exitTriviaMenu()">← Back</button>
     </div>
     
-    <h2 style="color: var(--primary); margin-top: 20px;">How Many Questions?</h2>
-    
-    <div class="rollerBox" style="margin: 30px 0;">
-        <div class="slot review-slot" id="triviaCountScroll" style="width: 160px;" onclick="openPicker('triviaCount')">
-            <div class="reel" id="triviaCountReel"></div>
-        </div>
-    </div>
-    
-    <button onclick="startTriviaGame()" style="background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">START</button>
+    <button class="focus-start-btn" onclick="startTriviaGame()">START</button>
 </div>
 
 <div id="triviaGameContainer" class="view-container">
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitTriviaGame()" style="background: none; border: none; color: #ef4444; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">Quit</button>
-        <span id="triviaScoreDisplay" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Score: 0</span>
+    <div class="focus-top-bar">
+        <button class="focus-nav-btn quit" onclick="exitTriviaGame()">✖ Quit</button>
+        <span id="triviaScoreDisplay" class="focus-status-text">Score: 0</span>
     </div>
 
-    <div id="triviaSubjectLabel" style="font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
+    <div id="triviaSubjectLabel" class="focus-subject-label">Subject - Week</div>
 
-    <div id="triviaPrompt"></div>
-
-    <div class="trivia-grid">
-        <button id="triviaBtn0" class="trivia-option-btn"></button>
-        <button id="triviaBtn1" class="trivia-option-btn"></button>
-        <button id="triviaBtn2" class="trivia-option-btn"></button>
-        <button id="triviaBtn3" class="trivia-option-btn"></button>
-    </div>
 </div>
 
 <div id="taResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">

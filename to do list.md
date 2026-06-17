@@ -10,6 +10,8 @@ to do list
         
     Focus page
         + multiple choice mode?
+            - clean up the questions in data.js
+            
         + map game (ongoing)
             - i want to use two fingers to pan around the map but not select. right now, when i zoom with two fingers, i often get dinged with a wrong answer as it things i've tapped on something when i release my fingers from zooming.
 
@@ -49,10 +51,12 @@ Future updates
             Bible
             English
             Geography*
-            History
+            History*
                         Timeline
             Science
                         Math
 
-*needs to be changed to canadian geography
+*needs to be changed to canadian version
   
+
+- clean up quiz questions

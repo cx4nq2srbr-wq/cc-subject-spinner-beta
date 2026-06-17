@@ -1060,3 +1060,54 @@ body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 /* Dark Mode Overrides */
 body.dark-mode .trivia-option-btn { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); color: #f8fafc; }
 body.dark-mode #triviaPrompt { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }
+
+/* ==========================================================================
+   FOCUS MODE SHARED STYLES
+   ========================================================================== */
+.focus-top-bar {
+    width: 100%; display: flex; justify-content: space-between; align-items: center; 
+    padding: 15px 25px; box-sizing: border-box;
+}
+
+.focus-nav-btn {
+    background: none; border: none; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;
+}
+.focus-nav-btn.back { color: var(--secondary); }
+.focus-nav-btn.quit { color: #ef4444; }
+
+.focus-status-text {
+    color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;
+}
+
+.focus-subject-label {
+    font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px; text-align: center;
+}
+
+.focus-start-btn {
+    background: var(--primary); color: white; border: none; padding: 15px 40px; 
+    border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; 
+    box-shadow: 0 4px 15px rgba(255,111,97,0.3);
+}
+
+/* Shared Action Buttons (Standardized to 70px tall, 20px radius) */
+.focus-action-btn {
+    height: 70px; border-radius: 20px; border: none; color: white; 
+    font-weight: 800; font-size: 16px; cursor: pointer; 
+    display: flex; align-items: center; justify-content: center; 
+    transition: transform 0.1s ease, opacity 0.2s;
+}
+.focus-action-btn.red { background: #ef4444; box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
+.focus-action-btn.green { background: #22c55e; box-shadow: 0 4px 15px rgba(34,197,94,0.3); }
+
+/* Specific Button Layouts */
+.focus-mistake-actions {
+    display: flex; gap: 15px; margin-top: auto; margin-bottom: 20px; 
+    width: 90%; max-width: 400px; justify-content: center; margin-inline: auto;
+}
+.focus-mistake-actions .focus-action-btn { flex: 1; }
+
+.focus-ta-actions {
+    display: flex; align-items: center; justify-content: space-between; 
+    width: 95%; max-width: 450px; margin: auto auto 20px auto; padding: 0 10px; box-sizing: border-box;
+}
+.focus-ta-actions .focus-action-btn { width: 70px; }
