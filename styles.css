@@ -551,17 +551,8 @@ button:disabled svg text {
   z-index: 3000;
 }
 
-#doneOverlay {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.45);
-  z-index: 4000;
-}
-
-#doneOverlay .doneBox, #taResultsOverlay .doneBox, #mistakeResultsOverlay .doneBox {
+/* Make ALL doneBox popups solid white with a shadow */
+.doneBox {
   position: relative;
   background: #fff;
   padding: 18px;
@@ -574,7 +565,8 @@ button:disabled svg text {
   z-index: 2;
 }
 
-#doneOverlay canvas, #taResultsOverlay canvas, #mistakeResultsOverlay canvas {
+/* Make sure confetti canvases span the entire screen behind the popup */
+canvas[id$="ConfettiCanvas"], #confettiCanvas {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   width: 100%; height: 100%;
@@ -582,19 +574,9 @@ button:disabled svg text {
   z-index: 1;
 }
 
-#doneOverlay .doneActions, #taResultsOverlay .doneActions, #mistakeResultsOverlay .doneActions { 
+.doneActions { 
     position: relative; 
     z-index: 2; 
-}
-
-#resetConfirmOverlay .confirmBox {
-  background: #fff;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  width: 85%;
-  max-width: 320px;
-  text-align: center;
 }
 
 .picker-btn {
