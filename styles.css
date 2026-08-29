@@ -551,6 +551,16 @@ button:disabled svg text {
   z-index: 3000;
 }
 
+#doneOverlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 4000;
+}
+
 /* Make ALL doneBox popups solid white with a shadow */
 .doneBox {
   position: relative;
