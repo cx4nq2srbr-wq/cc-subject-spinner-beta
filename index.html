@@ -33,6 +33,7 @@
 
   <div id="answerContainer">
     <button id="toggleAnswer" onclick="toggleAnswer()">▼ Show Answer ▼</button>
+    <button id="infoBtnMain" class="info-btn" onclick="openInfoModal(event, 'infoBtnMain')">i</button>
     <button id="audioBtnMain" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnMain')"></button>
     <div id="answerContent"></div>
   </div>
@@ -89,6 +90,7 @@
         
         <div id="reviewAnswerContainer">
             <div class="answer-header-static">ANSWER</div>
+            <button id="infoBtnReview" class="info-btn" onclick="openInfoModal(event, 'infoBtnReview')">i</button>
             <button id="audioBtnReview" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnReview')"></button>
             <div id="reviewAnswerContent"></div>
         </div>
@@ -182,6 +184,7 @@
 
     <div id="mistakeAnswerContainer">
         <button id="toggleMistakeAnswer" onclick="toggleMistakeAnswerBtn()">▼ Show Answer ▼</button>
+        <button id="infoBtnMistake" class="info-btn" onclick="openInfoModal(event, 'infoBtnMistake')">i</button>
         <button id="audioBtnMistake" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnMistake')"></button>
         <div id="mistakeAnswerContent"></div>
     </div>
@@ -220,6 +223,7 @@
 
     <div id="taAnswerContainer">
         <button id="toggleTAAnswer" onclick="toggleTAAnswerBtn()">▼ Show Answer ▼</button>
+        <button id="infoBtnTA" class="info-btn" onclick="openInfoModal(event, 'infoBtnTA')">i</button>
         <button id="audioBtnTA" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnTA')"></button>
         <div id="taAnswerContent"></div>
     </div>
@@ -492,6 +496,14 @@
         <h3 id="pickerTitle" style="margin-top: 0; text-align: center; color: var(--primary);">Select</h3>
         <div id="pickerGrid" style="display: grid; gap: 10px; overflow-y: auto; padding: 10px 0;"></div>
         <button onclick="closePicker()" style="margin-top: 15px; width: 100%; padding: 12px; background: #f1f5f9; color: #64748b; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">Cancel</button>
+    </div>
+</div>
+
+<div id="infoModalOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 6000;">
+    <div style="background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 90%; max-width: 500px; border-radius: 16px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); max-height: 80vh; overflow-y: auto; position: relative; text-align: center;">
+        <button onclick="closeInfoModal()" style="position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 800; cursor: pointer; color: #64748b;">X</button>
+        <h3 style="margin-top: 0; color: var(--primary);">Extra Info</h3>
+        <div id="infoModalContent"></div>
     </div>
 </div>
 

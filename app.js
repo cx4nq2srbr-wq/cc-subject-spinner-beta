@@ -324,6 +324,7 @@ function spinBoth() {
       ansDiv.innerHTML = lesson.a;
       
       prepVoiceover(subject, week, 'audioBtnMain');
+      prepInfoBtn(subject, week, 'infoBtnMain');
 
       // Handle Auto-Reveal
       if (userSettings.autoReveal) {
@@ -834,6 +835,7 @@ function updateReviewDisplay() {
     document.getElementById('reviewAnswerContent').innerHTML = lesson.a;
 
     prepVoiceover(subject, week, 'audioBtnReview');
+    prepInfoBtn(subject, week, 'infoBtnReview');
     updateFlagUI(); // Ensure flag color updates when scrolling!
 }
 
@@ -1263,7 +1265,8 @@ function spinNextMistake() {
 
         // 8. Prep Audio
         prepVoiceover(currentMistake.subject, currentMistake.week, 'audioBtnMistake');
-        
+        prepInfoBtn(currentMistake.subject, currentMistake.week, 'infoBtnMistake');
+
     } catch (error) {
         console.error("Mistake Review Crash:", error);
         alert("Oops! A corrupted lesson got stuck in the deck. We've cleared the error, please try again.");
@@ -1438,6 +1441,7 @@ function nextTAQuestion() {
     document.getElementById('toggleTAAnswer').textContent = '▼ Show Answer ▼';
     
     prepVoiceover(taCurrent.subject, taCurrent.week, 'audioBtnTA');
+    prepInfoBtn(taCurrent.subject, taCurrent.week, 'infoBtnTA');
 }
 
 function toggleTAAnswerBtn() {
@@ -1649,6 +1653,58 @@ function stopVoiceover() {
         voiceAudio.pause();
         if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
     }
+}
+
+/* ==========================================================================
+   EXTRA INFO ENGINE
+   ========================================================================== */
+function prepInfoBtn(subject, week, btnId) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    
+    // Reset state
+    btn.style.display = 'none';
+    
+    // Construct the base file name
+    const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const jpgUrl = `extra/c${currentCycle}-${cleanSubject}-w${week}.jpg`;
+    const pngUrl = `extra/c${currentCycle}-${cleanSubject}-w${week}.png`;
+
+    // Ping the server for the JPG first
+    fetch(jpgUrl, { method: 'HEAD' })
+        .then(res => {
+            if (res.ok) {
+                btn.dataset.url = jpgUrl;
+                btn.style.display = 'flex'; // Found the JPG!
+            } else {
+                // If the JPG is missing, check for a PNG
+                return fetch(pngUrl, { method: 'HEAD' }).then(resPng => {
+                    if (resPng.ok) {
+                        btn.dataset.url = pngUrl;
+                        btn.style.display = 'flex'; // Found the PNG!
+                    }
+                });
+            }
+        })
+        .catch(e => { /* Both files missing or network error, keep button hidden */ });
+}
+
+function openInfoModal(e, btnId) {
+    if (e) e.stopPropagation(); // Stop the blue bar from opening!
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    
+    const btn = document.getElementById(btnId);
+    if (!btn || !btn.dataset.url) return;
+    
+    // Inject the image and scale it to fit the popup
+    document.getElementById('infoModalContent').innerHTML = `<img src="${btn.dataset.url}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">`;
+    document.getElementById('infoModalOverlay').style.display = 'flex';
+}
+
+function closeInfoModal() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    document.getElementById('infoModalOverlay').style.display = 'none';
+    document.getElementById('infoModalContent').innerHTML = ""; // Clean up memory
 }
 
 /* ==========================================================================
