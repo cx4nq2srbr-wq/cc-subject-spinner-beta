@@ -51,7 +51,7 @@ Future updates
             Bible
             English
             Geography*
-            History*
+                        History
                         Timeline
             Science
                         Math
@@ -60,3 +60,5 @@ Future updates
   
 
 - clean up quiz questions
+
+Map Explorer is cloaked. remove  {style="display: none;}  to restore
