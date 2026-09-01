@@ -634,491 +634,469 @@ const cycleData = {
 };
 
 /* ==========================================================================
-   CUSTOM TRIVIA BANK (EXPANDED MASTER LIST)
+   CUSTOM TRIVIA BANK (EXPANDED MASTER LIST - CLEANED & GROUPED)
    ========================================================================== */
 const customTriviaBank = [
     // ==========================================
-    // CYCLE 1 QUESTIONS
+    // CYCLE 1
     // ==========================================
-    
+
     // Cycle 1 - Math
-    { cycle: 1, subject: "Math", week: 10, q: "What is 4 squared (4 x 4)?", options: ["8", "12", "16", "20"], answerIndex: 2 },
-    { cycle: 1, subject: "Math", week: 12, q: "If you are baking cookies, how many teaspoons equal 1 tablespoon?", options: ["2", "3", "4", "5"], answerIndex: 1 },
-    { cycle: 1, subject: "Math", week: 13, q: "How many cups are in 1 pint?", options: ["2", "4", "6", "8"], answerIndex: 0 },
-    { cycle: 1, subject: "Math", week: 14, q: "How many inches are in a foot?", options: ["10", "12", "14", "16"], answerIndex: 1 },
-    { cycle: 1, subject: "Math", week: 15, q: "True or False: 1,000 meters equals 1 kilometer.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "Math", week: 18, q: "The area of a triangle equals one-half base times what?", options: ["Width", "Length", "Height", "Radius"], answerIndex: 2 },
-
-    // Cycle 1 - Science
-    { cycle: 1, subject: "Science", week: 1, q: "Which of these is a classification of living things?", options: ["Kingdom", "Empire", "Country", "State"], answerIndex: 0 },
-    { cycle: 1, subject: "Science", week: 2, q: "True or False: Fungi is one of the kingdoms of living things.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "Science", week: 3, q: "Which of these is a part of an animal cell?", options: ["Cell wall", "Chloroplasts", "Nucleus", "Bark"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 4, q: "Nucleus, cytoplasm, vacuole, mitochondria, and cell membrane are parts of what kind of cell?", options: ["Animal cell", "Plant cell", "Duracell", "Bacteria cell"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 6, q: "Which of these is a major group of vertebrates?", options: ["Sponges", "Fish", "Flatworms", "Mollusks"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 9, q: "Which of these is a part of a plant?", options: ["Heart", "Lungs", "Roots", "Bones"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 11, q: "Which of these is a part of a flower?", options: ["Petal", "Leaf", "Stem", "Root"], answerIndex: 0 },
-    { cycle: 1, subject: "Science", week: 13, q: "The core, mantle, and crust are parts of what?", options: ["The atmosphere", "The ocean", "The geosphere", "The sun"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 14, q: "Which of these is a kind of rock?", options: ["Plastic", "Igneous", "Metal", "Glass"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 16, q: "True or False: A dormant volcano is a kind of volcano.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "Science", week: 20, q: "Which of these is a part of the atmosphere?", options: ["Core", "Mantle", "Stratosphere", "Crust"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 23, q: "What type of cloud sounds like a puffy cotton ball?", options: ["Cumulus", "Stratus", "Cirrus", "Nimbus"], answerIndex: 0 },
-
-    // Cycle 1 - History
-    { cycle: 1, subject: "History", week: 1, q: "What is the 5th Commandment?", options: ["No stealing", "Honor parents", "No lying", "Sabbath"], answerIndex: 1 },
-    { cycle: 1, subject: "History", week: 3, q: "Which of these is a Greek god?", options: ["Jupiter", "Mars", "Zeus", "Neptune"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 4, q: "Which of the following was NOT one of the Seven Wonders of the Ancient World?", options: ["Pyramids", "Hanging Gardens", "Eiffel Tower", "Colossus"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 6, q: "Who was a famous ancient Greek mathematician?", options: ["Homer", "Pythagoras", "Socrates", "Archimedes"], answerIndex: 1 },
-    { cycle: 1, subject: "History", week: 16, q: "The Olmecs, Mayans, and Aztecs were civilizations of what region?", options: ["Mesoamerica", "Europe", "Asia", "Africa"], answerIndex: 0 },
-    { cycle: 1, subject: "History", week: 17, q: "Who did the Aztecs fall to in 1519?", options: ["Columbus", "Cortés", "Magellan", "Cabot"], answerIndex: 1 },
-
-    // Cycle 1 - English
-    { cycle: 1, subject: "English", week: 1, q: "True or False: A preposition relates a noun or pronoun to another word.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "English", week: 14, q: "What kind of verb helps another verb assert action?", options: ["Linking verb", "Helping verb", "Action verb", "Noun"], answerIndex: 1 },
-    { cycle: 1, subject: "English", week: 20, q: "What kind of verb makes an assertion by joining two words?", options: ["Helping verb", "Linking verb", "Doing verb", "Adverb"], answerIndex: 1 },
-
-    // Cycle 1 - Bible
-    { cycle: 1, subject: "Bible", week: 1, q: "What did God create on Day 1?", options: ["Sun, Moon, Stars", "Atmosphere", "Earth, Space, Time, Light", "Animals"], answerIndex: 2 },
-    { cycle: 1, subject: "Bible", week: 4, q: "Who built an ark at God's command to save his family?", options: ["Moses", "Abraham", "Noah", "David"], answerIndex: 2 },
-    { cycle: 1, subject: "Bible", week: 6, q: "What event caused people to speak different languages?", options: ["The Flood", "Tower of Babel", "Exodus", "Creation"], answerIndex: 1 },
-    { cycle: 1, subject: "Bible", week: 14, q: "Who was sold into slavery by his brothers and saved his family from a famine in Egypt?", options: ["Moses", "Joseph", "Isaac", "Jacob"], answerIndex: 1 },
-    { cycle: 1, subject: "Bible", week: 17, q: "What was the very first plague of Egypt?", options: ["Frogs", "Flies", "Blood", "Locusts"], answerIndex: 2 },
-
-    // ==========================================
-    // CYCLE 2 QUESTIONS
-    // ==========================================
-
-    // Cycle 2 - Math
-    { cycle: 2, subject: "Math", week: 11, q: "What is 3 cubed (3 x 3 x 3)?", options: ["9", "18", "27", "81"], answerIndex: 2 },
-    { cycle: 2, subject: "Math", week: 16, q: "True or False: The area of a rectangle equals length times width.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "Math", week: 17, q: "To find the area of a square, you take the length of its side and do what?", options: ["Multiply by 2", "Square it", "Divide it", "Add 4"], answerIndex: 1 },
-
-    // Cycle 2 - Science
-    { cycle: 2, subject: "Science", week: 1, q: "On what day of creation did God create land animals, Adam, and Eve?", options: ["Day 4", "Day 5", "Day 6", "Day 7"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 2, q: "Which of these is a land biome?", options: ["Pond", "Ocean", "Desert", "Lake"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 3, q: "True or False: An animal that eats only plants is called an omnivore.", options: ["True", "False"], answerIndex: 1 }, // False (herbivore)
-    { cycle: 2, subject: "Science", week: 4, q: "What are the parts of the food chain?", options: ["Producer, consumer, decomposer", "Plant, animal, human", "Sun, earth, moon", "Seed, stem, leaf"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 6, q: "How do animals react to environmental change?", options: ["Adapt, migrate, hibernate", "Read, write, math", "Run, jump, swim", "Sleep, eat, play"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 8, q: "Which of these is an aquatic biome?", options: ["Tundra", "Grassland", "Oceans and seas", "Scrubland"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 10, q: "Which of these planets is closest to the sun?", options: ["Earth", "Mars", "Venus", "Mercury"], answerIndex: 3 },
-    { cycle: 2, subject: "Science", week: 11, q: "Which of these is a phase of the moon?", options: ["Triangle", "Square", "Crescent", "Circle"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 14, q: "Solid, liquid, gas, and plasma are the four states of what?", options: ["Water", "Matter", "Energy", "Light"], answerIndex: 1 },
-    { cycle: 2, subject: "Science", week: 15, q: "What are two forms of energy?", options: ["Hot and Cold", "Kinetic and Potential", "Fast and Slow", "Light and Dark"], answerIndex: 1 },
-    { cycle: 2, subject: "Science", week: 23, q: "Radiation, conduction, and convection are three ways that what flows?", options: ["Water", "Electricity", "Heat", "Wind"], answerIndex: 2 },
-
-    // Cycle 2 - History
-    { cycle: 2, subject: "History", week: 1, q: "Who was crowned Holy Roman Emperor of Europe in 800?", options: ["King John", "William the Conqueror", "Charlemagne", "Richard the Lion-Hearted"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 4, q: "English King John signed what famous document in 1215, limiting the king's power?", options: ["The Constitution", "The Magna Carta", "The Declaration", "The Treaty of Paris"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 6, q: "Who was a famous playwright during the Renaissance?", options: ["Leonardo da Vinci", "William Shakespeare", "Michelangelo", "Copernicus"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 7, q: "Who began the Protestant Reformation by printing the Ninety-Five Theses?", options: ["John Calvin", "Pope Leo X", "Martin Luther", "Henry VIII"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 11, q: "The Reign of Terror and the use of the guillotine happened during which revolution?", options: ["American Revolution", "French Revolution", "Industrial Revolution", "Russian Revolution"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 14, q: "True or False: World War I started in 1914 and ended in 1918.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "History", week: 16, q: "World War II began in 1939 when Hitler invaded what country?", options: ["France", "England", "Russia", "Poland"], answerIndex: 3 },
-    { cycle: 2, subject: "History", week: 24, q: "Who became South Africa's first black president after the end of apartheid?", options: ["Nelson Mandela", "F.W. de Klerk", "Martin Luther King, Jr.", "Gandhi"], answerIndex: 0 },
-
-    // Cycle 2 - English
-    { cycle: 2, subject: "English", week: 2, q: "What replaces a noun in order to avoid repetition?", options: ["Verb", "Adjective", "Pronoun", "Adverb"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 4, q: "Which of these is a Nominative Pronoun?", options: ["Me", "My", "I", "Mine"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 14, q: "What part of speech answers the questions: How? When? Where? and Why?", options: ["Noun", "Adjective", "Adverb", "Pronoun"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 17, q: "What part of speech names a person, place, thing, activity, or idea?", options: ["Verb", "Noun", "Adverb", "Conjunction"], answerIndex: 1 },
-    { cycle: 2, subject: "English", week: 24, q: "What is a word or phrase used as a strong expression of feeling or emotion called?", options: ["Conjunction", "Adjective", "Interjection", "Preposition"], answerIndex: 2 },
-
-    // Cycle 2 - Bible
-    { cycle: 2, subject: "Bible", week: 3, q: "Who were the three kings of united Israel?", options: ["Abraham, Isaac, Jacob", "Saul, David, Solomon", "Peter, James, John", "Elijah, Elisha, Joel"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 6, q: "Who oversaw the building of the first Jewish temple?", options: ["David", "Moses", "Solomon", "Aaron"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 19, q: "What book of the Old Testament contains a collection of wise instruction for living a godly life?", options: ["Psalms", "Proverbs", "Genesis", "Exodus"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 23, q: "How old was Jesus when he started teaching alongside the Jewish leaders in the temple?", options: ["10", "12", "15", "30"], answerIndex: 1 },
-
-    // ==========================================
-    // CYCLE 3 QUESTIONS
-    // ==========================================
-
-    // Cycle 3 - Science
-    { cycle: 3, subject: "Science", week: 1, q: "Connective, epithelial, muscle, and nerve are four types of what?", options: ["Bones", "Blood", "Tissue", "Organs"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 2, q: "The skull, vertebrae, ribs, and sternum make up what?", options: ["Axial skeleton", "Appendicular skeleton", "Nervous system", "Digestive system"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 3, q: "Which of these is a kind of muscle?", options: ["Rough", "Smooth", "Hard", "Soft"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 4, q: "The brain, spinal cord, and nerves are three parts of what system?", options: ["Digestive", "Circulatory", "Nervous", "Excretory"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 5, q: "Which of these is one of your five main senses?", options: ["Flying", "Hearing", "Invisibility", "Telepathy"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 6, q: "The stomach and the small intestine are parts of what system?", options: ["Digestive system", "Nervous system", "Skeletal system", "Lymph system"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 8, q: "What system includes the heart, arteries, veins, and capillaries?", options: ["Nervous system", "Digestive system", "Circulatory system", "Respiratory system"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 10, q: "The nose, trachea, and lungs are parts of what system?", options: ["Circulatory system", "Respiratory system", "Excretory system", "Endocrine system"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 14, q: "What is a basic chemical substance defined by its atomic number and atomic mass?", options: ["Element", "Cell", "Tissue", "Organ"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 16, q: "What is the very first element in the periodic table?", options: ["Helium", "Oxygen", "Hydrogen", "Carbon"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 19, q: "True or False: An acid donates a hydrogen ion.", options: ["True", "False"], answerIndex: 0 },
-
-    // Cycle 3 - History
-    { cycle: 3, subject: "History", week: 1, q: "What are the three groups of Indigenous people in Canada?", options: ["First Nations, Inuit, Métis", "Mayans, Aztecs, Olmecs", "Vikings, Celts, Gauls", "Romans, Greeks, Spartans"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 3, q: "What explorer claimed Newfoundland for England in 1497?", options: ["John Cabot", "Samuel de Champlain", "Leif Eriksson", "Christopher Columbus"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 5, q: "Who is known as the 'Father of New France' and founded Quebec City?", options: ["Jacques Cartier", "Samuel de Champlain", "John Cabot", "Louis de Buade"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 7, q: "In 1670, The English Crown formed what company to find a northwest passage to the Pacific?", options: ["East India Company", "Hudson's Bay Company", "Virginia Company", "North West Company"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 11, q: "The British fought the French in the Seven Years' War for control of the colonies and what trade?", options: ["Gold trade", "Spice trade", "Fur trade", "Silk trade"], answerIndex: 2 },
-    { cycle: 3, subject: "History", week: 15, q: "During the War of 1812, who led British troops alongside Shawnee Chief Tecumseh?", options: ["General George Washington", "General Isaac Brock", "General Wellington", "General Wolfe"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 18, q: "What Act established the Dominion of Canada on July 1, 1867?", options: ["The Quebec Act", "The Constitutional Act", "The Act of Union", "The British North America Act"], answerIndex: 3 },
-    { cycle: 3, subject: "History", week: 21, q: "Who kept law and order in the West to encourage families to settle there?", options: ["The Texas Rangers", "The North-West Mounted Police", "The British Army", "The Canadian Militia"], answerIndex: 1 },
-
-    // Cycle 3 - English
-    { cycle: 3, subject: "English", week: 1, q: "What is 'to' plus a verb, used as a noun, adjective, or adverb called?", options: ["Infinitive", "Gerund", "Participle", "Appositive"], answerIndex: 0 },
-    { cycle: 3, subject: "English", week: 2, q: "True or False: A present participle is a verb plus '-ing'.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "English", week: 17, q: "What part of a sentence is that about which something is being said?", options: ["Predicate", "Clause", "Subject", "Phrase"], answerIndex: 2 },
-    { cycle: 3, subject: "English", week: 19, q: "A group of words that contains both a subject and a verb is called a what?", options: ["Phrase", "Clause", "Paragraph", "Predicate"], answerIndex: 1 },
-    { cycle: 3, subject: "English", week: 22, q: "A group of words that does NOT contain both a subject and a verb is called a what?", options: ["Clause", "Sentence", "Phrase", "Subject"], answerIndex: 2 },
-
-    // Cycle 3 - Bible
-    { cycle: 3, subject: "Bible", week: 1, q: "What are the two major themes of the Bible?", options: ["Creation and Flood", "Who God is and His covenant with man", "Kings and Prophets", "Law and Grace"], answerIndex: 1 },
-    { cycle: 3, subject: "Bible", week: 2, q: "What are the two major divisions of the Bible?", options: ["Law and Prophets", "Old Testament and New Testament", "Gospels and Letters", "History and Poetry"], answerIndex: 1 },
-    { cycle: 3, subject: "Bible", week: 4, q: "Which of these is the first book of the Old Testament?", options: ["Exodus", "Leviticus", "Genesis", "Numbers"], answerIndex: 2 },
-    { cycle: 3, subject: "Bible", week: 9, q: "Matthew, Mark, Luke, and John are the first four books of what?", options: ["Old Testament", "New Testament", "The Law", "The Prophets"], answerIndex: 1 },
-    { cycle: 3, subject: "Bible", week: 13, q: "How is Jesus portrayed in the Gospel of John?", options: ["As King", "As Servant", "As Man", "As God"], answerIndex: 3 },
-    { cycle: 3, subject: "Bible", week: 16, q: "Which disciple betrayed Jesus?", options: ["Peter", "John", "Thomas", "Judas Iscariot"], answerIndex: 3 },
-    { cycle: 3, subject: "Bible", week: 18, q: "What book of the Bible records the ascension of Christ and Pentecost?", options: ["Romans", "Acts", "Hebrews", "Revelation"], answerIndex: 1 },
-    { cycle: 3, subject: "Bible", week: 19, q: "Who was a Jewish leader who at first persecuted Christians but then became a devoted follower of Christ?", options: ["Peter", "John", "Saul of Tarsus (Paul)", "James"], answerIndex: 2 },
-    { cycle: 3, subject: "Bible", week: 22, q: "What book of the New Testament is typically considered a prophecy of the end times?", options: ["Revelation", "Romans", "Jude", "Acts"], answerIndex: 0 },
-
-// ==========================================
-    // CYCLE 1 - EXPANSION PACK
-    // ==========================================
-    { cycle: 1, subject: "Math", week: 11, q: "What is 2 cubed (2 x 2 x 2)?", options: ["4", "6", "8", "10"], answerIndex: 2 },
-    { cycle: 1, subject: "Math", week: 19, q: "To find the area of a circle, multiply pi (3.14) times the radius what?", options: ["Halved", "Squared", "Cubed", "Doubled"], answerIndex: 1 },
-    { cycle: 1, subject: "Math", week: 22, q: "Which law states that a + b = b + a?", options: ["Associative Law", "Identity Law", "Commutative Law", "Distributive Law"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 5, q: "Sponges, flatworms, and sea stars belong to what major group?", options: ["Vertebrates", "Invertebrates", "Mammals", "Amphibians"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 7, q: "Which of these is a way animals reproduce?", options: ["Live birth", "Photosynthesis", "Transpiration", "Breathing"], answerIndex: 0 },
-    { cycle: 1, subject: "Science", week: 8, q: "Photosynthesis is a system used by what living things?", options: ["Animals", "Humans", "Plants", "Fungi"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 10, q: "Linear, oval, and lobed are shapes of what?", options: ["Clouds", "Leaves", "Rocks", "Bones"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 12, q: "What is a conifer?", options: ["A type of rock", "An animal", "A type of seed plant", "A cloud"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 17, q: "Magma, lava, and crater are parts of a what?", options: ["Mountain", "Ocean", "Volcano", "Cloud"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 18, q: "Where would you find an abyssal plain and a trench?", options: ["In the sky", "On the ocean floor", "Inside a volcano", "In the desert"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 21, q: "What famous circle of latitude goes right around the middle of the Earth?", options: ["Arctic Circle", "Tropic of Cancer", "Equator", "Antarctic Circle"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 2, q: "What is the 8th Commandment?", options: ["No murder", "No stealing", "No lying", "No idols"], answerIndex: 1 },
-    { cycle: 1, subject: "History", week: 5, q: "In what year did the Western Roman Empire fall?", options: ["27 BC", "AD 286", "AD 476", "AD 1453"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 7, q: "Karma, reincarnation, and the caste system are parts of what religion from India?", options: ["Buddhism", "Christianity", "Hinduism", "Islam"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 8, q: "Who led India to independence from British rule?", options: ["Queen Victoria", "Gandhi", "Columbus", "King George"], answerIndex: 1 },
-    { cycle: 1, subject: "History", week: 10, q: "Samurai protected landowners in what country?", options: ["China", "India", "Japan", "Egypt"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 11, q: "Which emperor legalized Christianity and founded Constantinople?", options: ["Justinian", "Augustus", "Constantine", "Nero"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 14, q: "Ancient Ghana in Africa was known as the land of what?", options: ["Silver", "Gold", "Diamonds", "Salt"], answerIndex: 1 },
-    { cycle: 1, subject: "History", week: 18, q: "The Adena, Hopewell, and Mississippians are known as the what?", options: ["Pyramid Builders", "Mound Builders", "Castle Builders", "Cave Dwellers"], answerIndex: 1 },
-    { cycle: 1, subject: "English", week: 13, q: "True or False: 'According to' and 'instead of' are compound prepositions.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "English", week: 15, q: "Which of these is a helping verb?", options: ["Run", "Jump", "Does", "Happy"], answerIndex: 2 },
-    { cycle: 1, subject: "English", week: 21, q: "Am, is, are, was, and were are forms of what verb?", options: ["To Do", "To Have", "To Be", "To Go"], answerIndex: 2 },
-    { cycle: 1, subject: "Bible", week: 3, q: "What was God's covenant with Adam?", options: ["Never flood the earth again", "Send a Redeemer to the world", "Give him a kingdom", "Make him a priest"], answerIndex: 1 },
-    { cycle: 1, subject: "Bible", week: 5, q: "What was God's covenant with Noah?", options: ["To never destroy the human race by flood again", "To give him land", "To make him king", "To send fire from heaven"], answerIndex: 0 },
-    { cycle: 1, subject: "Bible", week: 8, q: "Who was a God-fearing man who endured loss as God demonstrated His authority?", options: ["Moses", "Abraham", "Job", "David"], answerIndex: 2 },
-    { cycle: 1, subject: "Bible", week: 10, q: "Who was the son of Abraham through whom the Jewish people came?", options: ["Ishmael", "Isaac", "Jacob", "Esau"], answerIndex: 1 },
-    { cycle: 1, subject: "Bible", week: 12, q: "True or False: Reuben, Simeon, and Levi were sons of Israel.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "Bible", week: 15, q: "What was Moses' job?", options: ["Build an ark", "Be king of Israel", "Deliver the Israelites from Egyptian slavery", "Build the temple"], answerIndex: 2 },
-    { cycle: 1, subject: "Bible", week: 16, q: "Who was Moses' older brother and right-hand man?", options: ["Joshua", "Aaron", "Caleb", "Miriam"], answerIndex: 1 },
-    { cycle: 1, subject: "Bible", week: 22, q: "What was the portable tent of meeting with God called?", options: ["The Temple", "The Tabernacle", "The Synagogue", "The Ark"], answerIndex: 1 },
-    { cycle: 1, subject: "Bible", week: 24, q: "Where were the Ten Commandments kept?", options: ["In the Ark", "On the Brazen Altar", "In the Showbread", "At the Laver"], answerIndex: 0 },
-
-    // ==========================================
-    // CYCLE 2 - EXPANSION PACK
-    // ==========================================
-    { cycle: 2, subject: "Math", week: 10, q: "What is 5 squared (5 x 5)?", options: ["10", "15", "20", "25"], answerIndex: 3 },
-    { cycle: 2, subject: "Math", week: 13, q: "How many quarts are in 1 gallon?", options: ["2", "4", "6", "8"], answerIndex: 1 },
-    { cycle: 2, subject: "Math", week: 24, q: "True or False: The Identity Law for addition states that a + 0 = a.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 5, q: "The water cycle, carbon and oxygen cycle, and nitrogen cycle are examples of what?", options: ["Cycles in space", "Cycles in nature", "Bicycle parts", "Weather fronts"], answerIndex: 1 },
-    { cycle: 2, subject: "Science", week: 7, q: "Noise, air, water, and land are forms of what?", options: ["Pollution", "Biomes", "Energy", "Weather"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 9, q: "Sunspots and solar flares are parts of the what?", options: ["Moon", "Earth", "Sun", "Mars"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 12, q: "Asteroids, comets, and meteoroids are bodies found where?", options: ["In the ocean", "In the earth's crust", "In our solar system", "In the atmosphere"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 13, q: "Apollo and Shuttle are names of U.S. what?", options: ["Submarines", "Airplanes", "Space missions", "Satellites"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 16, q: "Which law states that an object at rest tends to remain at rest unless an outside force acts upon it?", options: ["Newton's 1st Law", "Newton's 2nd Law", "Newton's 3rd Law", "First Law of Thermodynamics"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 18, q: "Which law states that for every action, there is an equal and opposite reaction?", options: ["Newton's 1st Law", "Newton's 2nd Law", "Newton's 3rd Law", "Law of Gravity"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 19, q: "True or False: The first law of thermodynamics states that energy CANNOT be created or destroyed.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 24, q: "What units are used to measure voltage?", options: ["Ohms", "Volts", "Amps", "Watts"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 2, q: "What happened to the church in 1054?", options: ["It split into Roman Catholic and Eastern Orthodox", "It was founded", "It moved to England", "It was destroyed"], answerIndex: 0 },
-    { cycle: 2, subject: "History", week: 3, q: "Richard the Lion-Hearted fought the Turks for Jerusalem during what wars?", options: ["Hundred Years' War", "The Crusades", "World War I", "The Boer Wars"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 5, q: "Who led the French to defeat the English at the Siege of Orleans?", options: ["Joan of Arc", "Napoleon", "King John", "William the Conqueror"], answerIndex: 0 },
-    { cycle: 2, subject: "History", week: 8, q: "Who was the explorer that first sailed around the globe?", options: ["Columbus", "Magellan", "Vespucci", "Coronado"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 9, q: "Louis XIV of France and Peter the Great of Russia ruled during the age of what?", options: ["Absolute Monarchs", "Exploration", "Industry", "Information"], answerIndex: 0 },
-    { cycle: 2, subject: "History", week: 10, q: "Who brought Christianity to Russia in the 900s?", options: ["Ivan the Terrible", "Peter the Great", "Vladimir I", "Catherine the Great"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 12, q: "Where was Napoleon Bonaparte finally defeated?", options: ["Paris", "Waterloo", "Moscow", "London"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 13, q: "Watt's steam engine and Whitney's cotton gin spurred what revolution?", options: ["French Revolution", "American Revolution", "Industrial Revolution", "Russian Revolution"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 15, q: "During WWI, Great Britain, France, and Russia fought against Austria-Hungary and Germany. What were Germany and Austria-Hungary called?", options: ["The Allies", "The Axis", "The Central Powers", "The Republic"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 17, q: "Which of these leaders was part of the Allied powers during WWII?", options: ["Hitler", "Tojo", "Mussolini", "Churchill"], answerIndex: 3 },
-    { cycle: 2, subject: "History", week: 18, q: "What organization was formed in 1945 to replace the failed League of Nations?", options: ["The United Nations", "NATO", "The European Union", "The Soviet Union"], answerIndex: 0 },
-    { cycle: 2, subject: "History", week: 19, q: "What U.S. General led United Nations forces during the Korean War?", options: ["Eisenhower", "MacArthur", "Washington", "Grant"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 20, q: "In 1965, which U.S. President sent troops to stop communist North Vietnam?", options: ["Nixon", "Kennedy", "Johnson", "Reagan"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 21, q: "Which U.S. President worked with British Prime Minister Margaret Thatcher to end the Cold War?", options: ["Bush", "Reagan", "Carter", "Clinton"], answerIndex: 1 },
-    { cycle: 2, subject: "English", week: 3, q: "First person singular, second person singular, and third person plural are examples of what?", options: ["Noun Cases", "Verb Tenses", "Pronoun Order", "Sentence Types"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 5, q: "Which of these is an Objective Pronoun?", options: ["I", "Me", "My", "Mine"], answerIndex: 1 },
-    { cycle: 2, subject: "English", week: 8, q: "Myself, yourself, and themselves are what kind of pronouns?", options: ["Reflexive", "Interrogative", "Demonstrative", "Possessive"], answerIndex: 0 },
-    { cycle: 2, subject: "English", week: 9, q: "Who, whom, whose, which, and what are what kind of pronouns?", options: ["Demonstrative", "Indefinite", "Interrogative", "Reflexive"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 15, q: "Declarative, exclamatory, interrogative, and imperative are four purposes of what?", options: ["Verbs", "Nouns", "Sentences", "Paragraphs"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 18, q: "Subject, direct object, and possessive are three of the five cases of what?", options: ["Verbs", "Nouns", "Adjectives", "Pronouns"], answerIndex: 1 },
-    { cycle: 2, subject: "English", week: 19, q: "True or False: A gerund is a present participle verb form used as a noun.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "English", week: 21, q: "What part of speech is used to connect words, phrases, or clauses together?", options: ["Adjective", "Conjunction", "Interjection", "Adverb"], answerIndex: 1 },
-    { cycle: 2, subject: "English", week: 23, q: "What part of speech answers the questions: What kind? How many? Which? Whose?", options: ["Adverb", "Adjective", "Noun", "Verb"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 1, q: "Who was a significant judge of Israel?", options: ["David", "Solomon", "Gideon", "Saul"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 4, q: "True or False: King David fell greatly in sin, yet rose again to love and serve God.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "Bible", week: 5, q: "God's covenant with David promised that who would come from his family?", options: ["Moses", "The Messiah", "Abraham", "Noah"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 7, q: "Because King Solomon built worship temples to false gods, what happened to Israel?", options: ["It was flooded", "It divided into two kingdoms", "It was destroyed by fire", "It conquered Rome"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 8, q: "Who was the first king of the northern kingdom of Israel?", options: ["Rehoboam", "Jeroboam I", "David", "Solomon"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 13, q: "What two nations took the Jewish people into captivity?", options: ["Egypt and Rome", "Greece and Persia", "Assyria and Babylon", "Moab and Edom"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 18, q: "Hymns of praise and songs of thanksgiving are types of what?", options: ["Proverbs", "Prophecies", "Psalms", "Commandments"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 20, q: "Yahweh, Adonai, and Elohim are Hebrew names for who?", options: ["Angels", "Prophets", "Kings", "God"], answerIndex: 3 },
-
-    // ==========================================
-    // CYCLE 3 - EXPANSION PACK
-    // ==========================================
-    { cycle: 3, subject: "Math", week: 18, q: "True or False: The area of a triangle equals length times width.", options: ["True", "False"], answerIndex: 1 }, // False (one-half base x height)
-    { cycle: 3, subject: "Math", week: 20, q: "To find the circumference of a circle, you multiply 2 times pi times what?", options: ["Radius", "Diameter", "Area", "Width"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 7, q: "The urinary tract, lungs, skin, and intestines are parts of what system?", options: ["Digestive", "Nervous", "Excretory", "Endocrine"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 9, q: "Lymph vessels and lymph nodes belong to what system?", options: ["Lymph system", "Circulatory system", "Respiratory system", "Nervous system"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 11, q: "What system uses hormones to send messages through the bloodstream?", options: ["Endocrine system", "Excretory system", "Digestive system", "Nervous system"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 12, q: "Transportation, communication, regulation, and protection are the major purposes of what?", options: ["Bones", "Muscles", "Blood", "Nerves"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 13, q: "What do we call the number of protons in the nucleus of an atom?", options: ["Atomic mass", "Atomic number", "Atomic weight", "Atomic power"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 15, q: "Protons, electrons, and neutrons are parts of a what?", options: ["Cell", "Molecule", "Atom", "Tissue"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 17, q: "Carbon and Oxygen are examples of what?", options: ["Compounds", "Elements", "Mixtures", "Liquids"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 18, q: "True or False: Neon is an element on the periodic table.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 20, q: "The idea that the fittest survive and pass traits to their offspring is called what?", options: ["Intelligent Design", "Natural Selection", "Thermodynamics", "Photosynthesis"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 23, q: "Rocks, fossils, ice, tar, and amber are ways that what is preserved?", options: ["Earth's history", "Space dust", "Ocean water", "Volcanic ash"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 2, q: "Around AD 1000, what Norseman arrived in the land he called Vinland?", options: ["John Cabot", "Christopher Columbus", "Leif Eriksson", "Jacques Cartier"], answerIndex: 2 },
-    { cycle: 3, subject: "History", week: 4, q: "Who mapped the Gulf of the St Lawrence River in 1534?", options: ["Samuel de Champlain", "Jacques Cartier", "John Cabot", "Louis de Buade"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 6, q: "From the 1600s to 1800s, Europeans explored Canada because they wanted pelts from what animal to make hats?", options: ["Bear", "Fox", "Beaver", "Wolf"], answerIndex: 2 },
-    { cycle: 3, subject: "History", week: 8, q: "True or False: Initial contact between Europeans and Indigenous peoples formed around trade and alliances.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 10, q: "What treaty gave Britain control over Newfoundland and Nova Scotia after Queen Anne's War?", options: ["Treaty of Paris", "Treaty of Utrecht", "Treaty of Versailles", "Treaty of Ghent"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 12, q: "Signed in 1774, what act refused to give political representation to the French in Canada?", options: ["The Quebec Act", "The Constitutional Act", "The Union Act", "The British Act"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 13, q: "After the American Revolution, what group of people flocked to Canada?", options: ["French Explorers", "Spanish Conquistadors", "British Loyalists", "Viking Raiders"], answerIndex: 2 },
-    { cycle: 3, subject: "History", week: 14, q: "The Constitutional Act of 1791 divided the Province of Quebec into Upper Canada and what?", options: ["East Canada", "Lower Canada", "New France", "Nova Scotia"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 16, q: "In 1840, Queen Victoria enacted the Act of Union to unite East and West regions into what?", options: ["The Dominion of Canada", "The Province of Canada", "New England", "Rupert's Land"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 17, q: "A government that is accountable to the people, not to the Monarch, is called what?", options: ["Responsible government", "Absolute monarchy", "Dictatorship", "Empire"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 19, q: "Between 1871 and 1921, the Canadian government signed eleven of what with Indigenous people?", options: ["Declarations", "Treaties", "Constitutions", "Laws"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 20, q: "To persuade British Columbia to join Canada, what was promised to be built?", options: ["A massive fort", "A transcontinental railroad", "A fleet of ships", "A new capital city"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 22, q: "In 1917, Canadians fought as a unit for the first time in what World War I battle?", options: ["Battle of Waterloo", "Battle of Midway", "Battle of Vimy Ridge", "Battle of Gettysburg"], answerIndex: 2 },
-    { cycle: 3, subject: "History", week: 23, q: "Passed in 1931, the Statute of Westminster gave Canada complete independence of what?", options: ["Taxes", "Foreign policy", "The Monarchy", "Language"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 24, q: "In 1982, Prime Minister Pierre Trudeau and Queen Elizabeth II signed the Charter of Rights and Freedoms to repatriate what?", options: ["The Military", "The Constitution", "The Railroad", "The Fur Trade"], answerIndex: 1 },
-    { cycle: 3, subject: "English", week: 3, q: "True or False: A past participle is a verb plus '-ed'.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "English", week: 4, q: "Infinitive, present, past, present participle, and past participle are the principal parts of what?", options: ["A Noun", "An Adjective", "A Verb", "A Sentence"], answerIndex: 2 },
-    { cycle: 3, subject: "English", week: 18, q: "What part of a sentence says something ABOUT the subject?", options: ["Clause", "Phrase", "Predicate", "Conjunction"], answerIndex: 2 },
-    { cycle: 3, subject: "English", week: 20, q: "What kind of clause expresses a complete thought like a sentence?", options: ["Subordinate Clause", "Dependent Clause", "Independent Clause", "Santa Clause"], answerIndex: 2 },
-    { cycle: 3, subject: "English", week: 21, q: "True or False: A subordinate clause expresses a complete thought and can stand alone.", options: ["True", "False"], answerIndex: 1 }, // False (does not express a complete thought)
-    { cycle: 3, subject: "English", week: 23, q: "Simple, compound, complex, and compound-complex are four structures of what?", options: ["Verbs", "Paragraphs", "Sentences", "Essays"], answerIndex: 2 },
-    { cycle: 3, subject: "Bible", week: 3, q: "Law, History, Poetry, Prophets, Gospels, Letters, and Prophecy are the seven subdivisions of what?", options: ["The Bible", "The Old Testament", "The Dictionary", "The Encyclopedia"], answerIndex: 0 },
-    { cycle: 3, subject: "Bible", week: 10, q: "Romans, Corinthians, Galatians, and Ephesians are books found where?", options: ["Old Testament", "New Testament", "The Law", "The Gospels"], answerIndex: 1 },
-    { cycle: 3, subject: "Bible", week: 14, q: "Peter, John, James, and Andrew were some of Jesus' original twelve what?", options: ["Brothers", "Kings", "Prophets", "Disciples"], answerIndex: 3 },
-    { cycle: 3, subject: "Bible", week: 17, q: "Under God's new covenant, what lives within believers?", options: ["An angel", "The Holy Spirit", "A priest", "A prophet"], answerIndex: 1 },
-    { cycle: 3, subject: "Bible", week: 20, q: "Paul took the Gospel to the Gentiles. Who took the Gospel to the Jews?", options: ["John", "Matthew", "Peter", "Luke"], answerIndex: 2 },
-    { cycle: 3, subject: "Bible", week: 21, q: "How is Satan described in 1 Peter?", options: ["A sneaky snake", "A roaring lion", "A quiet mouse", "A flying dragon"], answerIndex: 1 },
-    { cycle: 3, subject: "Geography", week: 15, q: "Huron, Ontario, Michigan, Erie, and Superior are the names of what?", options: ["Great Rivers", "Great Mountains", "Great Lakes", "Great Deserts"], answerIndex: 2 },
-
-    // ==========================================
-    // CYCLE 1 - MEGA EXPANSION PACK
-    // ==========================================
-    { cycle: 1, subject: "Geography", week: 1, q: "The Fertile Crescent includes the Mediterranean Sea, Mesopotamia, and what two rivers?", options: ["Nile and Amazon", "Euphrates and Tigris", "Mississippi and Missouri", "Rhine and Danube"], answerIndex: 1 },
-    { cycle: 1, subject: "Geography", week: 5, q: "The Nile River and Nile Delta are part of what ancient empire?", options: ["Egyptian Empire", "Roman Empire", "Assyrian Empire", "Hittite Empire"], answerIndex: 0 },
-    { cycle: 1, subject: "Geography", week: 7, q: "Rome and Carthage were part of what empire?", options: ["Hebrew Empire", "Byzantine Empire", "Roman Empire", "Muslim Empire"], answerIndex: 2 },
-    { cycle: 1, subject: "Geography", week: 9, q: "The Yellow River and Yangtze River are in what country?", options: ["Japan", "China", "India", "Egypt"], answerIndex: 1 },
-    { cycle: 1, subject: "Geography", week: 15, q: "The Middle East includes Israel, the Sinai Peninsula, and what famous canal?", options: ["Erie Canal", "Panama Canal", "Suez Canal", "Grand Canal"], answerIndex: 2 },
-    { cycle: 1, subject: "Latin", week: 1, q: "What noun case is used for the subject of a sentence?", options: ["Genitive", "Dative", "Accusative", "Nominative"], answerIndex: 3 },
-    { cycle: 1, subject: "Latin", week: 1, q: "What noun case is used for the direct object?", options: ["Accusative", "Ablative", "Nominative", "Genitive"], answerIndex: 0 },
-    { cycle: 1, subject: "Latin", week: 3, q: "True or False: The ending '-am' belongs to the 1st Declension (Singular).", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "English", week: 2, q: "True or False: 'Above' and 'across' are prepositions.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "English", week: 19, q: "Shall, will, and can are examples of what kind of verbs?", options: ["Linking Verbs", "Helping Verbs", "Action Verbs", "Nouns"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 22, q: "Cold, warm, stationary, and occluded are kinds of what?", options: ["Oceans", "Mountains", "Weather fronts", "Clouds"], answerIndex: 2 },
-    { cycle: 1, subject: "Science", week: 24, q: "Latitude and longitude are markings found on a what?", options: ["Ruler", "Thermometer", "Globe", "Clock"], answerIndex: 2 },
     { cycle: 1, subject: "Math", week: 1, q: "What comes next when skip counting by 2s: 2, 4, 6, 8, __?", options: ["9", "10", "12", "14"], answerIndex: 1 },
+    { cycle: 1, subject: "Math", week: 2, q: "What comes next when skip counting by 3s: 3, 6, 9, 12, __?", options: ["14", "15", "16", "18"], answerIndex: 1 },
+    { cycle: 1, subject: "Math", week: 2, q: "What comes next when skip counting by 4s: 4, 8, 12, 16, __?", options: ["18", "20", "22", "24"], answerIndex: 1 },
+    { cycle: 1, subject: "Math", week: 3, q: "What comes next when skip counting by 5s: 5, 10, 15, 20, __?", options: ["22", "25", "30", "35"], answerIndex: 1 },
+    { cycle: 1, subject: "Math", week: 3, q: "What comes next when skip counting by 6s: 6, 12, 18, 24, __?", options: ["28", "30", "32", "36"], answerIndex: 1 },
     { cycle: 1, subject: "Math", week: 4, q: "What is 7 times 3?", options: ["18", "21", "24", "28"], answerIndex: 1 },
     { cycle: 1, subject: "Math", week: 5, q: "What is 9 times 4?", options: ["32", "36", "40", "45"], answerIndex: 1 },
     { cycle: 1, subject: "Math", week: 6, q: "What is 11 times 5?", options: ["44", "50", "55", "66"], answerIndex: 2 },
     { cycle: 1, subject: "Math", week: 7, q: "What is 13 times 2?", options: ["23", "26", "29", "39"], answerIndex: 1 },
+    { cycle: 1, subject: "Math", week: 10, q: "What is 4 squared (4 x 4)?", options: ["8", "12", "16", "20"], answerIndex: 2 },
+    { cycle: 1, subject: "Math", week: 11, q: "What is 2 cubed (2 x 2 x 2)?", options: ["4", "6", "8", "10"], answerIndex: 2 },
     { cycle: 1, subject: "Math", week: 11, q: "What is 4 cubed (4 x 4 x 4)?", options: ["16", "32", "64", "128"], answerIndex: 2 },
+    { cycle: 1, subject: "Math", week: 12, q: "If you are baking cookies, how many teaspoons equal 1 tablespoon?", options: ["2", "3", "4", "5"], answerIndex: 1 },
+    { cycle: 1, subject: "Math", week: 13, q: "How many cups are in 1 pint?", options: ["2", "4", "6", "8"], answerIndex: 0 },
+    { cycle: 1, subject: "Math", week: 13, q: "8 fluid ounces equals 1 what?", options: ["Pint", "Quart", "Gallon", "Cup"], answerIndex: 3 },
+    { cycle: 1, subject: "Math", week: 14, q: "How many inches are in a foot?", options: ["10", "12", "14", "16"], answerIndex: 1 },
+    { cycle: 1, subject: "Math", week: 15, q: "True or False: 1,000 meters equals 1 kilometer.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "Math", week: 18, q: "The area of a triangle equals one-half base times what?", options: ["Width", "Length", "Height", "Radius"], answerIndex: 2 },
+    { cycle: 1, subject: "Math", week: 19, q: "To find the area of a circle, multiply pi (3.14) times the radius what?", options: ["Halved", "Squared", "Cubed", "Doubled"], answerIndex: 1 },
+    { cycle: 1, subject: "Math", week: 22, q: "Which law states that a + b = b + a?", options: ["Associative Law", "Identity Law", "Commutative Law", "Distributive Law"], answerIndex: 2 },
+
+    // Cycle 1 - Latin
+    { cycle: 1, subject: "Latin", week: 1, q: "What noun case is used for the subject of a sentence?", options: ["Genitive", "Dative", "Accusative", "Nominative"], answerIndex: 3 },
+    { cycle: 1, subject: "Latin", week: 1, q: "What noun case is used for the direct object?", options: ["Accusative", "Ablative", "Nominative", "Genitive"], answerIndex: 0 },
+    { cycle: 1, subject: "Latin", week: 2, q: "Which noun case is used for the Object of the Preposition?", options: ["Nominative", "Genitive", "Ablative", "Accusative"], answerIndex: 2 },
+    { cycle: 1, subject: "Latin", week: 3, q: "True or False: The ending '-am' belongs to the 1st Declension (Singular).", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "Latin", week: 4, q: "The endings -ae, -arum, -is, -as, -is belong to what declension plural?", options: ["1st Declension", "2nd Declension", "3rd Declension", "4th Declension"], answerIndex: 0 },
+    { cycle: 1, subject: "Latin", week: 5, q: "The endings -us, -i, -o, -um, -o belong to what declension singular?", options: ["1st Declension", "2nd Declension", "3rd Declension", "5th Declension"], answerIndex: 1 },
+
+    // Cycle 1 - Science
+    { cycle: 1, subject: "Science", week: 1, q: "Which of these is a classification of living things?", options: ["Kingdom", "Empire", "Country", "State"], answerIndex: 0 },
+    { cycle: 1, subject: "Science", week: 2, q: "True or False: Fungi is one of the kingdoms of living things.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "Science", week: 2, q: "Archaea and Bacteria are kingdoms of what?", options: ["Countries", "Living things", "Rocks", "Oceans"], answerIndex: 1 },
+    { cycle: 1, subject: "Science", week: 3, q: "Which of these is a part of an animal cell?", options: ["Cell wall", "Chloroplasts", "Nucleus", "Bark"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 4, q: "Nucleus, cytoplasm, vacuole, mitochondria, and cell membrane are parts of what kind of cell?", options: ["Animal cell", "Plant cell", "Duracell", "Bacteria cell"], answerIndex: 1 },
+    { cycle: 1, subject: "Science", week: 5, q: "Sponges, flatworms, and sea stars belong to what major group?", options: ["Vertebrates", "Invertebrates", "Mammals", "Amphibians"], answerIndex: 1 },
+    { cycle: 1, subject: "Science", week: 6, q: "Which of these is a major group of vertebrates?", options: ["Sponges", "Fish", "Flatworms", "Mollusks"], answerIndex: 1 },
+    { cycle: 1, subject: "Science", week: 7, q: "Which of these is a way animals reproduce?", options: ["Live birth", "Photosynthesis", "Transpiration", "Breathing"], answerIndex: 0 },
+    { cycle: 1, subject: "Science", week: 8, q: "Photosynthesis is a system used by what living things?", options: ["Animals", "Humans", "Plants", "Fungi"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 9, q: "Which of these is a part of a plant?", options: ["Heart", "Lungs", "Roots", "Bones"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 10, q: "Linear, oval, and lobed are shapes of what?", options: ["Clouds", "Leaves", "Rocks", "Bones"], answerIndex: 1 },
+    { cycle: 1, subject: "Science", week: 10, q: "Scalelike and needlelike are shapes of what?", options: ["Leaves", "Clouds", "Mountains", "Insects"], answerIndex: 0 },
+    { cycle: 1, subject: "Science", week: 11, q: "Which of these is a part of a flower?", options: ["Petal", "Leaf", "Stem", "Root"], answerIndex: 0 },
+    { cycle: 1, subject: "Science", week: 12, q: "What is a conifer?", options: ["A type of rock", "An animal", "A type of seed plant", "A cloud"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 12, q: "Monocot and dicot are types of what?", options: ["Seed plants", "Fish", "Volcanoes", "Weather fronts"], answerIndex: 0 },
+    { cycle: 1, subject: "Science", week: 13, q: "The core, mantle, and crust are parts of what?", options: ["The atmosphere", "The ocean", "The geosphere", "The sun"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 14, q: "Which of these is a kind of rock?", options: ["Plastic", "Igneous", "Metal", "Glass"], answerIndex: 1 },
+    { cycle: 1, subject: "Science", week: 15, q: "Mount Everest is the highest mountain on what continent?", options: ["North America", "Africa", "Europe", "Asia"], answerIndex: 3 },
+    { cycle: 1, subject: "Science", week: 15, q: "Mount Kilimanjaro is the highest mountain on what continent?", options: ["South America", "Africa", "Australia", "Antarctica"], answerIndex: 1 },
+    { cycle: 1, subject: "Science", week: 16, q: "True or False: A dormant volcano is a kind of volcano.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "Science", week: 17, q: "Magma, lava, and crater are parts of a what?", options: ["Mountain", "Ocean", "Volcano", "Cloud"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 18, q: "Where would you find an abyssal plain and a trench?", options: ["In the sky", "On the ocean floor", "Inside a volcano", "In the desert"], answerIndex: 1 },
+    { cycle: 1, subject: "Science", week: 19, q: "Epipelagic and mesopelagic are zones of what?", options: ["The atmosphere", "The Earth's core", "The ocean", "The forest"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 20, q: "Which of these is a part of the atmosphere?", options: ["Core", "Mantle", "Stratosphere", "Crust"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 21, q: "What famous circle of latitude goes right around the middle of the Earth?", options: ["Arctic Circle", "Tropic of Cancer", "Equator", "Antarctic Circle"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 22, q: "Cold, warm, stationary, and occluded are kinds of what?", options: ["Oceans", "Mountains", "Weather fronts", "Clouds"], answerIndex: 2 },
+    { cycle: 1, subject: "Science", week: 23, q: "What type of cloud sounds like a puffy cotton ball?", options: ["Cumulus", "Stratus", "Cirrus", "Nimbus"], answerIndex: 0 },
+    { cycle: 1, subject: "Science", week: 24, q: "Latitude and longitude are markings found on a what?", options: ["Ruler", "Thermometer", "Globe", "Clock"], answerIndex: 2 },
+
+    // Cycle 1 - English
+    { cycle: 1, subject: "English", week: 1, q: "True or False: A preposition relates a noun or pronoun to another word.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "English", week: 2, q: "True or False: 'Above' and 'across' are prepositions.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "English", week: 2, q: "True or False: 'Amid' and 'among' are prepositions.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "English", week: 5, q: "True or False: 'Between' and 'beyond' are helping verbs.", options: ["True", "False"], answerIndex: 1 },
+    { cycle: 1, subject: "English", week: 13, q: "True or False: 'According to' and 'instead of' are compound prepositions.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "English", week: 14, q: "What kind of verb helps another verb assert action?", options: ["Linking verb", "Helping verb", "Action verb", "Noun"], answerIndex: 1 },
+    { cycle: 1, subject: "English", week: 15, q: "Which of these is a helping verb?", options: ["Run", "Jump", "Does", "Happy"], answerIndex: 2 },
+    { cycle: 1, subject: "English", week: 19, q: "Shall, will, and can are examples of what kind of verbs?", options: ["Linking Verbs", "Helping Verbs", "Action Verbs", "Nouns"], answerIndex: 1 },
+    { cycle: 1, subject: "English", week: 20, q: "What kind of verb makes an assertion by joining two words?", options: ["Helping verb", "Linking verb", "Doing verb", "Adverb"], answerIndex: 1 },
+    { cycle: 1, subject: "English", week: 21, q: "Am, is, are, was, and were are forms of what verb?", options: ["To Do", "To Have", "To Be", "To Go"], answerIndex: 2 },
+    { cycle: 1, subject: "English", week: 21, q: "True or False: 'Being' and 'been' are forms of the verb To Be.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "English", week: 24, q: "'Smell' and 'grow' are examples of what kind of verb?", options: ["Action Verbs", "Helping Verbs", "Linking Verbs", "Nouns"], answerIndex: 2 },
+
+    // Cycle 1 - History
+    { cycle: 1, subject: "History", week: 1, q: "What is the 5th Commandment?", options: ["No stealing", "Honor parents", "No lying", "Sabbath"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 2, q: "What is the 8th Commandment?", options: ["No murder", "No stealing", "No lying", "No idols"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 3, q: "Which of these is a Greek god?", options: ["Jupiter", "Mars", "Zeus", "Neptune"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 4, q: "Which of the following was NOT one of the Seven Wonders of the Ancient World?", options: ["Pyramids", "Hanging Gardens", "Eiffel Tower", "Colossus"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 5, q: "In what year did the Western Roman Empire fall?", options: ["27 BC", "AD 286", "AD 476", "AD 1453"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 5, q: "The Roman Republic became an Empire in what year?", options: ["100 BC", "27 BC", "AD 476", "AD 1453"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 6, q: "Who was a famous ancient Greek mathematician?", options: ["Homer", "Pythagoras", "Socrates", "Archimedes"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 7, q: "Karma, reincarnation, and the caste system are parts of what religion from India?", options: ["Buddhism", "Christianity", "Hinduism", "Islam"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 8, q: "Who led India to independence from British rule?", options: ["Queen Victoria", "Gandhi", "Columbus", "King George"], answerIndex: 1 },
     { cycle: 1, subject: "History", week: 9, q: "Lao-Tzu founded Taoism, which teaches harmony with what?", options: ["Animals", "Nature", "Oceans", "Fire"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 10, q: "Samurai protected landowners in what country?", options: ["China", "India", "Japan", "Egypt"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 11, q: "Which emperor legalized Christianity and founded Constantinople?", options: ["Justinian", "Augustus", "Constantine", "Nero"], answerIndex: 2 },
     { cycle: 1, subject: "History", week: 12, q: "The Muslim Empire was founded in 622 by whom?", options: ["Muhammad", "Constantine", "Justinian", "Charlemagne"], answerIndex: 0 },
     { cycle: 1, subject: "History", week: 13, q: "The Kush mined what precious metal along the Nile?", options: ["Silver", "Iron", "Gold", "Copper"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 13, q: "Berbers traded gold, iron, and salt in what desert?", options: ["Mojave", "Sonoran", "Sahara", "Gobi"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 14, q: "Ancient Ghana in Africa was known as the land of what?", options: ["Silver", "Gold", "Diamonds", "Salt"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 14, q: "Songhai was an African empire in what century?", options: ["1200s", "1300s", "1400s", "1500s"], answerIndex: 2 },
     { cycle: 1, subject: "History", week: 15, q: "Prince Henry of Portugal founded a school for what?", options: ["Art", "Music", "Navigation", "Science"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 16, q: "The Olmecs, Mayans, and Aztecs were civilizations of what region?", options: ["Mesoamerica", "Europe", "Asia", "Africa"], answerIndex: 0 },
+    { cycle: 1, subject: "History", week: 17, q: "Who did the Aztecs fall to in 1519?", options: ["Columbus", "Cortés", "Magellan", "Cabot"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 18, q: "The Adena, Hopewell, and Mississippians are known as the what?", options: ["Pyramid Builders", "Mound Builders", "Castle Builders", "Cave Dwellers"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 19, q: "The Anasazi built adobe villages where?", options: ["In caves and on cliffs", "On floating islands", "In deep forests", "Under the ocean"], answerIndex: 0 },
     { cycle: 1, subject: "History", week: 20, q: "Pancho Villa and Emiliano Zapata fought for 'Land and Liberty' in what revolution?", options: ["American Revolution", "French Revolution", "Russian Revolution", "Mexican Revolution"], answerIndex: 3 },
     { cycle: 1, subject: "History", week: 21, q: "John Cabot and Samuel de Champlain explored what country?", options: ["Mexico", "Canada", "Brazil", "Japan"], answerIndex: 1 },
+    { cycle: 1, subject: "History", week: 22, q: "The British North America Act established what Dominion?", options: ["Australia", "India", "Canada", "South Africa"], answerIndex: 2 },
+    { cycle: 1, subject: "History", week: 23, q: "San Martín, O'Higgins, and Bolívar fought to liberate what continent?", options: ["North America", "South America", "Europe", "Asia"], answerIndex: 1 },
+
+    // Cycle 1 - Geography
+    { cycle: 1, subject: "Geography", week: 1, q: "The Fertile Crescent includes the Mediterranean Sea, Mesopotamia, and what two rivers?", options: ["Nile and Amazon", "Euphrates and Tigris", "Mississippi and Missouri", "Rhine and Danube"], answerIndex: 1 },
+    { cycle: 1, subject: "Geography", week: 2, q: "The Red Sea, Persian Gulf, and Caspian Sea are part of what ancient empire?", options: ["Roman Empire", "Assyrian Empire", "Egyptian Empire", "Byzantine Empire"], answerIndex: 1 },
+    { cycle: 1, subject: "Geography", week: 3, q: "Judah, Israel, and the Jordan River are part of what empire?", options: ["Hebrew Empire", "Hittite Empire", "Muslim Empire", "Assyrian Empire"], answerIndex: 0 },
+    { cycle: 1, subject: "Geography", week: 4, q: "Asia Minor and Cyprus were part of what empire?", options: ["Hebrew Empire", "Hittite Empire", "Roman Empire", "Egyptian Empire"], answerIndex: 1 },
+    { cycle: 1, subject: "Geography", week: 5, q: "The Nile River and Nile Delta are part of what ancient empire?", options: ["Egyptian Empire", "Roman Empire", "Assyrian Empire", "Hittite Empire"], answerIndex: 0 },
+    { cycle: 1, subject: "Geography", week: 7, q: "Rome and Carthage were part of what empire?", options: ["Hebrew Empire", "Byzantine Empire", "Roman Empire", "Muslim Empire"], answerIndex: 2 },
+    { cycle: 1, subject: "Geography", week: 9, q: "The Yellow River and Yangtze River are in what country?", options: ["Japan", "China", "India", "Egypt"], answerIndex: 1 },
+    { cycle: 1, subject: "Geography", week: 15, q: "The Middle East includes Israel, the Sinai Peninsula, and what famous canal?", options: ["Erie Canal", "Panama Canal", "Suez Canal", "Grand Canal"], answerIndex: 2 },
+
+    // Cycle 1 - Bible
+    { cycle: 1, subject: "Bible", week: 1, q: "What did God create on Day 1?", options: ["Sun, Moon, Stars", "Atmosphere", "Earth, Space, Time, Light", "Animals"], answerIndex: 2 },
+    { cycle: 1, subject: "Bible", week: 2, q: "What did God create on Day 2 of creation?", options: ["Dry land", "Animals", "Atmosphere", "The sun"], answerIndex: 2 },
+    { cycle: 1, subject: "Bible", week: 2, q: "What did God create on Day 4 of creation?", options: ["Plants", "Fish", "Humans", "Sun, moon, and stars"], answerIndex: 3 },
+    { cycle: 1, subject: "Bible", week: 3, q: "What was God's covenant with Adam?", options: ["Never flood the earth again", "Send a Redeemer to the world", "Give him a kingdom", "Make him a priest"], answerIndex: 1 },
+    { cycle: 1, subject: "Bible", week: 4, q: "Who built an ark at God's command to save his family?", options: ["Moses", "Abraham", "Noah", "David"], answerIndex: 2 },
+    { cycle: 1, subject: "Bible", week: 5, q: "What was God's covenant with Noah?", options: ["To never destroy the human race by flood again", "To give him land", "To make him king", "To send fire from heaven"], answerIndex: 0 },
+    { cycle: 1, subject: "Bible", week: 6, q: "What event caused people to speak different languages?", options: ["The Flood", "Tower of Babel", "Exodus", "Creation"], answerIndex: 1 },
+    { cycle: 1, subject: "Bible", week: 7, q: "God's covenant with Abraham included the promise of land, blessing, redemption, and what else?", options: ["Descendants", "Wealth", "A golden chariot", "A temple"], answerIndex: 0 },
+    { cycle: 1, subject: "Bible", week: 8, q: "Who was a God-fearing man who endured loss as God demonstrated His authority?", options: ["Moses", "Abraham", "Job", "David"], answerIndex: 2 },
     { cycle: 1, subject: "Bible", week: 9, q: "Who was the son of Abraham through whom the Arab people came?", options: ["Isaac", "Jacob", "Esau", "Ishmael"], answerIndex: 3 },
+    { cycle: 1, subject: "Bible", week: 10, q: "Who was the son of Abraham through whom the Jewish people came?", options: ["Ishmael", "Isaac", "Jacob", "Esau"], answerIndex: 1 },
     { cycle: 1, subject: "Bible", week: 11, q: "Who were Isaac's two sons?", options: ["Cain and Abel", "Esau and Jacob", "David and Solomon", "Moses and Aaron"], answerIndex: 1 },
+    { cycle: 1, subject: "Bible", week: 12, q: "True or False: Reuben, Simeon, and Levi were sons of Israel.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "Bible", week: 12, q: "True or False: Judah, Dan, and Naphtali were sons of Israel.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 1, subject: "Bible", week: 14, q: "Who was sold into slavery by his brothers and saved his family from a famine in Egypt?", options: ["Moses", "Joseph", "Isaac", "Jacob"], answerIndex: 1 },
+    { cycle: 1, subject: "Bible", week: 15, q: "What was Moses' job?", options: ["Build an ark", "Be king of Israel", "Deliver the Israelites from Egyptian slavery", "Build the temple"], answerIndex: 2 },
+    { cycle: 1, subject: "Bible", week: 16, q: "Who was Moses' older brother and right-hand man?", options: ["Joshua", "Aaron", "Caleb", "Miriam"], answerIndex: 1 },
+    { cycle: 1, subject: "Bible", week: 17, q: "What was the very first plague of Egypt?", options: ["Frogs", "Flies", "Blood", "Locusts"], answerIndex: 2 },
+    { cycle: 1, subject: "Bible", week: 17, q: "Frogs, gnats, and flies were plagues that God sent to what country?", options: ["Rome", "Egypt", "Greece", "Assyria"], answerIndex: 1 },
     { cycle: 1, subject: "Bible", week: 18, q: "Hail, Locusts, and Darkness were plagues in what country?", options: ["Israel", "Egypt", "Babylon", "Assyria"], answerIndex: 1 },
     { cycle: 1, subject: "Bible", week: 19, q: "God's covenant with Moses made Israel a kingdom of what?", options: ["Warriors", "Farmers", "Priests", "Kings"], answerIndex: 2 },
     { cycle: 1, subject: "Bible", week: 20, q: "Passover and Unleavened Bread are examples of Jewish what?", options: ["Sacrifices", "Temples", "Feasts", "Tribes"], answerIndex: 2 },
+    { cycle: 1, subject: "Bible", week: 22, q: "What was the portable tent of meeting with God called?", options: ["The Temple", "The Tabernacle", "The Synagogue", "The Ark"], answerIndex: 1 },
     { cycle: 1, subject: "Bible", week: 23, q: "Sin, Guilt, Burnt, Grain, and Fellowship are five types of what?", options: ["Sacrifices", "Feasts", "Prayers", "Covenants"], answerIndex: 0 },
+    { cycle: 1, subject: "Bible", week: 24, q: "Where were the Ten Commandments kept?", options: ["In the Ark", "On the Brazen Altar", "In the Showbread", "At the Laver"], answerIndex: 0 },
+    { cycle: 1, subject: "Bible", week: 24, q: "The Brazen altar, Laver, and Lampstand are parts of what?", options: ["Noah's Ark", "The Tabernacle", "The Pyramids", "Solomon's Castle"], answerIndex: 1 },
+
+    // Cycle 1 - Timeline
     { cycle: 1, subject: "Timeline", week: 1, q: "What event happened after Creation and the Fall?", options: ["The Flood and the Tower of Babel", "The Spanish Inquisition", "The Hundred Years' War", "The Cold War"], answerIndex: 0 },
     { cycle: 1, subject: "Timeline", week: 8, q: "Who completed the Vulgate?", options: ["Augustine of Hippo", "Constantine", "Jerome", "Byzantine Emperor Justinian"], answerIndex: 2 },
     { cycle: 1, subject: "Timeline", week: 12, q: "Who ruled the Mongols?", options: ["Marco Polo", "Genghis Khan", "Czar Ivan the Great", "Prince Henry"], answerIndex: 1 },
 
     // ==========================================
-    // CYCLE 2 - MEGA EXPANSION PACK
+    // CYCLE 2
     // ==========================================
-    { cycle: 2, subject: "Geography", week: 1, q: "Which of these is NOT an ocean?", options: ["Indian Ocean", "Arctic Ocean", "European Ocean", "Southern Ocean"], answerIndex: 2 },
-    { cycle: 2, subject: "Geography", week: 2, q: "The North Sea and Baltic Sea are waters in what continent?", options: ["North America", "Europe", "Asia", "Africa"], answerIndex: 1 },
-    { cycle: 2, subject: "Geography", week: 3, q: "Ireland, England, Portugal, Spain, and France are in what part of Europe?", options: ["Eastern Europe", "Northern Europe", "Western Europe", "Southern Europe"], answerIndex: 2 },
-    { cycle: 2, subject: "Geography", week: 5, q: "London, Paris, and Rome are famous what?", options: ["Rivers", "Mountains", "Cities", "Peninsulas"], answerIndex: 2 },
-    { cycle: 2, subject: "Geography", week: 6, q: "The Pyrenees, Alps, and Carpathians are what?", options: ["Rivers", "Mountains", "Cities", "Seas"], answerIndex: 1 },
-    { cycle: 2, subject: "Geography", week: 19, q: "North Korea, South Korea, and Taiwan are in Southeastern what?", options: ["Europe", "Africa", "South America", "Asia"], answerIndex: 3 },
-    { cycle: 2, subject: "Latin", week: 1, q: "The endings -o, -s, -t, -mus, -tis, -nt belong to what tense?", options: ["Imperfect Tense", "Future Tense", "Present Tense", "Perfect Tense"], answerIndex: 2 },
-    { cycle: 2, subject: "Latin", week: 3, q: "The endings -bam, -bas, -bat belong to what tense?", options: ["Imperfect Tense", "Present Tense", "Pluperfect Tense", "Future Tense"], answerIndex: 0 },
-    { cycle: 2, subject: "Latin", week: 5, q: "The endings -bo, -bis, -bit belong to what tense?", options: ["Perfect Tense", "Future Tense", "Imperfect Tense", "Present Tense"], answerIndex: 1 },
-    { cycle: 2, subject: "Latin", week: 7, q: "True or False: The endings -i, -isti, -it belong to the Perfect Tense.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "English", week: 3, q: "'We, you, they' are what kind of pronouns?", options: ["Objective", "Possessive", "Nominative", "Reflexive"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 5, q: "'Us, you, them' are what kind of pronouns?", options: ["Nominative", "Objective", "Possessive", "Demonstrative"], answerIndex: 1 },
-    { cycle: 2, subject: "English", week: 6, q: "'Ours, yours, theirs' are what kind of pronouns?", options: ["Nominative", "Objective", "Possessive", "Interrogative"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 22, q: "For, And, Nor, But, Or, Yet, So (FANBOYS) are called what?", options: ["Coordinating Conjunctions", "Helping Verbs", "Appositives", "Prepositions"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 17, q: "Force equals mass times acceleration (F=ma) is which of Newton's laws?", options: ["First Law", "Second Law", "Third Law", "Law of Thermodynamics"], answerIndex: 1 },
-    { cycle: 2, subject: "Science", week: 20, q: "What law is often called the law of entropy?", options: ["Newton's First Law", "First law of thermodynamics", "Second law of thermodynamics", "Third law of thermodynamics"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 21, q: "True or False: The third law of thermodynamics explains it is impossible to reach absolute zero temperature.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 22, q: "Reflection, refraction, and spectrum are ways we observe what?", options: ["Heat", "Electricity", "Light", "Gravity"], answerIndex: 2 },
+
+    // Cycle 2 - Math
     { cycle: 2, subject: "Math", week: 1, q: "What is 2 times 6?", options: ["10", "12", "14", "16"], answerIndex: 1 },
     { cycle: 2, subject: "Math", week: 2, q: "What is 4 times 7?", options: ["24", "28", "32", "36"], answerIndex: 1 },
     { cycle: 2, subject: "Math", week: 3, q: "What is 6 times 8?", options: ["42", "48", "54", "60"], answerIndex: 1 },
     { cycle: 2, subject: "Math", week: 4, q: "What is 8 times 9?", options: ["64", "72", "80", "88"], answerIndex: 1 },
     { cycle: 2, subject: "Math", week: 5, q: "What is 10 times 10?", options: ["90", "100", "110", "120"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 2, q: "William the Conqueror defeated King Harold of England and started what system?", options: ["Democracy", "Communism", "Feudalism", "Apartheid"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 5, q: "In the late 1340s, fleas on rats carried what disease?", options: ["The Flu", "The Plague", "Chicken Pox", "Malaria"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 10, q: "Ivan the Terrible, Peter the Great, and Catherine the Great were leaders of what country?", options: ["France", "England", "Prussia", "Russia"], answerIndex: 3 },
-    { cycle: 2, subject: "History", week: 22, q: "In 1989, communist dictators began to fall in Eastern Europe when what Soviet leader refused to send military aid?", options: ["Stalin", "Lenin", "Gorbachev", "Putin"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 23, q: "In 1990, President George H.W. Bush sent troops to the Persian Gulf to expel whom from Kuwait?", options: ["Hitler", "Mussolini", "Saddam Hussein", "Tojo"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 1, q: "Othniel, Ehud, Deborah, and Gideon were what in Israel?", options: ["Kings", "Prophets", "Judges", "Priests"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 10, q: "Elijah, Elisha, and Isaiah were what?", options: ["Kings", "Judges", "Prophets", "Disciples"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 15, q: "What caused the destruction of the first Jewish temple in 586 BC?", options: ["Roman soldiers", "Babylonian invasion", "A great earthquake", "A flood"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 16, q: "Who destroyed the second Jewish temple in 70 AD?", options: ["Babylonian invasion", "Assyrian army", "Roman soldiers", "Egyptian pharaoh"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 21, q: "The original languages of the Old Testament were Hebrew and what?", options: ["Greek", "Latin", "Aramaic", "English"], answerIndex: 2 },
-
-    // ==========================================
-    // CYCLE 3 - MEGA EXPANSION PACK
-    // ==========================================
-    { cycle: 3, subject: "Geography", week: 1, q: "Augusta is the capital of what state?", options: ["Massachusetts", "Maine", "New Hampshire", "Vermont"], answerIndex: 1 },
-    { cycle: 3, subject: "Geography", week: 3, q: "Richmond is the capital of what state?", options: ["Virginia", "Maryland", "North Carolina", "South Carolina"], answerIndex: 0 },
-    { cycle: 3, subject: "Geography", week: 4, q: "Atlanta is the capital of what state?", options: ["Florida", "Alabama", "Georgia", "Mississippi"], answerIndex: 2 },
-    { cycle: 3, subject: "Geography", week: 8, q: "Austin is the capital of what state?", options: ["Oklahoma", "Texas", "Colorado", "New Mexico"], answerIndex: 1 },
-    { cycle: 3, subject: "Geography", week: 13, q: "The Rocky Mountains and Sierra Nevadas are in what part of the US?", options: ["North", "South", "East", "West"], answerIndex: 3 },
-    { cycle: 3, subject: "Geography", week: 20, q: "The Erie Canal and Pennsylvania Canal are examples of what?", options: ["Rivers", "Trails", "Canals", "Deserts"], answerIndex: 2 },
-    { cycle: 3, subject: "Latin", week: 1, q: "In Latin, 'in' means in, 'apud' means with, and 'per' means what?", options: ["Without", "From", "Of", "By"], answerIndex: 3 },
-    { cycle: 3, subject: "Latin", week: 2, q: "In Latin, 'et' means and, 'ut' means that, and 'non' means what?", options: ["Yes", "No", "Not", "Never"], answerIndex: 2 },
-    { cycle: 3, subject: "Latin", week: 6, q: "In Latin, 'Deus' means what?", options: ["Word", "God", "Beginning", "Nothing"], answerIndex: 1 },
-    { cycle: 3, subject: "Latin", week: 10, q: "True or False: Latin has no translation for the articles a, an, and the.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "English", week: 5, q: "Am, are, is, was, and were belong to what verb?", options: ["To Do", "To Be", "To Rise", "To Go"], answerIndex: 1 },
-    { cycle: 3, subject: "English", week: 6, q: "Do, does, did, doing, and done belong to what verb?", options: ["To Be", "To Set", "To Do", "To Make"], answerIndex: 2 },
-    { cycle: 3, subject: "English", week: 16, q: "Go, goes, went, going, and gone belong to what verb?", options: ["To Go", "To Lay", "To Break", "To Beat"], answerIndex: 0 },
-    { cycle: 3, subject: "English", week: 24, q: "S-V, S-V-DO, and S-V-PN are examples of what?", options: ["Verb Tenses", "Sentence Patterns", "Noun Cases", "Pronoun Orders"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 3, q: "Skeletal, smooth, and cardiac are three kinds of what?", options: ["Tissue", "Bones", "Muscle", "Nerves"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 6, q: "The mouth, esophagus, and stomach are parts of what system?", options: ["Digestive system", "Excretory system", "Lymph system", "Endocrine system"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 8, q: "Red and white blood cells and platelets are parts of what system?", options: ["Respiratory system", "Nervous system", "Digestive system", "Circulatory system"], answerIndex: 3 },
-    { cycle: 3, subject: "Science", week: 21, q: "What theory relies on the belief that life began as a chance combination of non-living things?", options: ["Theory of intelligent design", "Theory of evolution", "Natural selection", "Thermodynamics"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 22, q: "What theory relies on the belief that life began as a result of intention and purpose?", options: ["Theory of intelligent design", "Theory of evolution", "Natural selection", "Thermodynamics"], answerIndex: 0 },
-    { cycle: 3, subject: "Math", week: 6, q: "What is 12 times 12?", options: ["120", "132", "144", "156"], answerIndex: 2 },
-    { cycle: 3, subject: "Math", week: 7, q: "What is 13 times 3?", options: ["26", "39", "52", "65"], answerIndex: 1 },
-    { cycle: 3, subject: "Math", week: 8, q: "What is 14 times 2?", options: ["28", "42", "56", "70"], answerIndex: 0 },
-    { cycle: 3, subject: "Math", week: 9, q: "What is 15 times 3?", options: ["30", "45", "60", "75"], answerIndex: 1 },
-    { cycle: 3, subject: "Math", week: 10, q: "What is 10 squared (10 x 10)?", options: ["20", "50", "100", "1000"], answerIndex: 2 },
-    { cycle: 3, subject: "Math", week: 11, q: "What is 10 cubed (10 x 10 x 10)?", options: ["100", "500", "1000", "10000"], answerIndex: 2 },
-    { cycle: 3, subject: "History", week: 6, q: "True or False: The Coureurs de Bois and Voyageurs were involved in the Canadian fur trade.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 9, q: "In the late 1600s, who forcibly expanded French influence to profit from the fur trade?", options: ["Samuel de Champlain", "Louis de Buade, Comte de Frontenac", "Jacques Cartier", "John Cabot"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 15, q: "General Isaac Brock and Shawnee Chief Tecumseh fought in what war?", options: ["Queen Anne's War", "Seven Years' War", "War of 1812", "American Revolution"], answerIndex: 2 },
-    { cycle: 3, subject: "Bible", week: 2, q: "True or False: The Old Testament and New Testament are the two major divisions of the Bible.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "Bible", week: 13, q: "How is Jesus portrayed in the Gospel of Matthew?", options: ["As Servant", "As Man", "As God", "As King"], answerIndex: 3 },
-    { cycle: 3, subject: "Bible", week: 13, q: "How is Jesus portrayed in the Gospel of Luke?", options: ["As Servant", "As Man", "As God", "As King"], answerIndex: 1 },
-    { cycle: 3, subject: "Bible", week: 20, q: "To whom did Peter take the Gospel?", options: ["The Gentiles", "The Romans", "The Greeks", "The Jews"], answerIndex: 3 },
-    { cycle: 3, subject: "Timeline", week: 16, q: "The American Revolution, French Revolution, and Louisiana Purchase happened during what age?", options: ["Age of Ancient Empires", "Age of Exploration", "Age of Enlightenment", "Age of Industry"], answerIndex: 3 },
-
-    // ==========================================
-    // CYCLE 1 - ULTIMATE EXPANSION PACK
-    // ==========================================
-    { cycle: 1, subject: "Math", week: 2, q: "What comes next when skip counting by 3s: 3, 6, 9, 12, __?", options: ["14", "15", "16", "18"], answerIndex: 1 },
-    { cycle: 1, subject: "Math", week: 2, q: "What comes next when skip counting by 4s: 4, 8, 12, 16, __?", options: ["18", "20", "22", "24"], answerIndex: 1 },
-    { cycle: 1, subject: "Math", week: 3, q: "What comes next when skip counting by 5s: 5, 10, 15, 20, __?", options: ["22", "25", "30", "35"], answerIndex: 1 },
-    { cycle: 1, subject: "Math", week: 3, q: "What comes next when skip counting by 6s: 6, 12, 18, 24, __?", options: ["28", "30", "32", "36"], answerIndex: 1 },
-    { cycle: 1, subject: "Math", week: 13, q: "8 fluid ounces equals 1 what?", options: ["Pint", "Quart", "Gallon", "Cup"], answerIndex: 3 },
-    { cycle: 1, subject: "Science", week: 2, q: "Archaea and Bacteria are kingdoms of what?", options: ["Countries", "Living things", "Rocks", "Oceans"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 10, q: "Scalelike and needlelike are shapes of what?", options: ["Leaves", "Clouds", "Mountains", "Insects"], answerIndex: 0 },
-    { cycle: 1, subject: "Science", week: 12, q: "Monocot and dicot are types of what?", options: ["Seed plants", "Fish", "Volcanoes", "Weather fronts"], answerIndex: 0 },
-    { cycle: 1, subject: "Science", week: 15, q: "Mount Everest is the highest mountain on what continent?", options: ["North America", "Africa", "Europe", "Asia"], answerIndex: 3 },
-    { cycle: 1, subject: "Science", week: 15, q: "Mount Kilimanjaro is the highest mountain on what continent?", options: ["South America", "Africa", "Australia", "Antarctica"], answerIndex: 1 },
-    { cycle: 1, subject: "Science", week: 19, q: "Epipelagic and mesopelagic are zones of what?", options: ["The atmosphere", "The Earth's core", "The ocean", "The forest"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 5, q: "The Roman Republic became an Empire in what year?", options: ["100 BC", "27 BC", "AD 476", "AD 1453"], answerIndex: 1 },
-    { cycle: 1, subject: "History", week: 13, q: "Berbers traded gold, iron, and salt in what desert?", options: ["Mojave", "Sonoran", "Sahara", "Gobi"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 14, q: "Songhai was an African empire in what century?", options: ["1200s", "1300s", "1400s", "1500s"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 19, q: "The Anasazi built adobe villages where?", options: ["In caves and on cliffs", "On floating islands", "In deep forests", "Under the ocean"], answerIndex: 0 },
-    { cycle: 1, subject: "History", week: 22, q: "The British North America Act established what Dominion?", options: ["Australia", "India", "Canada", "South Africa"], answerIndex: 2 },
-    { cycle: 1, subject: "History", week: 23, q: "San Martín, O'Higgins, and Bolívar fought to liberate what continent?", options: ["North America", "South America", "Europe", "Asia"], answerIndex: 1 },
-    { cycle: 1, subject: "English", week: 2, q: "True or False: 'Amid' and 'among' are prepositions.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "English", week: 5, q: "True or False: 'Between' and 'beyond' are helping verbs.", options: ["True", "False"], answerIndex: 1 },
-    { cycle: 1, subject: "English", week: 21, q: "True or False: 'Being' and 'been' are forms of the verb To Be.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "English", week: 24, q: "'Smell' and 'grow' are examples of what kind of verb?", options: ["Action Verbs", "Helping Verbs", "Linking Verbs", "Nouns"], answerIndex: 2 },
-    { cycle: 1, subject: "Bible", week: 2, q: "What did God create on Day 2 of creation?", options: ["Dry land", "Animals", "Atmosphere", "The sun"], answerIndex: 2 },
-    { cycle: 1, subject: "Bible", week: 2, q: "What did God create on Day 4 of creation?", options: ["Plants", "Fish", "Humans", "Sun, moon, and stars"], answerIndex: 3 },
-    { cycle: 1, subject: "Bible", week: 7, q: "God's covenant with Abraham included the promise of land, blessing, redemption, and what else?", options: ["Descendants", "Wealth", "A golden chariot", "A temple"], answerIndex: 0 },
-    { cycle: 1, subject: "Bible", week: 12, q: "True or False: Judah, Dan, and Naphtali were sons of Israel.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 1, subject: "Bible", week: 17, q: "Frogs, gnats, and flies were plagues that God sent to what country?", options: ["Rome", "Egypt", "Greece", "Assyria"], answerIndex: 1 },
-    { cycle: 1, subject: "Bible", week: 24, q: "The Brazen altar, Laver, and Lampstand are parts of what?", options: ["Noah's Ark", "The Tabernacle", "The Pyramids", "Solomon's Castle"], answerIndex: 1 },
-    { cycle: 1, subject: "Latin", week: 2, q: "Which noun case is used for the Object of the Preposition?", options: ["Nominative", "Genitive", "Ablative", "Accusative"], answerIndex: 2 },
-    { cycle: 1, subject: "Latin", week: 4, q: "The endings -ae, -arum, -is, -as, -is belong to what declension plural?", options: ["1st Declension", "2nd Declension", "3rd Declension", "4th Declension"], answerIndex: 0 },
-    { cycle: 1, subject: "Latin", week: 5, q: "The endings -us, -i, -o, -um, -o belong to what declension singular?", options: ["1st Declension", "2nd Declension", "3rd Declension", "5th Declension"], answerIndex: 1 },
-    { cycle: 1, subject: "Geography", week: 2, q: "The Red Sea, Persian Gulf, and Caspian Sea are part of what ancient empire?", options: ["Roman Empire", "Assyrian Empire", "Egyptian Empire", "Byzantine Empire"], answerIndex: 1 },
-    { cycle: 1, subject: "Geography", week: 3, q: "Judah, Israel, and the Jordan River are part of what empire?", options: ["Hebrew Empire", "Hittite Empire", "Muslim Empire", "Assyrian Empire"], answerIndex: 0 },
-    { cycle: 1, subject: "Geography", week: 4, q: "Asia Minor and Cyprus were part of what empire?", options: ["Hebrew Empire", "Hittite Empire", "Roman Empire", "Egyptian Empire"], answerIndex: 1 },
-
-    // ==========================================
-    // CYCLE 2 - ULTIMATE EXPANSION PACK
-    // ==========================================
     { cycle: 2, subject: "Math", week: 6, q: "What is 11 times 3?", options: ["22", "33", "44", "55"], answerIndex: 1 },
     { cycle: 2, subject: "Math", week: 7, q: "What is 13 times 4?", options: ["39", "52", "65", "78"], answerIndex: 1 },
     { cycle: 2, subject: "Math", week: 8, q: "What is 14 times 2?", options: ["14", "28", "42", "56"], answerIndex: 1 },
     { cycle: 2, subject: "Math", week: 9, q: "What is 15 times 2?", options: ["15", "30", "45", "60"], answerIndex: 1 },
+    { cycle: 2, subject: "Math", week: 10, q: "What is 5 squared (5 x 5)?", options: ["10", "15", "20", "25"], answerIndex: 3 },
+    { cycle: 2, subject: "Math", week: 11, q: "What is 3 cubed (3 x 3 x 3)?", options: ["9", "18", "27", "81"], answerIndex: 2 },
     { cycle: 2, subject: "Math", week: 12, q: "3 teaspoons equals how many tablespoons?", options: ["1", "2", "3", "4"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 4, q: "What is the very first part of a food chain?", options: ["Consumer", "Decomposer", "Producer", "Hunter"], answerIndex: 2 },
-    { cycle: 2, subject: "Science", week: 6, q: "True or False: Hibernating is a way animals react to environmental change.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 8, q: "Wetlands and estuaries are types of what biomes?", options: ["Land biomes", "Aquatic biomes", "Desert biomes", "Space biomes"], answerIndex: 1 },
-    { cycle: 2, subject: "Science", week: 9, q: "True or False: The core is a part of the sun.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 2, subject: "Science", week: 10, q: "Jupiter, Saturn, Uranus, and Neptune are what?", options: ["Stars", "Comets", "Moons", "Planets"], answerIndex: 3 },
-    { cycle: 2, subject: "Science", week: 11, q: "New, crescent, quarter, gibbous, and full are phases of what?", options: ["The sun", "The moon", "The earth", "A comet"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 2, q: "The church split into Roman Catholic and Eastern Orthodox in what year?", options: ["500", "800", "1054", "1517"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 7, q: "John Calvin joined what movement?", options: ["The Crusades", "The French Revolution", "The Protestant Reformation", "The Renaissance"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 8, q: "Which explorer explored the American Southwest?", options: ["Magellan", "Columbus", "Coronado", "Dias"], answerIndex: 2 },
-    { cycle: 2, subject: "History", week: 11, q: "In 1789, citizens stormed what building to start the French Revolution?", options: ["The Colosseum", "The Bastille", "The Louvre", "The Tower of London"], answerIndex: 1 },
-    { cycle: 2, subject: "History", week: 14, q: "Clemenceau, Lloyd George, and Nicholas II were leaders during what war?", options: ["World War I", "World War II", "The Cold War", "The Korean War"], answerIndex: 0 },
-    { cycle: 2, subject: "History", week: 17, q: "Tojo was the WWII Axis leader of what country?", options: ["Germany", "Italy", "Japan", "Russia"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 4, q: "'He, she, and it' are what kind of pronouns?", options: ["Objective", "Possessive", "Nominative", "Indefinite"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 5, q: "'Him, her, and it' are what kind of pronouns?", options: ["Nominative", "Objective", "Possessive", "Reflexive"], answerIndex: 1 },
-    { cycle: 2, subject: "English", week: 6, q: "'His, hers, and its' are what kind of pronouns?", options: ["Demonstrative", "Objective", "Possessive", "Nominative"], answerIndex: 2 },
-    { cycle: 2, subject: "English", week: 10, q: "'This, that, these, and those' are what kind of pronouns?", options: ["Demonstrative", "Interrogative", "Reflexive", "Indefinite"], answerIndex: 0 },
-    { cycle: 2, subject: "Bible", week: 1, q: "Jephthah, Samson, Eli, and Samuel were what?", options: ["Kings of Israel", "Judges of Israel", "Prophets of Israel", "Disciples"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 4, q: "Who was a warrior, poet, and king who fell greatly in sin, yet rose again to love and serve God?", options: ["Saul", "Solomon", "David", "Samson"], answerIndex: 2 },
-    { cycle: 2, subject: "Bible", week: 9, q: "Rehoboam was the first king of what southern kingdom?", options: ["Israel", "Judah", "Egypt", "Syria"], answerIndex: 1 },
-    { cycle: 2, subject: "Bible", week: 10, q: "Obadiah, Joel, and Jonah were what?", options: ["Prophets", "Kings", "Judges", "Priests"], answerIndex: 0 },
-    { cycle: 2, subject: "Bible", week: 14, q: "Who prophesies in the Old Testament about the New Covenant?", options: ["Moses", "David", "Jeremiah", "Solomon"], answerIndex: 2 },
+    { cycle: 2, subject: "Math", week: 13, q: "How many quarts are in 1 gallon?", options: ["2", "4", "6", "8"], answerIndex: 1 },
+    { cycle: 2, subject: "Math", week: 16, q: "True or False: The area of a rectangle equals length times width.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 2, subject: "Math", week: 17, q: "To find the area of a square, you take the length of its side and do what?", options: ["Multiply by 2", "Square it", "Divide it", "Add 4"], answerIndex: 1 },
+    { cycle: 2, subject: "Math", week: 24, q: "True or False: The Identity Law for addition states that a + 0 = a.", options: ["True", "False"], answerIndex: 0 },
+
+    // Cycle 2 - Latin
+    { cycle: 2, subject: "Latin", week: 1, q: "The endings -o, -s, -t, -mus, -tis, -nt belong to what tense?", options: ["Imperfect Tense", "Future Tense", "Present Tense", "Perfect Tense"], answerIndex: 2 },
     { cycle: 2, subject: "Latin", week: 2, q: "The endings -o, -s, -t belong to what tense?", options: ["Future Tense", "Imperfect Tense", "Present Tense", "Perfect Tense"], answerIndex: 2 },
+    { cycle: 2, subject: "Latin", week: 3, q: "The endings -bam, -bas, -bat belong to what tense?", options: ["Imperfect Tense", "Present Tense", "Pluperfect Tense", "Future Tense"], answerIndex: 0 },
     { cycle: 2, subject: "Latin", week: 4, q: "The endings -bamus, -batis, -bant belong to what tense?", options: ["Imperfect Tense", "Present Tense", "Future Tense", "Pluperfect Tense"], answerIndex: 0 },
+    { cycle: 2, subject: "Latin", week: 5, q: "The endings -bo, -bis, -bit belong to what tense?", options: ["Perfect Tense", "Future Tense", "Imperfect Tense", "Present Tense"], answerIndex: 1 },
     { cycle: 2, subject: "Latin", week: 6, q: "The endings -bimus, -bitis, -bunt belong to what tense?", options: ["Imperfect Tense", "Perfect Tense", "Future Tense", "Present Tense"], answerIndex: 2 },
+    { cycle: 2, subject: "Latin", week: 7, q: "True or False: The endings -i, -isti, -it belong to the Perfect Tense.", options: ["True", "False"], answerIndex: 0 },
     { cycle: 2, subject: "Latin", week: 8, q: "The endings -imus, -istis, -erunt belong to what tense?", options: ["Future Perfect Tense", "Perfect Tense", "Pluperfect Tense", "Present Tense"], answerIndex: 1 },
+
+    // Cycle 2 - Science
+    { cycle: 2, subject: "Science", week: 1, q: "On what day of creation did God create land animals, Adam, and Eve?", options: ["Day 4", "Day 5", "Day 6", "Day 7"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 2, q: "Which of these is a land biome?", options: ["Pond", "Ocean", "Desert", "Lake"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 3, q: "True or False: An animal that eats only plants is called an omnivore.", options: ["True", "False"], answerIndex: 1 },
+    { cycle: 2, subject: "Science", week: 4, q: "What are the parts of the food chain?", options: ["Producer, consumer, decomposer", "Plant, animal, human", "Sun, earth, moon", "Seed, stem, leaf"], answerIndex: 0 },
+    { cycle: 2, subject: "Science", week: 4, q: "What is the very first part of a food chain?", options: ["Consumer", "Decomposer", "Producer", "Hunter"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 5, q: "The water cycle, carbon and oxygen cycle, and nitrogen cycle are examples of what?", options: ["Cycles in space", "Cycles in nature", "Bicycle parts", "Weather fronts"], answerIndex: 1 },
+    { cycle: 2, subject: "Science", week: 6, q: "How do animals react to environmental change?", options: ["Adapt, migrate, hibernate", "Read, write, math", "Run, jump, swim", "Sleep, eat, play"], answerIndex: 0 },
+    { cycle: 2, subject: "Science", week: 6, q: "True or False: Hibernating is a way animals react to environmental change.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 2, subject: "Science", week: 7, q: "Noise, air, water, and land are forms of what?", options: ["Pollution", "Biomes", "Energy", "Weather"], answerIndex: 0 },
+    { cycle: 2, subject: "Science", week: 8, q: "Which of these is an aquatic biome?", options: ["Tundra", "Grassland", "Oceans and seas", "Scrubland"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 8, q: "Wetlands and estuaries are types of what biomes?", options: ["Land biomes", "Aquatic biomes", "Desert biomes", "Space biomes"], answerIndex: 1 },
+    { cycle: 2, subject: "Science", week: 9, q: "Sunspots and solar flares are parts of the what?", options: ["Moon", "Earth", "Sun", "Mars"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 9, q: "True or False: The core is a part of the sun.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 2, subject: "Science", week: 10, q: "Which of these planets is closest to the sun?", options: ["Earth", "Mars", "Venus", "Mercury"], answerIndex: 3 },
+    { cycle: 2, subject: "Science", week: 10, q: "Jupiter, Saturn, Uranus, and Neptune are what?", options: ["Stars", "Comets", "Moons", "Planets"], answerIndex: 3 },
+    { cycle: 2, subject: "Science", week: 11, q: "Which of these is a phase of the moon?", options: ["Triangle", "Square", "Crescent", "Circle"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 11, q: "New, crescent, quarter, gibbous, and full are phases of what?", options: ["The sun", "The moon", "The earth", "A comet"], answerIndex: 1 },
+    { cycle: 2, subject: "Science", week: 12, q: "Asteroids, comets, and meteoroids are bodies found where?", options: ["In the ocean", "In the earth's crust", "In our solar system", "In the atmosphere"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 13, q: "Apollo and Shuttle are names of U.S. what?", options: ["Submarines", "Airplanes", "Space missions", "Satellites"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 14, q: "Solid, liquid, gas, and plasma are the four states of what?", options: ["Water", "Matter", "Energy", "Light"], answerIndex: 1 },
+    { cycle: 2, subject: "Science", week: 15, q: "What are two forms of energy?", options: ["Hot and Cold", "Kinetic and Potential", "Fast and Slow", "Light and Dark"], answerIndex: 1 },
+    { cycle: 2, subject: "Science", week: 16, q: "Which law states that an object at rest tends to remain at rest unless an outside force acts upon it?", options: ["Newton's 1st Law", "Newton's 2nd Law", "Newton's 3rd Law", "First Law of Thermodynamics"], answerIndex: 0 },
+    { cycle: 2, subject: "Science", week: 17, q: "Force equals mass times acceleration (F=ma) is which of Newton's laws?", options: ["First Law", "Second Law", "Third Law", "Law of Thermodynamics"], answerIndex: 1 },
+    { cycle: 2, subject: "Science", week: 18, q: "Which law states that for every action, there is an equal and opposite reaction?", options: ["Newton's 1st Law", "Newton's 2nd Law", "Newton's 3rd Law", "Law of Gravity"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 19, q: "True or False: The first law of thermodynamics states that energy CANNOT be created or destroyed.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 2, subject: "Science", week: 20, q: "What law is often called the law of entropy?", options: ["Newton's First Law", "First law of thermodynamics", "Second law of thermodynamics", "Third law of thermodynamics"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 21, q: "True or False: The third law of thermodynamics explains it is impossible to reach absolute zero temperature.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 2, subject: "Science", week: 22, q: "Reflection, refraction, and spectrum are ways we observe what?", options: ["Heat", "Electricity", "Light", "Gravity"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 23, q: "Radiation, conduction, and convection are three ways that what flows?", options: ["Water", "Electricity", "Heat", "Wind"], answerIndex: 2 },
+    { cycle: 2, subject: "Science", week: 24, q: "What units are used to measure voltage?", options: ["Ohms", "Volts", "Amps", "Watts"], answerIndex: 1 },
+
+    // Cycle 2 - English
+    { cycle: 2, subject: "English", week: 2, q: "What replaces a noun in order to avoid repetition?", options: ["Verb", "Adjective", "Pronoun", "Adverb"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 3, q: "First person singular, second person singular, and third person plural are examples of what?", options: ["Noun Cases", "Verb Tenses", "Pronoun Order", "Sentence Types"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 3, q: "'We, you, they' are what kind of pronouns?", options: ["Objective", "Possessive", "Nominative", "Reflexive"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 4, q: "Which of these is a Nominative Pronoun?", options: ["Me", "My", "I", "Mine"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 4, q: "'He, she, and it' are what kind of pronouns?", options: ["Objective", "Possessive", "Nominative", "Indefinite"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 5, q: "Which of these is an Objective Pronoun?", options: ["I", "Me", "My", "Mine"], answerIndex: 1 },
+    { cycle: 2, subject: "English", week: 5, q: "'Him, her, and it' are what kind of pronouns?", options: ["Nominative", "Objective", "Possessive", "Reflexive"], answerIndex: 1 },
+    { cycle: 2, subject: "English", week: 5, q: "'Us, you, them' are what kind of pronouns?", options: ["Nominative", "Objective", "Possessive", "Demonstrative"], answerIndex: 1 },
+    { cycle: 2, subject: "English", week: 6, q: "'His, hers, and its' are what kind of pronouns?", options: ["Demonstrative", "Objective", "Possessive", "Nominative"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 6, q: "'Ours, yours, theirs' are what kind of pronouns?", options: ["Nominative", "Objective", "Possessive", "Interrogative"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 8, q: "Myself, yourself, and themselves are what kind of pronouns?", options: ["Reflexive", "Interrogative", "Demonstrative", "Possessive"], answerIndex: 0 },
+    { cycle: 2, subject: "English", week: 9, q: "Who, whom, whose, which, and what are what kind of pronouns?", options: ["Demonstrative", "Indefinite", "Interrogative", "Reflexive"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 10, q: "'This, that, these, and those' are what kind of pronouns?", options: ["Demonstrative", "Interrogative", "Reflexive", "Indefinite"], answerIndex: 0 },
+    { cycle: 2, subject: "English", week: 14, q: "What part of speech answers the questions: How? When? Where? and Why?", options: ["Noun", "Adjective", "Adverb", "Pronoun"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 15, q: "Declarative, exclamatory, interrogative, and imperative are four purposes of what?", options: ["Verbs", "Nouns", "Sentences", "Paragraphs"], answerIndex: 2 },
+    { cycle: 2, subject: "English", week: 17, q: "What part of speech names a person, place, thing, activity, or idea?", options: ["Verb", "Noun", "Adverb", "Conjunction"], answerIndex: 1 },
+    { cycle: 2, subject: "English", week: 18, q: "Subject, direct object, and possessive are three of the five cases of what?", options: ["Verbs", "Nouns", "Adjectives", "Pronouns"], answerIndex: 1 },
+    { cycle: 2, subject: "English", week: 19, q: "True or False: A gerund is a present participle verb form used as a noun.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 2, subject: "English", week: 21, q: "What part of speech is used to connect words, phrases, or clauses together?", options: ["Adjective", "Conjunction", "Interjection", "Adverb"], answerIndex: 1 },
+    { cycle: 2, subject: "English", week: 22, q: "For, And, Nor, But, Or, Yet, So (FANBOYS) are called what?", options: ["Coordinating Conjunctions", "Helping Verbs", "Appositives", "Prepositions"], answerIndex: 0 },
+    { cycle: 2, subject: "English", week: 23, q: "What part of speech answers the questions: What kind? How many? Which? Whose?", options: ["Adverb", "Adjective", "Noun", "Verb"], answerIndex: 1 },
+    { cycle: 2, subject: "English", week: 24, q: "What is a word or phrase used as a strong expression of feeling or emotion called?", options: ["Conjunction", "Adjective", "Interjection", "Preposition"], answerIndex: 2 },
+
+    // Cycle 2 - History
+    { cycle: 2, subject: "History", week: 1, q: "Who was crowned Holy Roman Emperor of Europe in 800?", options: ["King John", "William the Conqueror", "Charlemagne", "Richard the Lion-Hearted"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 2, q: "What happened to the church in 1054?", options: ["It split into Roman Catholic and Eastern Orthodox", "It was founded", "It moved to England", "It was destroyed"], answerIndex: 0 },
+    { cycle: 2, subject: "History", week: 2, q: "William the Conqueror defeated King Harold of England and started what system?", options: ["Democracy", "Communism", "Feudalism", "Apartheid"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 3, q: "Richard the Lion-Hearted fought the Turks for Jerusalem during what wars?", options: ["Hundred Years' War", "The Crusades", "World War I", "The Boer Wars"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 4, q: "English King John signed what famous document in 1215, limiting the king's power?", options: ["The Constitution", "The Magna Carta", "The Declaration", "The Treaty of Paris"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 5, q: "Who led the French to defeat the English at the Siege of Orleans?", options: ["Joan of Arc", "Napoleon", "King John", "William the Conqueror"], answerIndex: 0 },
+    { cycle: 2, subject: "History", week: 5, q: "In the late 1340s, fleas on rats carried what disease?", options: ["The Flu", "The Plague", "Chicken Pox", "Malaria"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 6, q: "Who was a famous playwright during the Renaissance?", options: ["Leonardo da Vinci", "William Shakespeare", "Michelangelo", "Copernicus"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 7, q: "Who began the Protestant Reformation by printing the Ninety-Five Theses?", options: ["John Calvin", "Pope Leo X", "Martin Luther", "Henry VIII"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 7, q: "John Calvin joined what movement?", options: ["The Crusades", "The French Revolution", "The Protestant Reformation", "The Renaissance"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 8, q: "Who was the explorer that first sailed around the globe?", options: ["Columbus", "Magellan", "Vespucci", "Coronado"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 8, q: "Which explorer explored the American Southwest?", options: ["Magellan", "Columbus", "Coronado", "Dias"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 9, q: "Louis XIV of France and Peter the Great of Russia ruled during the age of what?", options: ["Absolute Monarchs", "Exploration", "Industry", "Information"], answerIndex: 0 },
+    { cycle: 2, subject: "History", week: 10, q: "Who brought Christianity to Russia in the 900s?", options: ["Ivan the Terrible", "Peter the Great", "Vladimir I", "Catherine the Great"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 10, q: "Ivan the Terrible, Peter the Great, and Catherine the Great were leaders of what country?", options: ["France", "England", "Prussia", "Russia"], answerIndex: 3 },
+    { cycle: 2, subject: "History", week: 11, q: "The Reign of Terror and the use of the guillotine happened during which revolution?", options: ["American Revolution", "French Revolution", "Industrial Revolution", "Russian Revolution"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 11, q: "In 1789, citizens stormed what building to start the French Revolution?", options: ["The Colosseum", "The Bastille", "The Louvre", "The Tower of London"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 12, q: "Where was Napoleon Bonaparte finally defeated?", options: ["Paris", "Waterloo", "Moscow", "London"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 13, q: "Watt's steam engine and Whitney's cotton gin spurred what revolution?", options: ["French Revolution", "American Revolution", "Industrial Revolution", "Russian Revolution"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 14, q: "True or False: World War I started in 1914 and ended in 1918.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 2, subject: "History", week: 14, q: "Clemenceau, Lloyd George, and Nicholas II were leaders during what war?", options: ["World War I", "World War II", "The Cold War", "The Korean War"], answerIndex: 0 },
+    { cycle: 2, subject: "History", week: 15, q: "During WWI, Great Britain, France, and Russia fought against Austria-Hungary and Germany. What were Germany and Austria-Hungary called?", options: ["The Allies", "The Axis", "The Central Powers", "The Republic"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 16, q: "World War II began in 1939 when Hitler invaded what country?", options: ["France", "England", "Russia", "Poland"], answerIndex: 3 },
+    { cycle: 2, subject: "History", week: 17, q: "Which of these leaders was part of the Allied powers during WWII?", options: ["Hitler", "Tojo", "Mussolini", "Churchill"], answerIndex: 3 },
+    { cycle: 2, subject: "History", week: 17, q: "Tojo was the WWII Axis leader of what country?", options: ["Germany", "Italy", "Japan", "Russia"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 18, q: "What organization was formed in 1945 to replace the failed League of Nations?", options: ["The United Nations", "NATO", "The European Union", "The Soviet Union"], answerIndex: 0 },
+    { cycle: 2, subject: "History", week: 19, q: "What U.S. General led United Nations forces during the Korean War?", options: ["Eisenhower", "MacArthur", "Washington", "Grant"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 20, q: "In 1965, which U.S. President sent troops to stop communist North Vietnam?", options: ["Nixon", "Kennedy", "Johnson", "Reagan"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 21, q: "Which U.S. President worked with British Prime Minister Margaret Thatcher to end the Cold War?", options: ["Bush", "Reagan", "Carter", "Clinton"], answerIndex: 1 },
+    { cycle: 2, subject: "History", week: 22, q: "In 1989, communist dictators began to fall in Eastern Europe when what Soviet leader refused to send military aid?", options: ["Stalin", "Lenin", "Gorbachev", "Putin"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 23, q: "In 1990, President George H.W. Bush sent troops to the Persian Gulf to expel whom from Kuwait?", options: ["Hitler", "Mussolini", "Saddam Hussein", "Tojo"], answerIndex: 2 },
+    { cycle: 2, subject: "History", week: 24, q: "Who became South Africa's first black president after the end of apartheid?", options: ["Nelson Mandela", "F.W. de Klerk", "Martin Luther King, Jr.", "Gandhi"], answerIndex: 0 },
+
+    // Cycle 2 - Geography
+    { cycle: 2, subject: "Geography", week: 1, q: "Which of these is NOT an ocean?", options: ["Indian Ocean", "Arctic Ocean", "European Ocean", "Southern Ocean"], answerIndex: 2 },
+    { cycle: 2, subject: "Geography", week: 2, q: "The North Sea and Baltic Sea are waters in what continent?", options: ["North America", "Europe", "Asia", "Africa"], answerIndex: 1 },
+    { cycle: 2, subject: "Geography", week: 3, q: "Ireland, England, Portugal, Spain, and France are in what part of Europe?", options: ["Eastern Europe", "Northern Europe", "Western Europe", "Southern Europe"], answerIndex: 2 },
     { cycle: 2, subject: "Geography", week: 4, q: "The Seine, Rhine, Elbe, and Po are what?", options: ["European Mountains", "European Peninsulas", "European Rivers", "European Cities"], answerIndex: 2 },
+    { cycle: 2, subject: "Geography", week: 5, q: "London, Paris, and Rome are famous what?", options: ["Rivers", "Mountains", "Cities", "Peninsulas"], answerIndex: 2 },
+    { cycle: 2, subject: "Geography", week: 6, q: "The Pyrenees, Alps, and Carpathians are what?", options: ["Rivers", "Mountains", "Cities", "Seas"], answerIndex: 1 },
     { cycle: 2, subject: "Geography", week: 7, q: "The Iberian, Scandinavian, and Balkan are what?", options: ["European Cities", "European Mountains", "European Peninsulas", "European Rivers"], answerIndex: 2 },
     { cycle: 2, subject: "Geography", week: 13, q: "Norway, Sweden, Finland, and Denmark are countries in what part of Europe?", options: ["Northern Europe", "Southern Europe", "Eastern Europe", "Western Europe"], answerIndex: 0 },
+    { cycle: 2, subject: "Geography", week: 19, q: "North Korea, South Korea, and Taiwan are in Southeastern what?", options: ["Europe", "Africa", "South America", "Asia"], answerIndex: 3 },
+
+    // Cycle 2 - Bible
+    { cycle: 2, subject: "Bible", week: 1, q: "Othniel, Ehud, Deborah, and Gideon were what in Israel?", options: ["Kings", "Prophets", "Judges", "Priests"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 1, q: "Jephthah, Samson, Eli, and Samuel were what?", options: ["Kings of Israel", "Judges of Israel", "Prophets of Israel", "Disciples"], answerIndex: 1 },
+    { cycle: 2, subject: "Bible", week: 3, q: "Who were the three kings of united Israel?", options: ["Abraham, Isaac, Jacob", "Saul, David, Solomon", "Peter, James, John", "Elijah, Elisha, Joel"], answerIndex: 1 },
+    { cycle: 2, subject: "Bible", week: 4, q: "True or False: King David fell greatly in sin, yet rose again to love and serve God.", options: ["True", "False"], answerIndex: 0 },
+    { cycle: 2, subject: "Bible", week: 4, q: "Who was a warrior, poet, and king who fell greatly in sin, yet rose again to love and serve God?", options: ["Saul", "Solomon", "David", "Samson"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 5, q: "God's covenant with David promised that who would come from his family?", options: ["Moses", "The Messiah", "Abraham", "Noah"], answerIndex: 1 },
+    { cycle: 2, subject: "Bible", week: 6, q: "Who oversaw the building of the first Jewish temple?", options: ["David", "Moses", "Solomon", "Aaron"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 7, q: "Because King Solomon built worship temples to false gods, what happened to Israel?", options: ["It was flooded", "It divided into two kingdoms", "It was destroyed by fire", "It conquered Rome"], answerIndex: 1 },
+    { cycle: 2, subject: "Bible", week: 8, q: "Who was the first king of the northern kingdom of Israel?", options: ["Rehoboam", "Jeroboam I", "David", "Solomon"], answerIndex: 1 },
+    { cycle: 2, subject: "Bible", week: 9, q: "Rehoboam was the first king of what southern kingdom?", options: ["Israel", "Judah", "Egypt", "Syria"], answerIndex: 1 },
+    { cycle: 2, subject: "Bible", week: 10, q: "Elijah, Elisha, and Isaiah were what?", options: ["Kings", "Judges", "Prophets", "Disciples"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 10, q: "Obadiah, Joel, and Jonah were what?", options: ["Prophets", "Kings", "Judges", "Priests"], answerIndex: 0 },
+    { cycle: 2, subject: "Bible", week: 13, q: "What two nations took the Jewish people into captivity?", options: ["Egypt and Rome", "Greece and Persia", "Assyria and Babylon", "Moab and Edom"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 14, q: "Who prophesies in the Old Testament about the New Covenant?", options: ["Moses", "David", "Jeremiah", "Solomon"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 15, q: "What caused the destruction of the first Jewish temple in 586 BC?", options: ["Roman soldiers", "Babylonian invasion", "A great earthquake", "A flood"], answerIndex: 1 },
+    { cycle: 2, subject: "Bible", week: 16, q: "Who destroyed the second Jewish temple in 70 AD?", options: ["Babylonian invasion", "Assyrian army", "Roman soldiers", "Egyptian pharaoh"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 18, q: "Hymns of praise and songs of thanksgiving are types of what?", options: ["Proverbs", "Prophecies", "Psalms", "Commandments"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 19, q: "What book of the Old Testament contains a collection of wise instruction for living a godly life?", options: ["Psalms", "Proverbs", "Genesis", "Exodus"], answerIndex: 1 },
+    { cycle: 2, subject: "Bible", week: 20, q: "Yahweh, Adonai, and Elohim are Hebrew names for who?", options: ["Angels", "Prophets", "Kings", "God"], answerIndex: 3 },
+    { cycle: 2, subject: "Bible", week: 21, q: "The original languages of the Old Testament were Hebrew and what?", options: ["Greek", "Latin", "Aramaic", "English"], answerIndex: 2 },
+    { cycle: 2, subject: "Bible", week: 23, q: "How old was Jesus when he started teaching alongside the Jewish leaders in the temple?", options: ["10", "12", "15", "30"], answerIndex: 1 },
 
     // ==========================================
-    // CYCLE 3 - ULTIMATE EXPANSION PACK
+    // CYCLE 3 (UPDATED WITH NEW DATA)
     // ==========================================
-    { cycle: 3, subject: "Math", week: 12, q: "2 tablespoons equals how many fluid ounces?", options: ["1", "2", "3", "4"], answerIndex: 0 },
-    { cycle: 3, subject: "Math", week: 13, q: "2 cups equals how many pints?", options: ["1", "2", "3", "4"], answerIndex: 0 },
-    { cycle: 3, subject: "Math", week: 13, q: "2 pints equals how many quarts?", options: ["1", "2", "3", "4"], answerIndex: 0 },
-    { cycle: 3, subject: "Math", week: 14, q: "2.54 centimeters equals how many inches?", options: ["1", "2", "3", "4"], answerIndex: 0 },
-    { cycle: 3, subject: "Math", week: 15, q: "10 millimeters equals how many centimeters?", options: ["1", "10", "100", "1000"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 1, q: "Epithelial and nerve are types of what?", options: ["Bones", "Tissue", "Muscles", "Blood"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 2, q: "The vertebrae are part of what skeleton?", options: ["Appendicular skeleton", "Axial skeleton", "Exoskeleton", "Outer skeleton"], answerIndex: 1 },
-    { cycle: 3, subject: "Science", week: 4, q: "Nerves are part of what system?", options: ["Circulatory system", "Digestive system", "Nervous system", "Lymph system"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 6, q: "The liver and large intestine are parts of what system?", options: ["Digestive system", "Excretory system", "Respiratory system", "Endocrine system"], answerIndex: 0 },
-    { cycle: 3, subject: "Science", week: 10, q: "The pharynx, larynx, and bronchi are parts of what system?", options: ["Nervous system", "Circulatory system", "Respiratory system", "Lymph system"], answerIndex: 2 },
-    { cycle: 3, subject: "Science", week: 12, q: "Protection is a major purpose of what?", options: ["Hair", "Blood", "Nails", "Teeth"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 1, q: "True or False: First Nations, Inuit, and Métis are Indigenous peoples of Canada.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 2, q: "L'Anse aux Meadows is located near what province today?", options: ["Ontario", "Quebec", "Newfoundland", "Alberta"], answerIndex: 2 },
-    { cycle: 3, subject: "History", week: 10, q: "Queen Anne's War was fought between England and what other country?", options: ["Spain", "France", "Portugal", "Netherlands"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 12, q: "The Québec Act allowed French Canadians to continue practicing what religion?", options: ["Roman Catholicism", "Protestantism", "Eastern Orthodox", "Judaism"], answerIndex: 0 },
-    { cycle: 3, subject: "History", week: 15, q: "American assaults on Canadian border fortresses happened during what war?", options: ["American Revolution", "War of 1812", "Seven Years' War", "Queen Anne's War"], answerIndex: 1 },
-    { cycle: 3, subject: "History", week: 24, q: "The Charter of Rights and Freedoms was signed in what year?", options: ["1867", "1931", "1982", "2000"], answerIndex: 2 },
-    { cycle: 3, subject: "English", week: 5, q: "'Was' and 'were' are past tense forms of what verb?", options: ["To Do", "To Be", "To Go", "To Rise"], answerIndex: 1 },
-    { cycle: 3, subject: "English", week: 7, q: "'Rise', 'rose', and 'risen' are forms of what verb?", options: ["To Raise", "To Lay", "To Lie", "To Rise"], answerIndex: 3 },
-    { cycle: 3, subject: "English", week: 9, q: "'Lay', 'laid', and 'laying' are forms of what verb?", options: ["To Lie", "To Lay", "To Set", "To Sit"], answerIndex: 1 },
-    { cycle: 3, subject: "English", week: 11, q: "'Set', 'sets', and 'setting' are forms of what verb?", options: ["To Sit", "To Set", "To Go", "To Do"], answerIndex: 1 },
-    { cycle: 3, subject: "English", week: 13, q: "'Beat', 'beating', and 'beaten' are forms of what verb?", options: ["To Break", "To Write", "To Beat", "To Go"], answerIndex: 2 },
-    { cycle: 3, subject: "Bible", week: 3, q: "True or False: The Gospels are a subdivision of the Bible.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "Bible", week: 5, q: "True or False: Job and Psalms are books of the Old Testament.", options: ["True", "False"], answerIndex: 0 },
-    { cycle: 3, subject: "Bible", week: 9, q: "Acts is a book in which part of the Bible?", options: ["Old Testament", "New Testament", "The Law", "The Prophets"], answerIndex: 1 },
-    { cycle: 3, subject: "Bible", week: 13, q: "The Gospel of Mark portrays Jesus as what?", options: ["King", "Man", "God", "Servant"], answerIndex: 3 },
-    { cycle: 3, subject: "Bible", week: 14, q: "Bartholomew, Matthew, and Simon the Zealot were what?", options: ["Kings", "Prophets", "Disciples", "Judges"], answerIndex: 2 },
-    { cycle: 3, subject: "Latin", week: 1, q: "In Latin, 'sine' means what?", options: ["With", "Without", "From", "By"], answerIndex: 1 },
-    { cycle: 3, subject: "Latin", week: 3, q: "In Latin, 'hic' means what?", options: ["That", "This", "Him", "It"], answerIndex: 1 },
-    { cycle: 3, subject: "Latin", week: 4, q: "In Latin, 'venit' means what?", options: ["Was", "Came", "Bear", "Believe"], answerIndex: 1 },
-    { cycle: 3, subject: "Latin", week: 7, q: "In Latin, 'vita' means what?", options: ["Light", "Man", "Name", "Life"], answerIndex: 3 },
-    { cycle: 3, subject: "Geography", week: 2, q: "Albany is the capital of what state?", options: ["Vermont", "New York", "New Jersey", "Pennsylvania"], answerIndex: 1 },
-    { cycle: 3, subject: "Geography", week: 5, q: "Columbus is the capital of what state?", options: ["Michigan", "Ohio", "Indiana", "Kentucky"], answerIndex: 1 },
-    { cycle: 3, subject: "Geography", week: 9, q: "Phoenix is the capital of what state?", options: ["Utah", "Nevada", "Arizona", "California"], answerIndex: 2 }  
-  ];
+
+    // Cycle 3 - Math
+    { cycle: 3, subject: "Math", week: 6, q: "What is 12 times 12?", options: ["120", "132", "144", "156"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 7, q: "What is 13 times 3?", options: ["26", "39", "52", "65"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 8, q: "What is 14 times 2?", options: ["28", "42", "56", "70"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 9, q: "What is 15 times 3?", options: ["30", "45", "60", "75"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 10, q: "What is 10 squared (10 x 10)?", options: ["20", "50", "100", "1000"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 11, q: "What is 10 cubed (10 x 10 x 10)?", options: ["100", "500", "1000", "10000"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 12, q: "2 tablespoons equals how many fluid ounces?", options: ["1", "2", "3", "4"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 13, q: "2 cups equals how many pints?", options: ["1", "2", "3", "4"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 13, q: "2 pints equals how many quarts?", options: ["1", "2", "3", "4"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 14, q: "2.54 centimeters equals how many inches?", options: ["1", "2", "3", "4"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 15, q: "10 millimeters equals how many centimeters?", options: ["1", "10", "100", "1000"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 18, q: "True or False: The area of a triangle equals length times width.", options: ["True", "False"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Math", week: 20, q: "To find the circumference of a circle, you multiply 2 times pi times what?", options: ["Radius", "Diameter", "Area", "Width"], answerIndex: 0 }, //[cite: 1]
+
+    // Cycle 3 - Latin
+    { cycle: 3, subject: "Latin", week: 1, q: "In Latin, 'in' means in, 'apud' means with, and 'per' means what?", options: ["Without", "From", "Of", "By"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Latin", week: 1, q: "In Latin, 'sine' means what?", options: ["With", "Without", "From", "By"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Latin", week: 2, q: "In Latin, 'et' means and, 'ut' means that, and 'non' means what?", options: ["Yes", "No", "Not", "Never"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Latin", week: 3, q: "In Latin, 'hic' means what?", options: ["That", "This", "Him", "It"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Latin", week: 4, q: "In Latin, 'venit' means what?", options: ["Was", "Came", "Bear", "Believe"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Latin", week: 6, q: "In Latin, 'Deus' means what?", options: ["Word", "God", "Beginning", "Nothing"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Latin", week: 7, q: "In Latin, 'vita' means what?", options: ["Light", "Man", "Name", "Life"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Latin", week: 10, q: "True or False: Latin has no translation for the articles a, an, and the.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+
+    // Cycle 3 - Science
+    { cycle: 3, subject: "Science", week: 1, q: "Connective, epithelial, muscle, and nerve are four types of what?", options: ["Bones", "Blood", "Tissue", "Organs"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 1, q: "Epithelial and nerve are types of what?", options: ["Bones", "Tissue", "Muscles", "Blood"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 2, q: "The skull, vertebrae, ribs, and sternum make up what?", options: ["Axial skeleton", "Appendicular skeleton", "Nervous system", "Digestive system"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 2, q: "The vertebrae are part of what skeleton?", options: ["Appendicular skeleton", "Axial skeleton", "Exoskeleton", "Outer skeleton"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 3, q: "Which of these is a kind of muscle?", options: ["Rough", "Smooth", "Hard", "Soft"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 3, q: "Skeletal, smooth, and cardiac are three kinds of what?", options: ["Tissue", "Bones", "Muscle", "Nerves"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 4, q: "The brain, spinal cord, and nerves are three parts of what system?", options: ["Digestive", "Circulatory", "Nervous", "Excretory"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 4, q: "Nerves are part of what system?", options: ["Circulatory system", "Digestive system", "Nervous system", "Lymph system"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 5, q: "Which of these is one of your five main senses?", options: ["Flying", "Hearing", "Invisibility", "Telepathy"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 6, q: "The stomach and the small intestine are parts of what system?", options: ["Digestive system", "Nervous system", "Skeletal system", "Lymph system"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 6, q: "The mouth, esophagus, and stomach are parts of what system?", options: ["Digestive system", "Excretory system", "Lymph system", "Endocrine system"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 6, q: "The liver and large intestine are parts of what system?", options: ["Digestive system", "Excretory system", "Respiratory system", "Endocrine system"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 7, q: "The urinary tract, lungs, skin, and intestines are parts of what system?", options: ["Digestive", "Nervous", "Excretory", "Endocrine"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 8, q: "What system includes the heart, arteries, veins, and capillaries?", options: ["Nervous system", "Digestive system", "Circulatory system", "Respiratory system"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 8, q: "Red and white blood cells and platelets are parts of what system?", options: ["Respiratory system", "Nervous system", "Digestive system", "Circulatory system"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 9, q: "Lymph vessels and lymph nodes belong to what system?", options: ["Lymph system", "Circulatory system", "Respiratory system", "Nervous system"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 10, q: "The nose, trachea, and lungs are parts of what system?", options: ["Circulatory system", "Respiratory system", "Excretory system", "Endocrine system"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 10, q: "The pharynx, larynx, and bronchi are parts of what system?", options: ["Nervous system", "Circulatory system", "Respiratory system", "Lymph system"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 11, q: "What system uses hormones to send messages through the bloodstream?", options: ["Endocrine system", "Excretory system", "Digestive system", "Nervous system"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 12, q: "Transportation, communication, regulation, and protection are the major purposes of what?", options: ["Bones", "Muscles", "Blood", "Nerves"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 12, q: "Protection is a major purpose of what?", options: ["Hair", "Blood", "Nails", "Teeth"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 13, q: "What do we call the number of protons in the nucleus of an atom?", options: ["Atomic mass", "Atomic number", "Atomic weight", "Atomic power"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 14, q: "What is a basic chemical substance defined by its atomic number and atomic mass?", options: ["Element", "Cell", "Tissue", "Organ"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 15, q: "Protons, electrons, and neutrons are parts of a what?", options: ["Cell", "Molecule", "Atom", "Tissue"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 16, q: "What is the very first element in the periodic table?", options: ["Helium", "Oxygen", "Hydrogen", "Carbon"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 17, q: "Carbon and Oxygen are examples of what?", options: ["Compounds", "Elements", "Mixtures", "Liquids"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 18, q: "True or False: Neon is an element on the periodic table.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 19, q: "True or False: An acid donates a hydrogen ion.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 20, q: "The idea that the fittest survive and pass traits to their offspring is called what?", options: ["Intelligent Design", "Natural Selection", "Thermodynamics", "Photosynthesis"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 21, q: "What theory relies on the belief that life began as a chance combination of non-living things?", options: ["Theory of intelligent design", "Theory of evolution", "Natural selection", "Thermodynamics"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 22, q: "What theory relies on the belief that life began as a result of intention and purpose?", options: ["Theory of intelligent design", "Theory of evolution", "Natural selection", "Thermodynamics"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Science", week: 23, q: "Rocks, fossils, ice, tar, and amber are ways that what is preserved?", options: ["Earth's history", "Space dust", "Ocean water", "Volcanic ash"], answerIndex: 0 }, //[cite: 1]
+
+    // Cycle 3 - English
+    { cycle: 3, subject: "English", week: 1, q: "What is 'to' plus a verb, used as a noun, adjective, or adverb called?", options: ["Infinitive", "Gerund", "Participle", "Appositive"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 2, q: "True or False: A present participle is a verb plus '-ing'.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 3, q: "True or False: A past participle is a verb plus '-ed'.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 4, q: "Infinitive, present, past, present participle, and past participle are the principal parts of what?", options: ["A Noun", "An Adjective", "A Verb", "A Sentence"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 5, q: "Am, are, is, was, and were belong to what verb?", options: ["To Do", "To Be", "To Rise", "To Go"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 5, q: "'Was' and 'were' are past tense forms of what verb?", options: ["To Do", "To Be", "To Go", "To Rise"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 6, q: "Do, does, did, doing, and done belong to what verb?", options: ["To Be", "To Set", "To Do", "To Make"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 7, q: "'Rise', 'rose', and 'risen' are forms of what verb?", options: ["To Raise", "To Lay", "To Lie", "To Rise"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 9, q: "'Lay', 'laid', and 'laying' are forms of what verb?", options: ["To Lie", "To Lay", "To Set", "To Sit"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 11, q: "'Set', 'sets', and 'setting' are forms of what verb?", options: ["To Sit", "To Set", "To Go", "To Do"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 13, q: "'Beat', 'beating', and 'beaten' are forms of what verb?", options: ["To Break", "To Write", "To Beat", "To Go"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 16, q: "Go, goes, went, going, and gone belong to what verb?", options: ["To Go", "To Lay", "To Break", "To Beat"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 17, q: "What part of a sentence is that about which something is being said?", options: ["Predicate", "Clause", "Subject", "Phrase"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 18, q: "What part of a sentence says something ABOUT the subject?", options: ["Clause", "Phrase", "Predicate", "Conjunction"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 19, q: "A group of words that contains both a subject and a verb is called a what?", options: ["Phrase", "Clause", "Paragraph", "Predicate"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 20, q: "What kind of clause expresses a complete thought like a sentence?", options: ["Subordinate Clause", "Dependent Clause", "Independent Clause", "Santa Clause"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 21, q: "True or False: A subordinate clause expresses a complete thought and can stand alone.", options: ["True", "False"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 22, q: "A group of words that does NOT contain both a subject and a verb is called a what?", options: ["Clause", "Sentence", "Phrase", "Subject"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 23, q: "Simple, compound, complex, and compound-complex are four structures of what?", options: ["Verbs", "Paragraphs", "Sentences", "Essays"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "English", week: 24, q: "S-V, S-V-DO, and S-V-PN are examples of what?", options: ["Verb Tenses", "Sentence Patterns", "Noun Cases", "Pronoun Orders"], answerIndex: 1 }, //[cite: 1]
+
+    // Cycle 3 - History
+    { cycle: 3, subject: "History", week: 1, q: "What are the three groups of Indigenous people in Canada?", options: ["First Nations, Inuit, Métis", "Mayans, Aztecs, Olmecs", "Vikings, Celts, Gauls", "Romans, Greeks, Spartans"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 1, q: "True or False: First Nations, Inuit, and Métis are Indigenous peoples of Canada.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 2, q: "Around AD 1000, what Norseman arrived in the land he called Vinland?", options: ["John Cabot", "Christopher Columbus", "Leif Eriksson", "Jacques Cartier"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 2, q: "L'Anse aux Meadows is located near what province today?", options: ["Ontario", "Quebec", "Newfoundland", "Alberta"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 3, q: "What explorer claimed Newfoundland for England in 1497?", options: ["John Cabot", "Samuel de Champlain", "Leif Eriksson", "Christopher Columbus"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 4, q: "Who mapped the Gulf of the St Lawrence River in 1534?", options: ["Samuel de Champlain", "Jacques Cartier", "John Cabot", "Louis de Buade"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 5, q: "Who is known as the 'Father of New France' and founded Quebec City?", options: ["Jacques Cartier", "Samuel de Champlain", "John Cabot", "Louis de Buade"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 6, q: "From the 1600s to 1800s, Europeans explored Canada because they wanted pelts from what animal to make hats?", options: ["Bear", "Fox", "Beaver", "Wolf"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 6, q: "True or False: The Coureurs de Bois and Voyageurs were involved in the Canadian fur trade.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 7, q: "In 1670, The English Crown formed what company to find a northwest passage to the Pacific?", options: ["East India Company", "Hudson's Bay Company", "Virginia Company", "North West Company"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 8, q: "True or False: Initial contact between Europeans and Indigenous peoples formed around trade and alliances.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 9, q: "In the late 1600s, who forcibly expanded French influence to profit from the fur trade?", options: ["Samuel de Champlain", "Louis de Buade, Comte de Frontenac", "Jacques Cartier", "John Cabot"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 10, q: "What treaty gave Britain control over Newfoundland and Nova Scotia after Queen Anne's War?", options: ["Treaty of Paris", "Treaty of Utrecht", "Treaty of Versailles", "Treaty of Ghent"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 10, q: "Queen Anne's War was fought between England and what other country?", options: ["Spain", "France", "Portugal", "Netherlands"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 11, q: "The British fought the French in the Seven Years' War for control of the colonies and what trade?", options: ["Gold trade", "Spice trade", "Fur trade", "Silk trade"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 12, q: "Signed in 1774, what act refused to give political representation to the French in Canada?", options: ["The Quebec Act", "The Constitutional Act", "The Union Act", "The British Act"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 12, q: "The Québec Act allowed French Canadians to continue practicing what religion?", options: ["Roman Catholicism", "Protestantism", "Eastern Orthodox", "Judaism"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 13, q: "After the American Revolution, what group of people flocked to Canada?", options: ["French Explorers", "Spanish Conquistadors", "British Loyalists", "Viking Raiders"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 14, q: "The Constitutional Act of 1791 divided the Province of Quebec into Upper Canada and what?", options: ["East Canada", "Lower Canada", "New France", "Nova Scotia"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 15, q: "During the War of 1812, who led British troops alongside Shawnee Chief Tecumseh?", options: ["General George Washington", "General Isaac Brock", "General Wellington", "General Wolfe"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 15, q: "American assaults on Canadian border fortresses happened during what war?", options: ["American Revolution", "War of 1812", "Seven Years' War", "Queen Anne's War"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 16, q: "In 1840, Queen Victoria enacted the Act of Union to unite East and West regions into what?", options: ["The Dominion of Canada", "The Province of Canada", "New England", "Rupert's Land"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 17, q: "A government that is accountable to the people, not to the Monarch, is called what?", options: ["Responsible government", "Absolute monarchy", "Dictatorship", "Empire"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 18, q: "What Act established the Dominion of Canada on July 1, 1867?", options: ["The Quebec Act", "The Constitutional Act", "The Act of Union", "The British North America Act"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 19, q: "Between 1871 and 1921, the Canadian government signed eleven of what with Indigenous people?", options: ["Declarations", "Treaties", "Constitutions", "Laws"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 20, q: "To persuade British Columbia to join Canada, what was promised to be built?", options: ["A massive fort", "A transcontinental railroad", "A fleet of ships", "A new capital city"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 21, q: "Who kept law and order in the West to encourage families to settle there?", options: ["The Texas Rangers", "The North-West Mounted Police", "The British Army", "The Canadian Militia"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 22, q: "In 1917, Canadians fought as a unit for the first time in what World War I battle?", options: ["Battle of Waterloo", "Battle of Midway", "Battle of Vimy Ridge", "Battle of Gettysburg"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 23, q: "Passed in 1931, the Statute of Westminster gave Canada complete independence of what?", options: ["Taxes", "Foreign policy", "The Monarchy", "Language"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 24, q: "In 1982, Prime Minister Pierre Trudeau and Queen Elizabeth II signed the Charter of Rights and Freedoms to repatriate what?", options: ["The Military", "The Constitution", "The Railroad", "The Fur Trade"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "History", week: 24, q: "The Charter of Rights and Freedoms was signed in what year?", options: ["1867", "1931", "1982", "2000"], answerIndex: 2 }, //[cite: 1]
+
+    // Cycle 3 - Geography
+    { cycle: 3, subject: "Geography", week: 1, q: "Which of the following is the capital of Nova Scotia?", options: ["St. John's", "Halifax", "Fredericton", "Charlottetown"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Geography", week: 2, q: "What is the capital of Manitoba?", options: ["Toronto", "Regina", "Winnipeg", "Edmonton"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Geography", week: 3, q: "Which of these is a territory and its capital?", options: ["Yellowknife, Northwest Territories", "Ottawa, Ontario", "Victoria, British Columbia", "Halifax, Nova Scotia"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Geography", week: 13, q: "Lake Huron, Lake Ontario, Lake Michigan, Lake Erie, and Lake Superior make up the what?", options: ["Great Rivers", "Great Mountains", "Great Lakes", "Great Deserts"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Geography", week: 15, q: "Augusta is the capital of what state?", options: ["Massachusetts", "Maine", "New Hampshire", "Vermont"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Geography", week: 17, q: "Richmond is the capital of what state?", options: ["Virginia", "Maryland", "North Carolina", "South Carolina"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Geography", week: 18, q: "Atlanta is the capital of what state?", options: ["Florida", "Alabama", "Georgia", "Mississippi"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Geography", week: 20, q: "Madison is the capital of what state?", options: ["Wisconsin", "Illinois", "Iowa", "Missouri"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Geography", week: 22, q: "Austin is the capital of what state?", options: ["Oklahoma", "Texas", "Colorado", "New Mexico"], answerIndex: 1 }, //[cite: 1]
+
+    // Cycle 3 - Bible
+    { cycle: 3, subject: "Bible", week: 1, q: "What are the two major themes of the Bible?", options: ["Creation and Flood", "Who God is and His covenant with man", "Kings and Prophets", "Law and Grace"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 2, q: "What are the two major divisions of the Bible?", options: ["Law and Prophets", "Old Testament and New Testament", "Gospels and Letters", "History and Poetry"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 2, q: "True or False: The Old Testament and New Testament are the two major divisions of the Bible.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 3, q: "Law, History, Poetry, Prophets, Gospels, Letters, and Prophecy are the seven subdivisions of what?", options: ["The Bible", "The Old Testament", "The Dictionary", "The Encyclopedia"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 3, q: "True or False: The Gospels are a subdivision of the Bible.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 4, q: "Which of these is the first book of the Old Testament?", options: ["Exodus", "Leviticus", "Genesis", "Numbers"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 5, q: "True or False: Job and Psalms are books of the Old Testament.", options: ["True", "False"], answerIndex: 0 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 9, q: "Matthew, Mark, Luke, and John are the first four books of what?", options: ["Old Testament", "New Testament", "The Law", "The Prophets"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 9, q: "Acts is a book in which part of the Bible?", options: ["Old Testament", "New Testament", "The Law", "The Prophets"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 10, q: "Romans, Corinthians, Galatians, and Ephesians are books found where?", options: ["Old Testament", "New Testament", "The Law", "The Gospels"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 13, q: "How is Jesus portrayed in the Gospel of John?", options: ["As King", "As Servant", "As Man", "As God"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 13, q: "How is Jesus portrayed in the Gospel of Matthew?", options: ["As Servant", "As Man", "As God", "As King"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 13, q: "How is Jesus portrayed in the Gospel of Luke?", options: ["As Servant", "As Man", "As God", "As King"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 13, q: "The Gospel of Mark portrays Jesus as what?", options: ["King", "Man", "God", "Servant"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 14, q: "Peter, John, James, and Andrew were some of Jesus' original twelve what?", options: ["Brothers", "Kings", "Prophets", "Disciples"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 14, q: "Bartholomew, Matthew, and Simon the Zealot were what?", options: ["Kings", "Prophets", "Disciples", "Judges"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 16, q: "Which disciple betrayed Jesus?", options: ["Peter", "John", "Thomas", "Judas Iscariot"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 17, q: "Under God's new covenant, what lives within believers?", options: ["An angel", "The Holy Spirit", "A priest", "A prophet"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 18, q: "What book of the Bible records the ascension of Christ and Pentecost?", options: ["Romans", "Acts", "Hebrews", "Revelation"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 19, q: "Who was a Jewish leader who at first persecuted Christians but then became a devoted follower of Christ?", options: ["Peter", "John", "Saul of Tarsus (Paul)", "James"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 20, q: "Paul took the Gospel to the Gentiles. Who took the Gospel to the Jews?", options: ["John", "Matthew", "Peter", "Luke"], answerIndex: 2 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 20, q: "To whom did Peter take the Gospel?", options: ["The Gentiles", "The Romans", "The Greeks", "The Jews"], answerIndex: 3 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 21, q: "How is Satan described in 1 Peter?", options: ["A sneaky snake", "A roaring lion", "A quiet mouse", "A flying dragon"], answerIndex: 1 }, //[cite: 1]
+    { cycle: 3, subject: "Bible", week: 22, q: "What book of the New Testament is typically considered a prophecy of the end times?", options: ["Revelation", "Romans", "Jude", "Acts"], answerIndex: 0 }, //[cite: 1]
+
+    // Cycle 3 - Timeline
+    { cycle: 3, subject: "Timeline", week: 16, q: "The American Revolution, French Revolution, and Louisiana Purchase happened during what age?", options: ["Age of Ancient Empires", "Age of Exploration", "Age of Enlightenment", "Age of Industry"], answerIndex: 3 } //[cite: 1]
+];

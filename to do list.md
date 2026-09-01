@@ -50,15 +50,15 @@ Future updates
             Latin
             Bible
             English
-            Geography*
+            Geography
                         History
                         Timeline
             Science
                         Math
-
-*needs to be changed to canadian version
-  
+ 
 
 - clean up quiz questions
 
 Map Explorer is cloaked. remove  {style="display: none;}  to restore
+
+c3-geography-w8 is missing extra info map
