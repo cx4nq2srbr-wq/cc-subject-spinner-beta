@@ -1132,3 +1132,10 @@ body.dark-mode #triviaPrompt { background: rgba(30, 41, 59, 0.9); border-color: 
 
 .info-btn:hover { background: rgba(255, 255, 255, 0.4); }
 .info-btn:active { transform: translateY(-50%) scale(0.85); }
+
+#infoModalContent {
+    overflow: hidden;
+    border-radius: 8px;
+    margin-top: 15px;
+    touch-action: none;
+}

@@ -1689,22 +1689,52 @@ function prepInfoBtn(subject, week, btnId) {
         .catch(e => { /* Both files missing or network error, keep button hidden */ });
 }
 
+let infoPanZoom = null; // Tracks the zoom physics engine!
+
 function openInfoModal(e, btnId) {
-    if (e) e.stopPropagation(); // Stop the blue bar from opening!
+    if (e) e.stopPropagation(); 
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
     
     const btn = document.getElementById(btnId);
     if (!btn || !btn.dataset.url) return;
     
-    // Inject the image and scale it to fit the popup
-    document.getElementById('infoModalContent').innerHTML = `<img src="${btn.dataset.url}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">`;
+    const contentDiv = document.getElementById('infoModalContent');
+    contentDiv.innerHTML = ""; // Clear old content
+    
+    // Create the image element safely
+    const img = document.createElement('img');
+    img.id = 'infoImage';
+    img.src = btn.dataset.url;
+    img.style.width = '100%';
+    img.style.borderRadius = '8px';
+    img.style.touchAction = 'none'; // Critical to stop the browser from fighting the zoom!
+    
+    contentDiv.appendChild(img);
     document.getElementById('infoModalOverlay').style.display = 'flex';
+
+    // Wait for the image to load, then attach the physics engine!
+    img.onload = () => {
+        if (infoPanZoom) infoPanZoom.dispose(); // Clean up just in case
+        infoPanZoom = panzoom(img, {
+            maxZoom: 5,
+            minZoom: 1,
+            bounds: true,
+            boundsPadding: 0.1
+        });
+    };
 }
 
 function closeInfoModal() {
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    
+    // Safely destroy the physics engine so it doesn't glitch future popups
+    if (infoPanZoom) {
+        infoPanZoom.dispose();
+        infoPanZoom = null;
+    }
+    
     document.getElementById('infoModalOverlay').style.display = 'none';
-    document.getElementById('infoModalContent').innerHTML = ""; // Clean up memory
+    document.getElementById('infoModalContent').innerHTML = ""; 
 }
 
 /* ==========================================================================
