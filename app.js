@@ -1588,9 +1588,9 @@ function prepVoiceover(subject, week, btnId) {
     btn.style.display = 'none';
     setAudioIcon(btnId, false);
     
-    // Construct the file name (e.g., "Math" -> "math", "Timeline" -> "timeline")
+    // THE FIX: Added subfolders for Cycle and Subject (e.g., audio/c1/math/c1-math-w1.m4a)
     const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const url = `audio/c${currentCycle}-${cleanSubject}-w${week}.m4a`;
+    const url = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.m4a`;
 
     // "Ping" the server to see if the file exists without downloading it
     fetch(url, { method: 'HEAD' })
@@ -1658,38 +1658,35 @@ function stopVoiceover() {
 /* ==========================================================================
    EXTRA INFO ENGINE
    ========================================================================== */
+let infoPanZoom = null; 
+
 function prepInfoBtn(subject, week, btnId) {
     const btn = document.getElementById(btnId);
     if (!btn) return;
     
-    // Reset state
     btn.style.display = 'none';
     
-    // Construct the base file name
+    // THE FIX: Added subfolders for Cycle and Subject (e.g., extra/c1/math/c1-math-w1.jpg)
     const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const jpgUrl = `extra/c${currentCycle}-${cleanSubject}-w${week}.jpg`;
-    const pngUrl = `extra/c${currentCycle}-${cleanSubject}-w${week}.png`;
+    const jpgUrl = `extra/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.jpg`;
+    const pngUrl = `extra/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.png`;
 
-    // Ping the server for the JPG first
     fetch(jpgUrl, { method: 'HEAD' })
         .then(res => {
             if (res.ok) {
                 btn.dataset.url = jpgUrl;
-                btn.style.display = 'flex'; // Found the JPG!
+                btn.style.display = 'flex'; 
             } else {
-                // If the JPG is missing, check for a PNG
                 return fetch(pngUrl, { method: 'HEAD' }).then(resPng => {
                     if (resPng.ok) {
                         btn.dataset.url = pngUrl;
-                        btn.style.display = 'flex'; // Found the PNG!
+                        btn.style.display = 'flex'; 
                     }
                 });
             }
         })
-        .catch(e => { /* Both files missing or network error, keep button hidden */ });
+        .catch(e => { /* Files missing */ });
 }
-
-let infoPanZoom = null; // Tracks the zoom physics engine!
 
 function openInfoModal(e, btnId) {
     if (e) e.stopPropagation(); 
