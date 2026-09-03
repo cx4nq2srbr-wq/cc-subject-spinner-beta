@@ -1139,3 +1139,42 @@ body.dark-mode #triviaPrompt { background: rgba(30, 41, 59, 0.9); border-color: 
     margin-top: 15px;
     touch-action: none;
 }
+
+/* ==========================================================================
+   SCRIPTURE KARAOKE STYLES
+   ========================================================================== */
+#scriptureLyricsContainer {
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 25px;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+/* Hide scrollbar for a clean Apple Music look */
+#scriptureLyricsContainer::-webkit-scrollbar { display: none; }
+
+.lyric-line {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-muted);
+    opacity: 0.3;
+    margin-bottom: 25px;
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1.3);
+    cursor: pointer;
+    transform-origin: left center;
+}
+
+.lyric-line.active {
+    opacity: 1;
+    color: var(--primary);
+    transform: scale(1.15);
+    text-shadow: 0 4px 15px rgba(255,111,97,0.2);
+}
+
+/* Dark Mode Overrides */
+body.dark-mode .lyric-line { color: #94a3b8; }
+body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba(255,255,255,0.2); }

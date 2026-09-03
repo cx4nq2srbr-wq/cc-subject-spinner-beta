@@ -1,8 +1,10 @@
-const CACHE_NAME = 'cc-spinner-v4.2.4 beta'; // Bumped version to trigger this new update!
+const CACHE_NAME = 'cc-spinner-v4.3.0 beta'; // Bumped version to trigger this new update!
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
+  './scripture.js',
+  './audio/c2/scripture/Genesis-1.m4a',
   './app.js',
   './data.js',
   './map-c2-europe.js',

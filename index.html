@@ -169,6 +169,14 @@
             </div>
             <div style="font-size: 26px;">🗺️</div>
         </button>
+
+        <button class="setting-item" onclick="openScriptureMenu()">
+            <div class="setting-text">
+                <h4>Scripture Song</h4>
+                <p>Sing along and learn the verses</p>
+            </div>
+            <div style="font-size: 26px;">🎵</div>
+        </button>
     </div>
 </div>
 
@@ -467,6 +475,30 @@
     </button>
 </nav>
 
+<div id="scriptureContainer" class="view-container">
+    <div class="focus-top-bar" style="padding-bottom: 5px;">
+        <button class="focus-nav-btn back" onclick="exitScriptureMenu()">← Back</button>
+        
+        <!-- The Target Week Dropdown -->
+        <select id="scriptureWeekSelect" style="appearance: none; background: var(--secondary); color: white; border: none; padding: 6px 15px; border-radius: 12px; font-weight: 800; font-size: 14px; text-align: center;">
+            <option value="1">Stop at Week 1</option>
+            <option value="2">Stop at Week 2</option>
+            <option value="3">Stop at Week 3</option>
+            <option value="4">Stop at Week 4</option>
+            <option value="12">Stop at Week 12</option>
+            <option value="24" selected>Play Full Song</option>
+        </select>
+    </div>
+
+    <!-- The Scrolling Lyrics Area -->
+    <div id="scriptureLyricsContainer"></div>
+
+    <!-- The Play Button -->
+    <div style="width: 100%; padding: 20px; box-sizing: border-box; background: var(--card-bg); backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.05); z-index: 10;">
+        <button id="scripturePlayBtn" class="focus-action-btn green" onclick="toggleScriptureAudio()" style="width: 100%; height: 60px;">▶ Play</button>
+    </div>
+</div>
+
 <div id="resetConfirmOverlay">
   <div class="confirmBox">
     <h3 style="margin-top:0">Clear Progress?</h3>
@@ -510,6 +542,7 @@
 <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
 <script src="data.js"></script>
 <script src="map-c2-europe.js"></script>
+<script src="scripture.js"></script>
 <script src="app.js"></script>
 
 </body>
