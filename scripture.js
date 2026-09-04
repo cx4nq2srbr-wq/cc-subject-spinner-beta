@@ -14,7 +14,7 @@ const scriptureData = {
     2: {
         title: "Genesis 1: 1-27",
         desc: "The Creation Story",
-        audio: "audio/c2/scripture/Genesis 1 1-27.m4a",
+        audio: "audio/c2/scripture/Genesis-1.m4a",
         lyrics: [
             { week: 1, time: 3.0, text: "1 In the beginning God created the heaven and the earth." },
             { week: 1, time: 9.0, text: "2 And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters." },
@@ -48,10 +48,32 @@ const scriptureData = {
     3: {
             title: "John 1: 1-7",
             desc: "In the beginning was the Word",
-            audio: "audio/c3/scripture/John 1.m4a",
+            audio: "audio/c3/scripture/John-1.m4a",
             lyrics: [
-                { week: 1, time: 0.0, text: "In the beginning was the Word," },
-                // Add Cycle 3 timestamps here...
+                { week: 1, time: 9.0, text: "1 In the beginning was the Word," },
+                { week: 2, time: 14.0, text: "and the Word was with God, and the Word was God." },
+                { week: 3, time: 25.0, text: "2 The same was in the beginning with God." },
+                { week: 4, time: 31.0, text: "3 All things were made by Him;" },
+                { week: 5, time: 35.0, text: "and without Him was made nothing that was made." },
+                { week: 6, time: 46.0, text: "4 In Him was life; and the life was the light of men." },
+                { week: 7, time: 56.0, text: "5 And the light shineth in the darkness;" },
+                { week: 8, time: 61.0, text: "and the darkness did not comprehend it." },
+                { week: 9, time: 66.0, text: "6 There was a man sent from God, whose name was John." },
+                { week: 10, time: 76.0, text: "7 This man came for a witness," },
+                { week: 11, time: 81.0, text: "to give testimony of the light," },
+                { week: 12, time: 86.0, text: "that all men might believe through him." },
+                { week: 13, time: 100.0, text: "in principio erat Verbum" },
+                { week: 14, time: 105.0, text: "et Verbum erat apud Deum er Dues erat Verbum" },
+                { week: 15, time: 117.0, text: "hoc erat in principio apud Deum" },
+                { week: 16, time: 123.0, text: "Omnia per ipsum facta sunt" },
+                { week: 17, time: 127.0, text: "et sine ipso factum est nihil quod factum est" },
+                { week: 18, time: 137.0, text: "in ipso vita erat et vita erat lux hominum" },
+                { week: 19, time: 146.0, text: "et lux in tenebris lucet" },
+                { week: 20, time: 151.0, text: "et tenebrae eam non comprehenderunt" },
+                { week: 21, time: 159.0, text: "fuit homo missus a Deo cui nomen erat lohannes" },
+                { week: 22, time: 169.0, text: "hic venit in testimonium" },
+                { week: 23, time: 174.0, text: "ut testimonium perhiberet de lumine" },
+                { week: 24, time: 180.0, text: "ut omnes crederent per illum " },
             ]
         }
     };
