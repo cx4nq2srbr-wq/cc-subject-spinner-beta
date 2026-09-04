@@ -196,6 +196,7 @@ function changeCycle(cycleNum) {
         updateReviewDisplay();
     }
     updateFlagUI();
+    updateScriptureButtonUI();
 }
 
 // --- Window Load & App Config ---
@@ -227,6 +228,7 @@ window.onload = function() {
     .then(m => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = m.version; })
     .catch(() => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = "not available"; });
     updateFlagUI();
+    updateScriptureButtonUI();
 };
 
 function saveToDevice() {
