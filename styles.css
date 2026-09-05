@@ -1183,3 +1183,49 @@ body.dark-mode #triviaPrompt { background: rgba(30, 41, 59, 0.9); border-color: 
 /* Dark Mode Overrides */
 body.dark-mode .lyric-line { color: #94a3b8; }
 body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba(255,255,255,0.2); }
+
+/* Progress Ring Play Button Wrapper */
+.scripture-player-wrap {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+.scripture-player-wrap:active .scripture-play-btn {
+    transform: scale(0.85); /* Triggers the squish effect on tap */
+}
+
+/* The SVG Ring Graphics */
+.scripture-progress-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 70px; height: 70px;
+    transform: rotate(-90deg); /* Starts the ring at 12 o'clock */
+}
+.scripture-progress-bg {
+    fill: none;
+    stroke: rgba(74, 144, 226, 0.2);
+    stroke-width: 4;
+}
+.scripture-progress-bar {
+    fill: none;
+    stroke: #ef4444; /* Turns red to match the audio button! */
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.1s linear;
+}
+
+/* Overriding the standard audio-btn for this specific central placement */
+.scripture-play-btn {
+    position: relative;
+    transform: none;
+    top: auto; right: auto; left: auto;
+    width: 52px; height: 52px;
+    display: flex;
+    pointer-events: none; /* Allows the wrapper to register the click */
+    margin: 0;
+}

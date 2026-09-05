@@ -511,9 +511,19 @@
     <!-- The Scrolling Lyrics Area -->
     <div id="scriptureLyricsContainer"></div>
 
-    <!-- The Play Button -->
-    <div style="width: 100%; padding: 20px; box-sizing: border-box; background: var(--card-bg); backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.05); z-index: 10;">
-        <button id="scripturePlayBtn" class="focus-action-btn green" onclick="toggleScriptureAudio()" style="width: 100%; height: 60px;">▶ Play</button>
+    <!-- The Play Button & Progress Ring -->
+    <div style="width: 100%; padding: 15px; box-sizing: border-box; background: var(--card-bg); backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.05); z-index: 10; display: flex; justify-content: center;">
+        
+        <div class="scripture-player-wrap" onclick="toggleScriptureAudio()">
+            <svg class="scripture-progress-svg" viewBox="0 0 70 70">
+                <circle class="scripture-progress-bg" cx="35" cy="35" r="31"></circle>
+                <circle id="scriptureProgressBar" class="scripture-progress-bar" cx="35" cy="35" r="31" style="stroke-dasharray: 195; stroke-dashoffset: 195;"></circle>
+            </svg>
+            <div id="scripturePlayBtn" class="audio-btn scripture-play-btn">
+                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </div>
+        </div>
+
     </div>
 </div>
 

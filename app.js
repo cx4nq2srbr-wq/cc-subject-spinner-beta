@@ -2242,33 +2242,31 @@ function nextTriviaQuestion() {
         return;
     }
 
-    // Pull the next custom question from the deck
     currentTrivia = triviaQueue.shift();
 
     document.getElementById('triviaSubjectLabel').textContent = `${subjectIcons[currentTrivia.subject]} ${currentTrivia.subject}`;
     document.getElementById('triviaPrompt').textContent = currentTrivia.q;
 
-    // Map the custom options to our button logic
-    let allOptions = [
-        { text: currentTrivia.options[0], isCorrect: currentTrivia.answerIndex === 0 },
-        { text: currentTrivia.options[1], isCorrect: currentTrivia.answerIndex === 1 },
-        { text: currentTrivia.options[2], isCorrect: currentTrivia.answerIndex === 2 },
-        { text: currentTrivia.options[3], isCorrect: currentTrivia.answerIndex === 3 }
-    ];
+    // THE FIX: Dynamically handle any amount of options (2, 3, or 4)
+    let allOptions = currentTrivia.options.map((text, idx) => {
+        return { text: text, isCorrect: currentTrivia.answerIndex === idx };
+    });
 
-    // Shuffle the options so the correct answer isn't always in the same spot!
+    // Shuffle the options
     allOptions.sort(() => Math.random() - 0.5);
 
-    // Populate the buttons
+    // Populate the buttons and completely hide any unused ones!
     for (let i = 0; i < 4; i++) {
         const btn = document.getElementById(`triviaBtn${i}`);
-        btn.innerHTML = allOptions[i].text;
-        btn.className = 'trivia-option-btn'; // Reset colors from previous question
-        
-        // NEW: Tag the button so we can easily find it later!
-        btn.dataset.correct = allOptions[i].isCorrect; 
-        
-        btn.onclick = () => processTriviaAnswer(i, allOptions[i].isCorrect, btn);
+        if (i < allOptions.length) {
+            btn.innerHTML = allOptions[i].text;
+            btn.className = 'trivia-option-btn'; 
+            btn.dataset.correct = allOptions[i].isCorrect; 
+            btn.style.display = 'flex'; // Ensure it's visible
+            btn.onclick = () => processTriviaAnswer(i, allOptions[i].isCorrect, btn);
+        } else {
+            btn.style.display = 'none'; // Hide the empty ones!
+        }
     }
 }
 

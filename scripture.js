@@ -115,10 +115,12 @@ function toggleScriptureAudio() {
     const playBtn = document.getElementById('scripturePlayBtn');
     if (scriptureAudio.paused) {
         scriptureAudio.play();
-        playBtn.innerHTML = `⏸ Pause`;
+        playBtn.classList.add('playing');
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
     } else {
         scriptureAudio.pause();
-        playBtn.innerHTML = `▶ Play`;
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
     }
 }
 
@@ -153,6 +155,13 @@ scriptureAudio.addEventListener('timeupdate', () => {
     const selectedWeek = parseInt(document.getElementById('scriptureWeekSelect').value);
     const currentLyrics = scriptureData[currentCycle].lyrics;
     
+    const progressRing = document.getElementById('scriptureProgressBar');
+    if (progressRing && scriptureAudio.duration) {
+        const percent = scriptureAudio.currentTime / scriptureAudio.duration;
+        const offset = 195 - (percent * 195);
+        progressRing.style.strokeDashoffset = offset;
+    }
+
     // 1. Auto-Pause Logic
     const nextLine = currentLyrics.find(line => line.time > currentTime);
     if (nextLine && nextLine.week > selectedWeek && currentTime >= nextLine.time - 0.2) {
@@ -189,5 +198,10 @@ scriptureAudio.addEventListener('timeupdate', () => {
 });
 
 scriptureAudio.addEventListener('ended', () => {
-    document.getElementById('scripturePlayBtn').innerHTML = `▶ Play`;
+    const playBtn = document.getElementById('scripturePlayBtn');
+    playBtn.classList.remove('playing');
+    playBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+    
+    const progressRing = document.getElementById('scriptureProgressBar');
+    if (progressRing) progressRing.style.strokeDashoffset = "195";
 });
