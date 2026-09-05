@@ -1225,7 +1225,11 @@ body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba
     transform: none;
     top: auto; right: auto; left: auto;
     width: 52px; height: 52px;
-    display: flex;
-    pointer-events: none; /* Allows the wrapper to register the click */
+    display: flex !important;
+    pointer-events: none; 
     margin: 0;
+    background: var(--primary) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(255,111,97,0.3);
 }
