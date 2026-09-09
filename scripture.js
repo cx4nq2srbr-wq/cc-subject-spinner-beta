@@ -71,7 +71,7 @@ const scriptureData = {
         desc: "In the beginning was the Word",
         audio: "audio/c3/scripture/John-1.m4a",
         lyrics: [
-            { week: 1, time: 9.0, text: "1 In the beginning was the Word," },
+            { week: 1, time: 9.5, text: "1 In the beginning was the Word," },
             { week: 2, time: 14.0, text: "and the Word was with God, and the Word was God." },
             { week: 3, time: 25.0, text: "2 The same was in the beginning with God." },
             { week: 4, time: 31.0, text: "3 All things were made by Him;" },
