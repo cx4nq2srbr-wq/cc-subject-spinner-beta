@@ -156,6 +156,13 @@ function restartScriptureAudio() {
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
     scriptureAudio.currentTime = 0;
     
+    // Clear the active lyric highlight
+    if (scriptureActiveLine !== -1) {
+        const oldEl = document.getElementById(`lyric-${scriptureActiveLine}`);
+        if (oldEl) oldEl.classList.remove('active');
+        scriptureActiveLine = -1;
+    }
+    
     // Instantly reset the ring
     const progressRing = document.getElementById('scriptureProgressBar');
     if (progressRing) progressRing.style.strokeDashoffset = "195";
@@ -234,17 +241,19 @@ scriptureAudio.addEventListener('timeupdate', () => {
         progressRing.style.strokeDashoffset = offset;
     }
 
-    // 1. Auto-Pause Logic
-    const nextLine = currentLyrics.find(line => line.time > currentTime);
-    if (nextLine && nextLine.week > selectedWeek && currentTime >= nextLine.time - 0.2) {
+    // 1. Auto-Pause Logic (FOOLPROOF)
+    // Find the very first line of the forbidden week, no matter where we are in the song
+    const stopLine = currentLyrics.find(line => line.week > selectedWeek);
+    
+    // If we hit or pass that line's timestamp, snap it back and pause!
+    if (stopLine && currentTime >= stopLine.time - 0.2) {
         scriptureAudio.pause();
         
-        // THE FIX: Proper SVG reset instead of the text emoji!
         const playBtn = document.getElementById('scripturePlayBtn');
         playBtn.classList.remove('playing');
         playBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
         
-        scriptureAudio.currentTime = nextLine.time - 0.2; 
+        scriptureAudio.currentTime = stopLine.time - 0.2; 
         return;
     }
 
