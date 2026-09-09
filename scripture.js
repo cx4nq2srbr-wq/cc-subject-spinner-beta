@@ -119,9 +119,16 @@ function openScriptureMenu() {
     document.getElementById('scriptureContainer').classList.add('active');
     activeChallengePage = 'scriptureContainer';
     
-    // Load the correct audio file for the current cycle
+    // Load the saved week preference for this specific cycle!
+    const savedWeek = localStorage.getItem(`cycle${currentCycle}_scriptureMaxWeek`);
+    const selectEl = document.getElementById('scriptureWeekSelect');
+    if (savedWeek) {
+        selectEl.value = savedWeek;
+    } else {
+        selectEl.value = "24"; // Default to full song
+    }
+
     scriptureAudio.src = scriptureData[currentCycle].audio; 
-    
     buildScriptureLyrics();
 }
 
@@ -142,6 +149,50 @@ function toggleScriptureAudio() {
         scriptureAudio.pause();
         playBtn.classList.remove('playing');
         playBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+    }
+}
+
+function restartScriptureAudio() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    scriptureAudio.currentTime = 0;
+    
+    // Instantly reset the ring
+    const progressRing = document.getElementById('scriptureProgressBar');
+    if (progressRing) progressRing.style.strokeDashoffset = "195";
+
+    // Scroll the lyrics back to the top
+    const container = document.getElementById('scriptureLyricsContainer');
+    if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function handleScriptureWeekChange() {
+    const selectEl = document.getElementById('scriptureWeekSelect');
+    const selectedWeek = parseInt(selectEl.value);
+    
+    // Save their choice to the phone's memory
+    localStorage.setItem(`cycle${currentCycle}_scriptureMaxWeek`, selectedWeek);
+    
+    // Instant Stop Logic: Are we already playing past this new limit?
+    const currentLyrics = scriptureData[currentCycle].lyrics;
+    const stopLine = currentLyrics.find(line => line.week > selectedWeek);
+    
+    if (stopLine && scriptureAudio.currentTime >= stopLine.time - 0.2) {
+        scriptureAudio.pause();
+        
+        // Reset the play button SVG
+        const playBtn = document.getElementById('scripturePlayBtn');
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+        
+        // Rewind to right before the forbidden week starts
+        scriptureAudio.currentTime = stopLine.time - 0.2;
+        
+        // Force the progress ring to update instantly
+        const progressRing = document.getElementById('scriptureProgressBar');
+        if (progressRing && scriptureAudio.duration) {
+            const percent = scriptureAudio.currentTime / scriptureAudio.duration;
+            progressRing.style.strokeDashoffset = 195 - (percent * 195);
+        }
     }
 }
 
@@ -187,7 +238,12 @@ scriptureAudio.addEventListener('timeupdate', () => {
     const nextLine = currentLyrics.find(line => line.time > currentTime);
     if (nextLine && nextLine.week > selectedWeek && currentTime >= nextLine.time - 0.2) {
         scriptureAudio.pause();
-        document.getElementById('scripturePlayBtn').innerHTML = `▶ Play`;
+        
+        // THE FIX: Proper SVG reset instead of the text emoji!
+        const playBtn = document.getElementById('scripturePlayBtn');
+        playBtn.classList.remove('playing');
+        playBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+        
         scriptureAudio.currentTime = nextLine.time - 0.2; 
         return;
     }
