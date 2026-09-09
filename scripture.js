@@ -5,10 +5,31 @@ const scriptureData = {
     1: {
         title: "Exodus 20: 1-17",
         desc: "The Ten Commandments",
-        audio: "audio/c1/scripture/Exodus 20.m4a",
+        audio: "audio/c1/scripture/Exodus-20.m4a",
         lyrics: [
-            { week: 1, time: 0.0, text: "And God spake all these words, saying," },
-            // Add Cycle 1 timestamps here...
+            { week: 1, time: 5.0, text: "And God spake all these words, saying, I am the LORD thy God," },
+            { week: 2, time: 12.0, text: "which have brought thee out of the land of Egypt, out of the house of bondage." },
+            { week: 3, time: 23.0, text: "Thou shalt have no other gods before me." },
+            { week: 4, time: 28.0, text: "Thou shalt have no other gods before me." },
+            { week: 5, time: 37.0, text: "of anything that is in heaven above, or that is in the earth beneath," },
+            { week: 6, time: 45.0, text: "or that is in the water under the earth." },
+            { week: 7, time: 51.0, text: "Thou shalt not bow down thyself to them, nor serve them:" },
+            { week: 8, time: 57.0, text: "for I the LORD thy God am a jealous God, visiting the iniquity of the fathers upon the children" },
+            { week: 9, time: 68.0, text: "unto the third and fourth generation of them that hate me;" },
+            { week: 10, time: 80.0, text: "and shewing mercy unto thousands of them that love me, and keep my commandments." },
+            { week: 11, time: 90.0, text: "Thou shalt not take the name of the LORD thy God in vain;" },
+            { week: 12, time: 97.0, text: "For the LORD will not hold him guiltless that taketh his name in vain." },
+            { week: 13, time: 106.0, text: "Remember the sabbath day, to keep it holy. Six days shalt thou labour, and do all thy work:" },
+            { week: 14, time: 119.0, text: "but on the seventh day is the sabbath of the LORD thy God: in it thou shalt not do any work," },
+            { week: 15, time: 130.0, text: "thou, nor thy son, nor thy daughter, thy manservant, nor thy maidservant, nor thy cattle, nor thy stranger that is within thy gates:" },
+            { week: 16, time: 148.0, text: "for in six days, the LORD made heaven and earth, the sea, and all that in them is," },
+            { week: 17, time: 161.0, text: "and rested the seventh day: wherefore the LORD blessed the sabbath day, and hallowed it." },
+            { week: 18, time: 175.0, text: "Honour thy father and thy mother: that thy days may be long" },
+            { week: 19, time: 184.0, text: "upon the land which the LORD thy God giveth thee. Thou shalt not kill." },
+            { week: 20, time: 195.0, text: "Thou shalt not commit adultery. Thou shalt not steal." },
+            { week: 21, time: 201.0, text: "Thou shalt not bear false witness against thy neighbour." },
+            { week: 22, time: 209.0, text: "Thou shalt not covet thy neighbour's house, thou shalt not covet thy neighbour's wife," },
+            { week: 23, time: 220.0, text: "Nor his manservant, nor his maidservant, nor his ox, nor his ass, nor anything that is thy neighbour's." },
         ]
     },
     2: {
@@ -46,37 +67,37 @@ const scriptureData = {
         ]
     },
     3: {
-            title: "John 1: 1-7",
-            desc: "In the beginning was the Word",
-            audio: "audio/c3/scripture/John-1.m4a",
-            lyrics: [
-                { week: 1, time: 9.0, text: "1 In the beginning was the Word," },
-                { week: 2, time: 14.0, text: "and the Word was with God, and the Word was God." },
-                { week: 3, time: 25.0, text: "2 The same was in the beginning with God." },
-                { week: 4, time: 31.0, text: "3 All things were made by Him;" },
-                { week: 5, time: 35.0, text: "and without Him was made nothing that was made." },
-                { week: 6, time: 46.0, text: "4 In Him was life; and the life was the light of men." },
-                { week: 7, time: 56.0, text: "5 And the light shineth in the darkness;" },
-                { week: 8, time: 61.0, text: "and the darkness did not comprehend it." },
-                { week: 9, time: 66.0, text: "6 There was a man sent from God, whose name was John." },
-                { week: 10, time: 76.0, text: "7 This man came for a witness," },
-                { week: 11, time: 81.0, text: "to give testimony of the light," },
-                { week: 12, time: 86.0, text: "that all men might believe through him." },
-                { week: 13, time: 100.0, text: "in principio erat Verbum" },
-                { week: 14, time: 105.0, text: "et Verbum erat apud Deum er Dues erat Verbum" },
-                { week: 15, time: 117.0, text: "hoc erat in principio apud Deum" },
-                { week: 16, time: 123.0, text: "Omnia per ipsum facta sunt" },
-                { week: 17, time: 127.0, text: "et sine ipso factum est nihil quod factum est" },
-                { week: 18, time: 137.0, text: "in ipso vita erat et vita erat lux hominum" },
-                { week: 19, time: 146.0, text: "et lux in tenebris lucet" },
-                { week: 20, time: 151.0, text: "et tenebrae eam non comprehenderunt" },
-                { week: 21, time: 159.0, text: "fuit homo missus a Deo cui nomen erat lohannes" },
-                { week: 22, time: 169.0, text: "hic venit in testimonium" },
-                { week: 23, time: 174.0, text: "ut testimonium perhiberet de lumine" },
-                { week: 24, time: 180.0, text: "ut omnes crederent per illum " },
-            ]
-        }
-    };
+        title: "John 1: 1-7",
+        desc: "In the beginning was the Word",
+        audio: "audio/c3/scripture/John-1.m4a",
+        lyrics: [
+            { week: 1, time: 9.0, text: "1 In the beginning was the Word," },
+            { week: 2, time: 14.0, text: "and the Word was with God, and the Word was God." },
+            { week: 3, time: 25.0, text: "2 The same was in the beginning with God." },
+            { week: 4, time: 31.0, text: "3 All things were made by Him;" },
+            { week: 5, time: 35.0, text: "and without Him was made nothing that was made." },
+            { week: 6, time: 46.0, text: "4 In Him was life; and the life was the light of men." },
+            { week: 7, time: 56.0, text: "5 And the light shineth in the darkness;" },
+            { week: 8, time: 61.0, text: "and the darkness did not comprehend it." },
+            { week: 9, time: 66.0, text: "6 There was a man sent from God, whose name was John." },
+            { week: 10, time: 76.0, text: "7 This man came for a witness," },
+            { week: 11, time: 81.0, text: "to give testimony of the light," },
+            { week: 12, time: 86.0, text: "that all men might believe through him." },
+            { week: 13, time: 100.0, text: "in principio erat Verbum" },
+            { week: 14, time: 105.0, text: "et Verbum erat apud Deum er Dues erat Verbum" },
+            { week: 15, time: 117.0, text: "hoc erat in principio apud Deum" },
+            { week: 16, time: 123.0, text: "Omnia per ipsum facta sunt" },
+            { week: 17, time: 127.0, text: "et sine ipso factum est nihil quod factum est" },
+            { week: 18, time: 137.0, text: "in ipso vita erat et vita erat lux hominum" },
+            { week: 19, time: 146.0, text: "et lux in tenebris lucet" },
+            { week: 20, time: 151.0, text: "et tenebrae eam non comprehenderunt" },
+            { week: 21, time: 159.0, text: "fuit homo missus a Deo cui nomen erat lohannes" },
+            { week: 22, time: 169.0, text: "hic venit in testimonium" },
+            { week: 23, time: 174.0, text: "ut testimonium perhiberet de lumine" },
+            { week: 24, time: 180.0, text: "ut omnes crederent per illum " },
+        ]
+    }
+};
 /* ==========================================================================
    SCRIPTURE KARAOKE ENGINE
    ========================================================================== */
