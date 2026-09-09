@@ -442,6 +442,14 @@
             <div class="toggle-switch" id="switch-dark"><div class="toggle-knob"></div></div>
         </button>
 
+        <button class="setting-item" onclick="openContactModal()">
+            <div class="setting-text">
+                <h4>Contact Us</h4>
+                <p>Send feedback, suggestions, or bug reports</p>
+            </div>
+            <div style="font-size: 24px;">✉️</div>
+        </button>
+
         <div class="setting-item" style="cursor: default;">
             <div class="setting-text">
                 <h4>App Version</h4>
@@ -523,7 +531,6 @@
                 <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -564,6 +571,27 @@
         <button onclick="closeInfoModal()" style="position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 800; cursor: pointer; color: #64748b;">X</button>
         <h3 style="margin-top: 0; color: var(--primary);">Extra Info</h3>
         <div id="infoModalContent"></div>
+    </div>
+</div>
+
+<div id="contactModalOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 6000;">
+    <div style="background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 90%; max-width: 400px; border-radius: 16px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); position: relative; text-align: left;">
+        <button onclick="closeContactModal()" style="position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 800; cursor: pointer; color: #64748b;">X</button>
+        <h3 style="margin-top: 0; color: var(--primary);">Contact Us</h3>
+        
+        <label style="font-weight: 800; color: var(--secondary); font-size: 14px;">Reason</label>
+        <select id="contactReason" style="width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 15px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 16px; background: white; color: var(--text-main);">
+            <option value="Feedback / Comment">Feedback / Comment</option>
+            <option value="Feature Suggestion">Feature Suggestion</option>
+            <option value="Incorrect Information">Incorrect Information</option>
+            <option value="Bug / Glitch">Report a Bug / Glitch</option>
+            <option value="Question / Other">Question / Other</option>
+        </select>
+
+        <label style="font-weight: 800; color: var(--secondary); font-size: 14px;">Message</label>
+        <textarea id="contactMessage" rows="5" placeholder="Type your message here..." style="width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 20px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 16px; resize: none; box-sizing: border-box; background: white; color: var(--text-main);"></textarea>
+
+        <button onclick="submitContactForm()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">Send Email</button>
     </div>
 </div>
 

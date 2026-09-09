@@ -803,6 +803,14 @@ body.dark-mode #taAnswerContent { color: #cbd5e1; }
 body.dark-mode #taAnswerContent b, body.dark-mode #taAnswerContent strong { color: #ffffff; font-weight: 800; }
 body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 
+/* Contact Form Dark Mode */
+body.dark-mode #contactReason, 
+body.dark-mode #contactMessage {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
 /* ==========================================================================
    11. BOTTOM NAVIGATION BAR
    ========================================================================== */

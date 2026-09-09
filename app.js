@@ -2342,3 +2342,42 @@ function closeTriviaResults() {
     document.getElementById('triviaResultsOverlay').style.display = 'none';
     exitTriviaGame();
 }
+
+/* ==========================================================================
+   CONTACT FORM ENGINE
+   ========================================================================== */
+function openContactModal() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    document.getElementById('contactMessage').value = ""; // Clear old text
+    document.getElementById('contactModalOverlay').style.display = 'flex';
+}
+
+function closeContactModal() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    document.getElementById('contactModalOverlay').style.display = 'none';
+}
+
+function submitContactForm() {
+    const reason = document.getElementById('contactReason').value;
+    const message = document.getElementById('contactMessage').value;
+    
+    if (!message.trim()) {
+        alert("Please enter a message before sending!");
+        return;
+    }
+
+    // PUT YOUR EMAIL ADDRESS HERE:
+    const email = "luke.abram.gibson+ccspinner@gmail.com"; 
+    
+    // Format the subject and body for the email client
+    const subject = encodeURIComponent(`CC Spinner App: ${reason}`);
+    
+    // Grabs their current version and cycle to help you debug!
+    const appVersion = document.getElementById('app-version').innerText;
+    const body = encodeURIComponent(`${message}\n\n---\nDiagnostic Info:\nReason: ${reason}\nApp Version: ${appVersion}\nActive Cycle: ${currentCycle}`);
+    
+    // Trigger the device's native email app
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    
+    closeContactModal();
+}
