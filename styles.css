@@ -1241,3 +1241,33 @@ body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba
     color: white !important;
     box-shadow: 0 4px 10px rgba(255,111,97,0.3);
 }
+
+/* ==========================================================================
+   SPLASH SCREEN ANIMATIONS
+   ========================================================================== */
+@keyframes splashFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes splashPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    50% { transform: scale(1.05); box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
+}
+
+.splash-logo {
+    animation: splashFloat 3s ease-in-out infinite;
+}
+
+.splash-btn {
+    animation: splashPulse 2s infinite;
+}
+
+/* Dark Mode override for the splash screen so it stays vibrant but fits the theme */
+body.dark-mode #splashScreen {
+    background: radial-gradient(circle at top, #334155, #0f172a);
+}
+body.dark-mode .splash-btn {
+    background: var(--primary);
+    color: white;
+}

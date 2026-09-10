@@ -2381,3 +2381,27 @@ function submitContactForm() {
     
     closeContactModal();
 }
+
+/* ==========================================================================
+   SPLASH SCREEN ENGINE
+   ========================================================================== */
+function dismissSplashScreen() {
+    const splash = document.getElementById('splashScreen');
+    if (!splash) return;
+
+    // 1. CRITICAL: Wake up the browser's audio engine on the first tap!
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    // 2. Play a quick, satisfying welcome chime and haptic bump
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
+    playSound(523.25, 'triangle', 0.1, 0.03); // C5
+    setTimeout(() => playSound(659.25, 'triangle', 0.15, 0.03), 100); // E5
+
+    // 3. Smoothly fade out the overlay
+    splash.style.opacity = '0';
+    
+    // 4. Remove it from the DOM so it doesn't block clicks later
+    setTimeout(() => {
+        splash.style.display = 'none';
+    }, 400); // Matches the 0.4s transition in the HTML
+}

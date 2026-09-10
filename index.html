@@ -19,6 +19,15 @@
 </head>
 <body>
 
+    <!-- SPLASH SCREEN -->
+<div id="splashScreen" style="position: fixed; inset: 0; background: radial-gradient(circle at top, #ff9a8f, #ff6f61); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: opacity 0.4s ease;">
+    <div class="splash-logo" style="font-size: 90px; margin-bottom: 15px;">🎡</div>
+    <h1 style="font-size: 42px; font-weight: 800; margin: 0; letter-spacing: 2px; text-shadow: 0 4px 15px rgba(0,0,0,0.1);">CC Spinner</h1>
+    <p style="font-size: 18px; font-weight: 600; opacity: 0.9; margin-top: 5px; margin-bottom: 60px;">Homeschool Review</p>
+    
+    <button class="splash-btn" onclick="dismissSplashScreen()" style="background: white; color: var(--primary); border: none; padding: 16px 45px; border-radius: 30px; font-size: 20px; font-weight: 800; cursor: pointer;">Tap to Start</button>
+</div>
+
 <div id="spinnerContainer" class="view-container active">
   <div class="rollerBox">
     <div class="slot">
