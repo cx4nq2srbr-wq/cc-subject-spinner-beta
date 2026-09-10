@@ -1263,3 +1263,19 @@ body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba
 .splash-btn {
     animation: splashPulse 2s infinite;
 }
+
+/* Splash Screen Solid Backgrounds */
+.splash-bg {
+    background: #f8fafc; /* Crisp, clean off-white for light mode */
+}
+.splash-text {
+    color: #334155;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode .splash-bg {
+    background: #0f172a; /* Deep slate for dark mode */
+}
+body.dark-mode .splash-text {
+    color: #cbd5e1;
+}
