@@ -71,7 +71,7 @@ const scriptureData = {
         desc: "In the beginning was the Word",
         audio: "audio/c3/scripture/John-1.m4a",
         lyrics: [
-            { week: 1, time: 9.5, text: "1 In the beginning was the Word," },
+            { week: 1, time: 10.0, text: "1 In the beginning was the Word," },
             { week: 2, time: 14.0, text: "and the Word was with God, and the Word was God." },
             { week: 3, time: 25.0, text: "2 The same was in the beginning with God." },
             { week: 4, time: 31.0, text: "3 All things were made by Him;" },
@@ -242,10 +242,8 @@ scriptureAudio.addEventListener('timeupdate', () => {
     }
 
     // 1. Auto-Pause Logic (FOOLPROOF)
-    // Find the very first line of the forbidden week, no matter where we are in the song
     const stopLine = currentLyrics.find(line => line.week > selectedWeek);
     
-    // If we hit or pass that line's timestamp, snap it back and pause!
     if (stopLine && currentTime >= stopLine.time - 0.2) {
         scriptureAudio.pause();
         
@@ -253,7 +251,8 @@ scriptureAudio.addEventListener('timeupdate', () => {
         playBtn.classList.remove('playing');
         playBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
         
-        scriptureAudio.currentTime = stopLine.time - 0.2; 
+        // Instantly reset the song and UI to the beginning!
+        restartScriptureAudio(); 
         return;
     }
 
@@ -288,6 +287,5 @@ scriptureAudio.addEventListener('ended', () => {
     playBtn.classList.remove('playing');
     playBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
     
-    const progressRing = document.getElementById('scriptureProgressBar');
-    if (progressRing) progressRing.style.strokeDashoffset = "195";
+    restartScriptureAudio();
 });
