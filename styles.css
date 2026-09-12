@@ -1285,7 +1285,7 @@ body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba
 
 /* Dark Mode Overrides */
 body.dark-mode .splash-bg {
-    background: #0f172a; /* Deep slate for dark mode */
+    background: #0f172a !important; /* The !important tag is required to override the inline HTML */
 }
 body.dark-mode .splash-text {
     color: #cbd5e1;
