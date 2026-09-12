@@ -22,8 +22,8 @@
 <!-- SPLASH SCREEN -->
 <div id="splashScreen" class="splash-bg" style="position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 5vh;">
     
-    <!-- THE WORKAROUND: This wrapper starts invisible and fades in after 150ms -->
-    <div class="splash-content" style="display: flex; flex-direction: column; align-items: center; opacity: 0;">
+    <!-- Controlled by JS to ensure it only fades in once layout is locked -->
+    <div id="splashContentWrapper" style="display: flex; flex-direction: column; align-items: center; opacity: 0; transition: opacity 0.5s ease;">
         
         <!-- The Spinner Icon -->
         <div class="splash-logo" style="margin-bottom: 25px;">
@@ -33,7 +33,7 @@
             </svg>
         </div>
         
-        <!-- Title (With drastically increased bottom margin to replace the subtext space) -->
+        <!-- Title -->
         <h1 style="font-size: 42px; font-weight: 800; margin: 0 0 80px 0; letter-spacing: 2px; color: var(--primary);">CC Spinner</h1>
         
         <!-- Solid Coral Button -->

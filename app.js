@@ -229,6 +229,11 @@ window.onload = function() {
     .catch(() => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = "not available"; });
     updateFlagUI();
     updateScriptureButtonUI();
+    // Reveal the splash screen ONLY after the layout and fonts have completely settled
+    setTimeout(() => {
+        const splashInner = document.getElementById('splashContentWrapper');
+        if (splashInner) splashInner.style.opacity = '1';
+    }, 250);
 };
 
 function saveToDevice() {
