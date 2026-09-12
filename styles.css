@@ -1263,7 +1263,17 @@ body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba
 /* ==========================================================================
    SPLASH SCREEN ANIMATIONS
    ========================================================================== */
-@keyframes splashFloat {
+@keyframes splashReveal {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.splash-content {
+    animation: splashReveal 0.4s ease forwards;
+    animation-delay: 0.15s; /* The magic delay that hides the iOS layout shift */
+}
+
+   @keyframes splashFloat {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-15px); }
 }

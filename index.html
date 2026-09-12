@@ -20,24 +20,24 @@
 <body>
 
 <!-- SPLASH SCREEN -->
-<div id="splashScreen" class="splash-bg" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999; display: block;">
+<div id="splashScreen" class="splash-bg" style="position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 5vh;">
     
-    <!-- Anchored exactly 240px from the top. No percentages, no shifting. -->
-    <div style="position: absolute; top: 240px; left: 0; width: 100%; text-align: center; transform: translateZ(0);">
+    <!-- THE WORKAROUND: This wrapper starts invisible and fades in after 150ms -->
+    <div class="splash-content" style="display: flex; flex-direction: column; align-items: center; opacity: 0;">
         
         <!-- The Spinner Icon -->
-        <div class="splash-logo" style="height: 110px; margin-bottom: 25px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 110px; height: 110px; margin: 0 auto;">
+        <div class="splash-logo" style="margin-bottom: 25px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 110px; height: 110px;">
                 <circle cx="12" cy="12" r="10"></circle>
                 <circle cx="12" cy="12" r="3"></circle>
             </svg>
         </div>
         
-        <!-- Title (Subtitle Removed) -->
-        <h1 style="font-size: 42px; font-weight: 800; margin: 0 0 60px 0; letter-spacing: 2px; color: var(--primary); line-height: 45px; height: 45px;">CC Spinner</h1>
+        <!-- Title (With drastically increased bottom margin to replace the subtext space) -->
+        <h1 style="font-size: 42px; font-weight: 800; margin: 0 0 80px 0; letter-spacing: 2px; color: var(--primary);">CC Spinner</h1>
         
         <!-- Solid Coral Button -->
-        <button class="splash-btn" onclick="dismissSplashScreen()" style="background: var(--primary); color: white; border: none; padding: 0 45px; height: 60px; line-height: 60px; border-radius: 30px; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3); display: inline-block; box-sizing: border-box;">Tap to Start</button>
+        <button class="splash-btn" onclick="dismissSplashScreen()" style="background: var(--primary); color: white; border: none; padding: 16px 45px; border-radius: 30px; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">Tap to Start</button>
 
     </div>
 </div>
