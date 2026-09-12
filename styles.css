@@ -803,12 +803,29 @@ body.dark-mode #taAnswerContent { color: #cbd5e1; }
 body.dark-mode #taAnswerContent b, body.dark-mode #taAnswerContent strong { color: #ffffff; font-weight: 800; }
 body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
 
+/* Contact Form Base (Light Mode) */
+#contactReason, 
+#contactMessage {
+    color: #1e293b !important; /* Forces dark text in the box */
+    background: #ffffff !important; /* Keeps the box white */
+}
+
+/* Darkens the "Type your message here..." placeholder text */
+#contactMessage::placeholder {
+    color: #64748b !important; 
+    opacity: 1; 
+}
+
 /* Contact Form Dark Mode */
 body.dark-mode #contactReason, 
 body.dark-mode #contactMessage {
-    background: #1e293b;
-    color: #f8fafc;
-    border-color: rgba(255, 255, 255, 0.1);
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode #contactMessage::placeholder {
+    color: #94a3b8 !important;
 }
 
 
