@@ -1,4 +1,8 @@
 to do list
+    Splash Screen
+        + add "to know God and make him known"
+        + add cycle selector?
+    
     Global
         + an "extra info" button across from the play button that could bring up a map, a math graphic, or maybe an AI extra info about that subject.
 
