@@ -829,6 +829,11 @@ body.dark-mode #contactMessage::placeholder {
 }
 
 body.dark-mode .tutorial-card { background: rgba(30, 41, 59, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.1); }
+
+body.dark-mode #walkthroughTooltip { background: rgba(30, 41, 59, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.1); }
+body.dark-mode #walkTitle { color: #f8fafc !important; }
+body.dark-mode #walkDesc { color: #cbd5e1 !important; }
+
 /* ==========================================================================
    11. BOTTOM NAVIGATION BAR
    ========================================================================== */

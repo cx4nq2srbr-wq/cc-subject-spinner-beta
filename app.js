@@ -2413,91 +2413,89 @@ function dismissSplashScreen() {
 }
 
 /* ==========================================================================
-   TUTORIAL ENGINE
+   INTERACTIVE WALKTHROUGH ENGINE
    ========================================================================== */
-const tutorialSteps = [
-    {
-        icon: "🎓",
-        title: "Welcome to the Studio",
-        desc: "Your complete toolkit for mastering classical memory work. Let's take a quick tour of how it works!"
-    },
-    {
-        icon: "🎡",
-        title: "Spin to Review",
-        desc: "Tap SPIN to randomly select a subject and week from your active grid. Check the answer, and tap the 🎯 Flag button if you need more practice."
-    },
-    {
-        icon: "🧠",
-        title: "Test Your Knowledge",
-        desc: "Head to the Focus tab to review your flagged mistakes, race the clock in Time Attack, or take a multiple-choice Trivia Quiz."
-    },
-    {
-        icon: "⚙️",
-        title: "Make It Yours",
-        desc: "Use the Settings tab to turn on Auto-Reveal, speed up the spinner, or switch to Dark Mode. You can change your active Cycle on the Lessons tab."
-    }
+const walkSteps = [
+    { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how Memory Master Studio works." },
+    { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap here to randomly select memory work. But how does it know what to spin?" },
+    { target: 'nav-grid', mode: 'spinner', title: "The Lessons Tab", desc: "Everything starts here. Let's head over to the Lessons tab to see how it controls the app." },
+    { target: 'gridContent', mode: 'grid', title: "The Master Grid", desc: "This grid tracks your progress! If a box is green, it's active in the spinner. Grey boxes are blocked or finished." },
+    { target: 'grid', mode: 'grid', title: "Power Tip", desc: "Tap any Subject name (top) or Week number (left) to instantly block or allow that entire row or column!" },
+    { target: 'gridControlsRow', mode: 'grid', title: "Set Your Pace", desc: "Change your Cycle here, and adjust your Max Week to match where you are in the school year." },
+    { target: 'resetGridBtnTour', mode: 'grid', title: "Start Fresh", desc: "Once you clear the board for the week, tap Reset Grid to start over!" },
+    { target: 'nav-challenge', mode: 'grid', title: "The Focus Tab", desc: "Ready for a challenge? The Focus tab features Mistake Review, Time Attack, and Trivia Quizzes." },
+    { target: null, mode: 'spinner', title: "You're All Set!", desc: "You can replay this tutorial anytime from the Settings tab. Have fun mastering your memory work!" }
 ];
 
-let currentTutorialStep = 0;
+let currentWalkStep = 0;
 
 function showTutorial() {
-    currentTutorialStep = 0;
-    document.getElementById('tutorialOverlay').style.display = 'flex';
-    renderTutorialStep();
+    currentWalkStep = 0;
+    document.getElementById('walkthroughTooltip').style.display = 'block';
+    document.getElementById('walkthroughMask').style.display = 'block';
+    renderWalkStep();
 }
 
-function renderTutorialStep() {
-    const step = tutorialSteps[currentTutorialStep];
+function renderWalkStep() {
+    const step = walkSteps[currentWalkStep];
     
-    // Update Text and Icon
-    document.getElementById('tutorialIcon').textContent = step.icon;
-    document.getElementById('tutorialTitle').textContent = step.title;
-    document.getElementById('tutorialDesc').textContent = step.desc;
-    
-    // Update Button Text
-    const btn = document.getElementById('tutorialNextBtn');
-    if (currentTutorialStep === tutorialSteps.length - 1) {
-        btn.textContent = "Get Started!";
-        btn.style.background = "#22c55e"; // Green for the final step
-        btn.style.boxShadow = "0 4px 15px rgba(34,197,94,0.3)";
-    } else {
-        btn.textContent = "Next";
-        btn.style.background = "var(--primary)";
-        btn.style.boxShadow = "0 4px 15px rgba(255,111,97,0.3)";
+    // Auto-switch tabs to show the user around!
+    if (currentMode !== step.mode) {
+        switchMode(step.mode);
     }
-    
-    // Update Dots
-    const dotsContainer = document.getElementById('tutorialDots');
-    dotsContainer.innerHTML = '';
-    tutorialSteps.forEach((_, idx) => {
-        const dot = document.createElement('div');
-        dot.style.width = '10px';
-        dot.style.height = '10px';
-        dot.style.borderRadius = '50%';
-        dot.style.transition = 'background 0.3s';
-        dot.style.background = idx === currentTutorialStep ? 'var(--primary)' : 'rgba(0,0,0,0.1)';
+
+    // Wait a tiny bit for the page transition to finish before calculating the spotlight
+    setTimeout(() => {
+        const mask = document.getElementById('walkthroughMask');
+        const tooltip = document.getElementById('walkthroughTooltip');
         
-        // Dark mode adjustment for inactive dots
-        if (userSettings.darkMode && idx !== currentTutorialStep) {
-            dot.style.background = 'rgba(255,255,255,0.2)';
+        document.getElementById('walkTitle').textContent = step.title;
+        document.getElementById('walkDesc').textContent = step.desc;
+
+        const nextBtn = document.getElementById('walkNextBtn');
+        nextBtn.textContent = (currentWalkStep === walkSteps.length - 1) ? "Get Started!" : "Next";
+        nextBtn.style.background = (currentWalkStep === walkSteps.length - 1) ? "#22c55e" : "var(--primary)";
+
+        if (step.target) {
+            const el = document.getElementById(step.target);
+            if (el) {
+                const rect = el.getBoundingClientRect();
+                // Move the hole in the darkness exactly over the button
+                mask.style.top = rect.top - 8 + 'px';
+                mask.style.left = rect.left - 8 + 'px';
+                mask.style.width = rect.width + 16 + 'px';
+                mask.style.height = rect.height + 16 + 'px';
+                
+                // Shift the tooltip so it doesn't cover the spotlight
+                tooltip.style.top = (rect.bottom + 180 > window.innerHeight) ? '20%' : '75%';
+            }
+        } else {
+            // Shrink the spotlight to nothing so the screen goes totally dark
+            mask.style.top = '50%';
+            mask.style.left = '50%';
+            mask.style.width = '0px';
+            mask.style.height = '0px';
+            tooltip.style.top = '50%';
         }
-        
-        dotsContainer.appendChild(dot);
-    });
+    }, 300);
 }
 
-function nextTutorialStep() {
+function nextWalkStep() {
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-    
-    if (currentTutorialStep < tutorialSteps.length - 1) {
-        currentTutorialStep++;
-        renderTutorialStep();
+    if (currentWalkStep < walkSteps.length - 1) {
+        currentWalkStep++;
+        renderWalkStep();
     } else {
-        // Finish Tutorial
-        document.getElementById('tutorialOverlay').style.display = 'none';
-        localStorage.setItem('hasSeenStudioTutorial', 'true'); // Save the flag!
-        playVictoryChime();
-        startConfetti();
-        setTimeout(stopConfetti, 2500); // Quick burst of confetti to celebrate starting
+        skipWalkthrough();
     }
+}
+
+function skipWalkthrough() {
+    document.getElementById('walkthroughTooltip').style.display = 'none';
+    document.getElementById('walkthroughMask').style.display = 'none';
+    localStorage.setItem('hasSeenStudioTutorial', 'true');
+    switchMode('spinner');
+    playVictoryChime();
+    startConfetti();
+    setTimeout(stopConfetti, 2500);
 }
