@@ -2394,19 +2394,110 @@ function dismissSplashScreen() {
     const splash = document.getElementById('splashScreen');
     if (!splash) return;
 
-    // 1. CRITICAL: Wake up the browser's audio engine on the first tap!
     if (audioCtx.state === 'suspended') audioCtx.resume();
     
-    // 2. Play a quick, satisfying welcome chime and haptic bump
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
-    playSound(523.25, 'triangle', 0.1, 0.03); // C5
-    setTimeout(() => playSound(659.25, 'triangle', 0.15, 0.03), 100); // E5
+    playSound(523.25, 'triangle', 0.1, 0.03); 
+    setTimeout(() => playSound(659.25, 'triangle', 0.15, 0.03), 100); 
 
-    // 3. Smoothly fade out the overlay
     splash.style.opacity = '0';
     
-    // 4. Remove it from the DOM so it doesn't block clicks later
     setTimeout(() => {
         splash.style.display = 'none';
-    }, 400); // Matches the 0.4s transition in the HTML
+        
+        // NEW: Check if they need the tutorial!
+        if (!localStorage.getItem('hasSeenStudioTutorial')) {
+            showTutorial();
+        }
+    }, 400); 
+}
+
+/* ==========================================================================
+   TUTORIAL ENGINE
+   ========================================================================== */
+const tutorialSteps = [
+    {
+        icon: "🎓",
+        title: "Welcome to the Studio",
+        desc: "Your complete toolkit for mastering classical memory work. Let's take a quick tour of how it works!"
+    },
+    {
+        icon: "🎡",
+        title: "Spin to Review",
+        desc: "Tap SPIN to randomly select a subject and week from your active grid. Check the answer, and tap the 🎯 Flag button if you need more practice."
+    },
+    {
+        icon: "🧠",
+        title: "Test Your Knowledge",
+        desc: "Head to the Focus tab to review your flagged mistakes, race the clock in Time Attack, or take a multiple-choice Trivia Quiz."
+    },
+    {
+        icon: "⚙️",
+        title: "Make It Yours",
+        desc: "Use the Settings tab to turn on Auto-Reveal, speed up the spinner, or switch to Dark Mode. You can change your active Cycle on the Lessons tab."
+    }
+];
+
+let currentTutorialStep = 0;
+
+function showTutorial() {
+    currentTutorialStep = 0;
+    document.getElementById('tutorialOverlay').style.display = 'flex';
+    renderTutorialStep();
+}
+
+function renderTutorialStep() {
+    const step = tutorialSteps[currentTutorialStep];
+    
+    // Update Text and Icon
+    document.getElementById('tutorialIcon').textContent = step.icon;
+    document.getElementById('tutorialTitle').textContent = step.title;
+    document.getElementById('tutorialDesc').textContent = step.desc;
+    
+    // Update Button Text
+    const btn = document.getElementById('tutorialNextBtn');
+    if (currentTutorialStep === tutorialSteps.length - 1) {
+        btn.textContent = "Get Started!";
+        btn.style.background = "#22c55e"; // Green for the final step
+        btn.style.boxShadow = "0 4px 15px rgba(34,197,94,0.3)";
+    } else {
+        btn.textContent = "Next";
+        btn.style.background = "var(--primary)";
+        btn.style.boxShadow = "0 4px 15px rgba(255,111,97,0.3)";
+    }
+    
+    // Update Dots
+    const dotsContainer = document.getElementById('tutorialDots');
+    dotsContainer.innerHTML = '';
+    tutorialSteps.forEach((_, idx) => {
+        const dot = document.createElement('div');
+        dot.style.width = '10px';
+        dot.style.height = '10px';
+        dot.style.borderRadius = '50%';
+        dot.style.transition = 'background 0.3s';
+        dot.style.background = idx === currentTutorialStep ? 'var(--primary)' : 'rgba(0,0,0,0.1)';
+        
+        // Dark mode adjustment for inactive dots
+        if (userSettings.darkMode && idx !== currentTutorialStep) {
+            dot.style.background = 'rgba(255,255,255,0.2)';
+        }
+        
+        dotsContainer.appendChild(dot);
+    });
+}
+
+function nextTutorialStep() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    
+    if (currentTutorialStep < tutorialSteps.length - 1) {
+        currentTutorialStep++;
+        renderTutorialStep();
+    } else {
+        // Finish Tutorial
+        document.getElementById('tutorialOverlay').style.display = 'none';
+        localStorage.setItem('hasSeenStudioTutorial', 'true'); // Save the flag!
+        playVictoryChime();
+        startConfetti();
+        setTimeout(stopConfetti, 2500); // Quick burst of confetti to celebrate starting
+    }
 }
