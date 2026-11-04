@@ -2416,24 +2416,21 @@ function dismissSplashScreen() {
     }, 400); 
 }
 
-/* ==========================================================================
-   INTERACTIVE WALKTHROUGH ENGINE
-   ========================================================================== */
 const walkSteps = [
     { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how CC Spinner works." },
     
     // 1. Spinner
-    { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap the SPIN button below to randomly select memory work. Go ahead, tap it!", interactive: true, delay: 2600 },
-    { target: 'undoBtn', mode: 'spinner', title: "Undo Spin", desc: "Made a mistake or got interrupted? Tap Undo to reverse your last spin and put the lesson back on the board." },
-    { target: 'answerContainer', mode: 'spinner', title: "Songs & Extras", desc: "When a lesson has an accompanying song or map, an Audio or Info (i) button will appear right here for you to tap." },
+    { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap the SPIN button below to randomly select memory work.", interactive: true, delay: 2600 },
+    { target: 'undoBtn', mode: 'spinner', title: "Undo Spin", desc: "Made a mistake or got interrupted? The Undo button reverses your last spin." },
+    { target: 'answerContainer', mode: 'spinner', title: "Songs & Extras", desc: "When a lesson has an accompanying song or map, an Audio or Info (i) button will appear right here." },
     
     // 2. Review
-    { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Next, tap the Review tab at the bottom to browse through all your memory work sequentially.", interactive: true, delay: 500 },
-    { target: 'reviewSubjectLabel', mode: 'review', title: "Browse Lessons", desc: "Tap the arrows to cycle through subjects and weeks, or tap the names directly to open a quick-selection menu." },
+    { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Now, tap the Review tab at the bottom to browse your memory work sequentially.", interactive: true, delay: 500 },
+    { target: 'reviewSubjectLabel', mode: 'review', title: "Browse Lessons", desc: "You can use the arrows to cycle through lessons, or tap the names directly to open a quick-selection menu." },
     
     // 3. Lessons Grid
-    { target: 'nav-grid', mode: 'review', title: "The Lessons Tab", desc: "Everything starts here. Tap the Lessons tab to see how it controls the entire app.", interactive: true, delay: 500 },
-    { target: 'gridContent', mode: 'grid', title: "The Master Grid", desc: "This grid tracks your progress. If a box is green, it's active in the spinner. Grey boxes are blocked or finished.", tooltipPos: '80%' },
+    { target: 'nav-grid', mode: 'review', title: "The Lessons Tab", desc: "Next, tap the Lessons tab. This controls the entire app.", interactive: true, delay: 500 },
+    { target: 'gridContent', mode: 'grid', title: "The Master Grid", desc: "This tracks your progress. White, green (or black in dark mode) squares are active. Grey squares are blocked or finished.", tooltipPos: '80%' },
     { target: 'grid', mode: 'grid', title: "Block a Subject", desc: "Tap a Subject name at the very top to instantly block or allow that entire column.", tooltipPos: '80%' },
     { target: 'grid', mode: 'grid', title: "Block a Week", desc: "Tap a Week number on the left side to instantly block or allow that entire row.", tooltipPos: '80%' },
     { target: 'gridControlsRow', mode: 'grid', title: "Set Your Pace", desc: "Change your Cycle here, and adjust your Max Week to match where you are in the school year." },
@@ -2463,6 +2460,9 @@ function renderWalkStep() {
     const counterEl = document.getElementById('walkCounter');
     if (counterEl) counterEl.textContent = (currentWalkStep + 1) + '/' + walkSteps.length;
     
+    // NEW: Force close the Review Picker if they accidentally opened it during the tour!
+    if (typeof closePicker === 'function') closePicker();
+    
     // Only auto-switch tabs if the user didn't just physically tap to get there!
     if (currentMode !== step.mode) {
         switchMode(step.mode);
@@ -2487,8 +2487,19 @@ function renderWalkStep() {
         document.getElementById('walkDesc').textContent = step.desc;
 
         const nextBtn = document.getElementById('walkNextBtn');
-        nextBtn.textContent = (currentWalkStep === walkSteps.length - 1) ? "Get Started!" : "Next";
-        nextBtn.style.background = (currentWalkStep === walkSteps.length - 1) ? "#22c55e" : "var(--primary)";
+        
+        // NEW: Visually disable the "Next" button on interactive steps so they know they MUST tap the app UI
+        if (step.interactive) {
+            nextBtn.textContent = "Tap highlighted area";
+            nextBtn.style.background = "#94a3b8"; // Greyed out
+            nextBtn.style.boxShadow = "none";
+            nextBtn.style.pointerEvents = "none";
+        } else {
+            nextBtn.textContent = (currentWalkStep === walkSteps.length - 1) ? "Get Started!" : "Next";
+            nextBtn.style.background = (currentWalkStep === walkSteps.length - 1) ? "#22c55e" : "var(--primary)";
+            nextBtn.style.boxShadow = "0 4px 15px rgba(255,111,97,0.3)";
+            nextBtn.style.pointerEvents = "auto";
+        }
 
         if (step.target) {
             const el = document.getElementById(step.target);
@@ -2531,28 +2542,4 @@ function renderWalkStep() {
             tooltip.style.top = '50%';
         }
     }, 300);
-}
-
-function nextWalkStep() {
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-    if (currentWalkStep < walkSteps.length - 1) {
-        currentWalkStep++;
-        renderWalkStep();
-    } else {
-        skipWalkthrough();
-    }
-}
-
-function skipWalkthrough() {
-    // Clean up any lingering listeners if they skip early
-    if (window.currentWalkListener && window.currentWalkTarget) {
-        window.currentWalkTarget.removeEventListener('click', window.currentWalkListener);
-    }
-    document.getElementById('walkthroughTooltip').style.display = 'none';
-    document.getElementById('walkthroughMask').style.display = 'none';
-    localStorage.setItem('hasSeenStudioTutorial', 'true');
-    switchMode('spinner');
-    playVictoryChime();
-    startConfetti();
-    setTimeout(stopConfetti, 2500);
 }
