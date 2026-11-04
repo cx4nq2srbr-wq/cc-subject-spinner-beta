@@ -2416,6 +2416,9 @@ function dismissSplashScreen() {
     }, 400); 
 }
 
+/* ==========================================================================
+   INTERACTIVE WALKTHROUGH ENGINE
+   ========================================================================== */
 const walkSteps = [
     { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how CC Spinner works." },
     
@@ -2460,10 +2463,10 @@ function renderWalkStep() {
     const counterEl = document.getElementById('walkCounter');
     if (counterEl) counterEl.textContent = (currentWalkStep + 1) + '/' + walkSteps.length;
     
-    // NEW: Force close the Review Picker if they accidentally opened it during the tour!
+    // Force close the Review Picker if they accidentally opened it during the tour
     if (typeof closePicker === 'function') closePicker();
     
-    // Only auto-switch tabs if the user didn't just physically tap to get there!
+    // Only auto-switch tabs if the user didn't just physically tap to get there
     if (currentMode !== step.mode) {
         switchMode(step.mode);
     }
@@ -2488,10 +2491,10 @@ function renderWalkStep() {
 
         const nextBtn = document.getElementById('walkNextBtn');
         
-        // NEW: Visually disable the "Next" button on interactive steps so they know they MUST tap the app UI
+        // Visually disable the "Next" button on interactive steps so they know they MUST tap the app UI
         if (step.interactive) {
             nextBtn.textContent = "Tap highlighted area";
-            nextBtn.style.background = "#94a3b8"; // Greyed out
+            nextBtn.style.background = "#94a3b8"; 
             nextBtn.style.boxShadow = "none";
             nextBtn.style.pointerEvents = "none";
         } else {
@@ -2511,22 +2514,18 @@ function renderWalkStep() {
                 mask.style.width = rect.width + 16 + 'px';
                 mask.style.height = rect.height + 16 + 'px';
                 
-                // Use custom positioning if provided, otherwise default to top/bottom logic
                 if (step.tooltipPos) {
                     tooltip.style.top = step.tooltipPos;
                 } else {
                     tooltip.style.top = (rect.bottom + 180 > window.innerHeight) ? '20%' : '75%';
                 }
 
-                // If this is an action-driven step, listen for the user's tap!
                 if (step.interactive) {
                     window.currentWalkTarget = el;
                     window.currentWalkListener = () => {
-                        // Hide the tutorial UI temporarily so they can watch the app respond
                         document.getElementById('walkthroughTooltip').style.display = 'none';
                         document.getElementById('walkthroughMask').style.display = 'none';
                         
-                        // Wait for the action to finish, then proceed to the next step automatically
                         setTimeout(() => {
                             nextWalkStep();
                         }, step.delay || 1000);
@@ -2542,4 +2541,27 @@ function renderWalkStep() {
             tooltip.style.top = '50%';
         }
     }, 300);
+}
+
+function nextWalkStep() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    if (currentWalkStep < walkSteps.length - 1) {
+        currentWalkStep++;
+        renderWalkStep();
+    } else {
+        skipWalkthrough();
+    }
+}
+
+function skipWalkthrough() {
+    if (window.currentWalkListener && window.currentWalkTarget) {
+        window.currentWalkTarget.removeEventListener('click', window.currentWalkListener);
+    }
+    document.getElementById('walkthroughTooltip').style.display = 'none';
+    document.getElementById('walkthroughMask').style.display = 'none';
+    localStorage.setItem('hasSeenStudioTutorial', 'true');
+    switchMode('spinner');
+    playVictoryChime();
+    startConfetti();
+    setTimeout(stopConfetti, 2500);
 }
