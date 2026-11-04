@@ -584,7 +584,8 @@
     <h3 style="margin-top:0">Clear Progress?</h3>
     <p>This will reset all lessons in the grid.</p>
     <div style="display:flex; gap:12px; justify-content:center;">
-      <button onclick="resetGridConfirmed()" style="background:var(--primary); color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:700; cursor:pointer;">Yes, Reset</button>
+      <!-- NEW: Added ID so the tutorial spotlight can find it! -->
+      <button id="confirmResetBtnTour" onclick="resetGridConfirmed()" style="background:var(--primary); color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:700; cursor:pointer;">Yes, Reset</button>
       <button onclick="hideResetConfirm()" style="background:#f1f5f9; color:#64748b; padding:12px 20px; border:none; border-radius:12px; font-weight:700; cursor:pointer;">Cancel</button>
     </div>
   </div>

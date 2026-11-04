@@ -2418,21 +2418,30 @@ function dismissSplashScreen() {
 const walkSteps = [
     { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how CC Spinner works." },
     
-    // Interactive: Will wait 2.6 seconds for the spin animation to finish before proceeding!
+    // Spinner Tab
     { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap the SPIN button below to randomly select memory work. Go ahead, tap it!", interactive: true, delay: 2600 },
+    { target: 'undoBtn', mode: 'spinner', title: "Undo Spin", desc: "Made a mistake or got interrupted? Tap the Undo button to reverse your last spin and put the lesson back on the board." },
+    { target: 'answerContainer', mode: 'spinner', title: "Songs & Extras", desc: "When a lesson has an accompanying song or map, an Audio or Info (i) button will appear right here for you to tap." },
     
-    // Interactive: Will jump to the next step half a second after they tap the tab
+    // Review Tab
     { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Next, tap the Review tab at the bottom to browse through all your memory work sequentially.", interactive: true, delay: 500 },
+    { target: 'reviewSubjectLabel', mode: 'review', title: "Browse Lessons", desc: "Tap the arrows to cycle through subjects and weeks, or tap the names directly to open a quick-selection menu." },
     
+    // Lessons Grid Tab
     { target: 'nav-grid', mode: 'review', title: "The Lessons Tab", desc: "Everything starts here. Tap the Lessons tab to see how it controls the entire app.", interactive: true, delay: 500 },
-    
-    // Custom Positioning: Forces the tooltip to 80% down the screen so it doesn't block the grid
     { target: 'gridContent', mode: 'grid', title: "The Master Grid", desc: "This grid tracks your progress! If a box is green, it's active in the spinner. Grey boxes are blocked or finished.", tooltipPos: '80%' },
-    { target: 'grid', mode: 'grid', title: "Power Tip", desc: "Tap any Subject name (top) or Week number (left) to instantly block or allow that entire row or column!", tooltipPos: '80%' },
-    
+    { target: 'grid', mode: 'grid', title: "Block a Subject", desc: "Tap a Subject name at the very top to instantly block or allow that entire column.", tooltipPos: '80%' },
+    { target: 'grid', mode: 'grid', title: "Block a Week", desc: "Tap a Week number on the left side to instantly block or allow that entire row.", tooltipPos: '80%' },
     { target: 'gridControlsRow', mode: 'grid', title: "Set Your Pace", desc: "Change your Cycle here, and adjust your Max Week to match where you are in the school year." },
-    { target: 'resetGridBtnTour', mode: 'grid', title: "Start Fresh", desc: "Once you clear the board for the week, tap Reset Grid to start over!" },
-    { target: 'nav-challenge', mode: 'grid', title: "The Focus Tab", desc: "Ready for a challenge? The Focus tab features Mistake Review, Time Attack, and Trivia Quizzes." },
+    
+    // Reset Interactive Flow
+    { target: 'resetGridBtnTour', mode: 'grid', title: "Start Fresh", desc: "Once you clear the board for the week, you can start over. Tap 'Reset Grid' to see what happens!", interactive: true, delay: 400 },
+    { target: 'confirmResetBtnTour', mode: 'grid', title: "Confirm Reset", desc: "Tap 'Yes, Reset' to clear the board. Don't worry, we won't lose your custom settings or Mistake Bank!", interactive: true, delay: 600 },
+    
+    // Focus Tab
+    { target: 'nav-challenge', mode: 'grid', title: "The Focus Tab", desc: "Ready for a challenge? Tap the Focus tab to explore the games.", interactive: true, delay: 500 },
+    { target: 'challengeContainer', mode: 'challenge', title: "Challenge Modes", desc: "Here you can review flagged mistakes, race the clock in Time Attack, sing Scripture songs, or take a Trivia Quiz.", tooltipPos: '85%' },
+    
     { target: null, mode: 'spinner', title: "You're All Set!", desc: "You can replay this tutorial anytime from the Settings tab. Have fun mastering your memory work!" }
 ];
 
