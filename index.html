@@ -38,22 +38,30 @@
 <!-- SPLASH SCREEN -->
 <div id="splashScreen" class="splash-bg" style="position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 5vh;">
     
-    <!-- Controlled by JS to ensure it only fades in once layout is locked -->
     <div id="splashContentWrapper" style="display: flex; flex-direction: column; align-items: center; opacity: 0; transition: opacity 0.5s ease;">
         
-        <!-- The Spinner Icon -->
+        <!-- The Logo -->
         <div class="splash-logo" style="margin-bottom: 25px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 110px; height: 110px;">
-                <circle cx="12" cy="12" r="10"></circle>
-                <circle cx="12" cy="12" r="3"></circle>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 110px; height: 110px; margin: 0 auto;">
+                <polyline points="4 21 4 5 12 13 20 5 20 21"></polyline>
             </svg>
         </div>
         
         <!-- Title -->
-        <h1 style="font-size: 42px; font-weight: 800; margin: 0 0 80px 0; letter-spacing: 2px; color: var(--primary);">CC Spinner</h1>
+        <h1 style="font-size: 42px; font-weight: 800; margin: 0 0 50px 0; letter-spacing: 2px; color: var(--primary);">Memory Master</h1>
         
         <!-- Solid Coral Button -->
-        <button class="splash-btn" onclick="dismissSplashScreen()" style="background: var(--primary); color: white; border: none; padding: 16px 45px; border-radius: 30px; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">Tap to Start</button>
+        <button class="splash-btn" onclick="dismissSplashScreen()" style="background: var(--primary); color: white; border: none; padding: 16px 45px; border-radius: 30px; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3); margin-bottom: 40px;">Tap to Start</button>
+
+        <!-- Splash Cycle Selector -->
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <label style="color: var(--text-muted); font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;">Active Cycle</label>
+            <select id="splashCyclePicker" onchange="changeCycle(this.value); document.getElementById('cyclePicker').value = this.value;" style="appearance: none; -webkit-appearance: none; background-color: white; color: var(--primary); padding: 10px 40px 10px 25px; border-radius: 25px; font-weight: 800; font-size: 16px; border: 2px solid var(--primary); cursor: pointer; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-family: inherit; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ff6f61%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto;">
+                <option value="1">Cycle 1</option>
+                <option value="2">Cycle 2</option>
+                <option value="3">Cycle 3</option>
+            </select>
+        </div>
 
     </div>
 </div>
@@ -502,15 +510,15 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
         <span>Review</span>
     </button>
+    <button class="nav-item" id="nav-grid" onclick="switchMode('grid')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        <span>Lessons</span>
+    </button>
     <button class="nav-item" id="nav-challenge" onclick="switchMode('challenge')" style="position: relative;">
         <span id="navMistakeBadge" class="notification-badge" style="top: 0px; right: 0px;">0</span>       
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         <span>Focus</span>
     </button> 
-    <button class="nav-item" id="nav-grid" onclick="switchMode('grid')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
-        <span>Lessons</span>
-    </button>
     <button class="nav-item" id="nav-settings" onclick="switchMode('settings')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         <span>Settings</span>
