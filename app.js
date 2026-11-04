@@ -2416,11 +2416,20 @@ function dismissSplashScreen() {
    INTERACTIVE WALKTHROUGH ENGINE
    ========================================================================== */
 const walkSteps = [
-    { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how Memory Master Studio works." },
-    { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap here to randomly select memory work. But how does it know what to spin?" },
-    { target: 'nav-grid', mode: 'spinner', title: "The Lessons Tab", desc: "Everything starts here. Let's head over to the Lessons tab to see how it controls the app." },
-    { target: 'gridContent', mode: 'grid', title: "The Master Grid", desc: "This grid tracks your progress! If a box is green, it's active in the spinner. Grey boxes are blocked or finished." },
-    { target: 'grid', mode: 'grid', title: "Power Tip", desc: "Tap any Subject name (top) or Week number (left) to instantly block or allow that entire row or column!" },
+    { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how CC Spinner works." },
+    
+    // Interactive: Will wait 2.6 seconds for the spin animation to finish before proceeding!
+    { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap the SPIN button below to randomly select memory work. Go ahead, tap it!", interactive: true, delay: 2600 },
+    
+    // Interactive: Will jump to the next step half a second after they tap the tab
+    { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Next, tap the Review tab at the bottom to browse through all your memory work sequentially.", interactive: true, delay: 500 },
+    
+    { target: 'nav-grid', mode: 'review', title: "The Lessons Tab", desc: "Everything starts here. Tap the Lessons tab to see how it controls the entire app.", interactive: true, delay: 500 },
+    
+    // Custom Positioning: Forces the tooltip to 80% down the screen so it doesn't block the grid
+    { target: 'gridContent', mode: 'grid', title: "The Master Grid", desc: "This grid tracks your progress! If a box is green, it's active in the spinner. Grey boxes are blocked or finished.", tooltipPos: '80%' },
+    { target: 'grid', mode: 'grid', title: "Power Tip", desc: "Tap any Subject name (top) or Week number (left) to instantly block or allow that entire row or column!", tooltipPos: '80%' },
+    
     { target: 'gridControlsRow', mode: 'grid', title: "Set Your Pace", desc: "Change your Cycle here, and adjust your Max Week to match where you are in the school year." },
     { target: 'resetGridBtnTour', mode: 'grid', title: "Start Fresh", desc: "Once you clear the board for the week, tap Reset Grid to start over!" },
     { target: 'nav-challenge', mode: 'grid', title: "The Focus Tab", desc: "Ready for a challenge? The Focus tab features Mistake Review, Time Attack, and Trivia Quizzes." },
@@ -2439,12 +2448,26 @@ function showTutorial() {
 function renderWalkStep() {
     const step = walkSteps[currentWalkStep];
     
-    // Auto-switch tabs to show the user around!
+    // Update Counter
+    const counterEl = document.getElementById('walkCounter');
+    if (counterEl) counterEl.textContent = (currentWalkStep + 1) + '/' + walkSteps.length;
+    
+    // Only auto-switch tabs if the user didn't just physically tap to get there!
     if (currentMode !== step.mode) {
         switchMode(step.mode);
     }
 
-    // Wait a tiny bit for the page transition to finish before calculating the spotlight
+    // Clean up any old interactive click listeners
+    if (window.currentWalkListener && window.currentWalkTarget) {
+        window.currentWalkTarget.removeEventListener('click', window.currentWalkListener);
+        window.currentWalkTarget = null;
+        window.currentWalkListener = null;
+    }
+
+    // Ensure tutorial UI is visible
+    document.getElementById('walkthroughTooltip').style.display = 'block';
+    document.getElementById('walkthroughMask').style.display = 'block';
+
     setTimeout(() => {
         const mask = document.getElementById('walkthroughMask');
         const tooltip = document.getElementById('walkthroughTooltip');
@@ -2460,17 +2483,36 @@ function renderWalkStep() {
             const el = document.getElementById(step.target);
             if (el) {
                 const rect = el.getBoundingClientRect();
-                // Move the hole in the darkness exactly over the button
+                
                 mask.style.top = rect.top - 8 + 'px';
                 mask.style.left = rect.left - 8 + 'px';
                 mask.style.width = rect.width + 16 + 'px';
                 mask.style.height = rect.height + 16 + 'px';
                 
-                // Shift the tooltip so it doesn't cover the spotlight
-                tooltip.style.top = (rect.bottom + 180 > window.innerHeight) ? '20%' : '75%';
+                // Use custom positioning if provided, otherwise default to top/bottom logic
+                if (step.tooltipPos) {
+                    tooltip.style.top = step.tooltipPos;
+                } else {
+                    tooltip.style.top = (rect.bottom + 180 > window.innerHeight) ? '20%' : '75%';
+                }
+
+                // If this is an action-driven step, listen for the user's tap!
+                if (step.interactive) {
+                    window.currentWalkTarget = el;
+                    window.currentWalkListener = () => {
+                        // Hide the tutorial UI temporarily so they can watch the app respond
+                        document.getElementById('walkthroughTooltip').style.display = 'none';
+                        document.getElementById('walkthroughMask').style.display = 'none';
+                        
+                        // Wait for the action to finish, then proceed to the next step automatically
+                        setTimeout(() => {
+                            nextWalkStep();
+                        }, step.delay || 1000);
+                    };
+                    el.addEventListener('click', window.currentWalkListener, { once: true });
+                }
             }
         } else {
-            // Shrink the spotlight to nothing so the screen goes totally dark
             mask.style.top = '50%';
             mask.style.left = '50%';
             mask.style.width = '0px';
@@ -2491,6 +2533,10 @@ function nextWalkStep() {
 }
 
 function skipWalkthrough() {
+    // Clean up any lingering listeners if they skip early
+    if (window.currentWalkListener && window.currentWalkTarget) {
+        window.currentWalkTarget.removeEventListener('click', window.currentWalkListener);
+    }
     document.getElementById('walkthroughTooltip').style.display = 'none';
     document.getElementById('walkthroughMask').style.display = 'none';
     localStorage.setItem('hasSeenStudioTutorial', 'true');
