@@ -2424,10 +2424,10 @@ const walkSteps = [
     
     // 1. Spinner
     { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap the SPIN button below to randomly select memory work.", interactive: true },
-    { target: 'undoBtn', mode: 'spinner', title: "Undo Spin", desc: "Made a mistake or got interrupted? The Undo button reverses your last spin." },
     { target: 'flagBtn', mode: 'spinner', title: "Flag for Review", desc: "Tap the Flag button here (or in the Review tab) to add a lesson to your Mistake Bank. You can practice them later in the Focus games!" },
     { target: 'answerContainer', mode: 'spinner', title: "Songs & Extras", desc: "When a lesson has an accompanying song or map, an Audio or Info (i) button will appear right here." },
-    
+    { target: 'undoBtn', mode: 'spinner', title: "Undo Spin", desc: "Made a mistake or got interrupted? The Undo button reverses your last spin." },
+
     // 2. Review
     { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Now, tap the Review tab at the bottom to browse your memory work sequentially.", interactive: true },
     { target: 'reviewSubjectLabel', mode: 'review', title: "Change Subject", desc: "Tap the Subject name here to open the quick-selector menu.", interactive: true },
