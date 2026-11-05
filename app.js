@@ -2538,10 +2538,26 @@ function renderWalkStep() {
                 maskEl.style.width = rect.width + 16 + 'px';
                 maskEl.style.height = rect.height + 16 + 'px';
                 
+                // NEW: Dynamic Positioning Logic
                 if (step.tooltipPos) {
+                    // Override with custom positioning
                     tooltip.style.top = step.tooltipPos;
+                    tooltip.style.transform = 'translate(-50%, -50%)';
+                } else if (!step.interactive) {
+                    // For non-interactive steps, move the tooltip right next to the highlight!
+                    if (rect.top > window.innerHeight / 2) {
+                        // Element is low, put tooltip ABOVE it
+                        tooltip.style.top = Math.max(20, rect.top - 20) + 'px';
+                        tooltip.style.transform = 'translate(-50%, -100%)';
+                    } else {
+                        // Element is high, put tooltip BELOW it
+                        tooltip.style.top = Math.min(window.innerHeight - 20, rect.bottom + 20) + 'px';
+                        tooltip.style.transform = 'translate(-50%, 0)';
+                    }
                 } else {
+                    // For interactive steps, default to keeping it out of the way
                     tooltip.style.top = (rect.bottom + 180 > window.innerHeight) ? '20%' : '75%';
+                    tooltip.style.transform = 'translate(-50%, -50%)';
                 }
 
                 if (step.interactive) {
@@ -2557,7 +2573,7 @@ function renderWalkStep() {
                         clearTimeout(walkPulseTimeout);
                         if (maskEl) maskEl.classList.remove('walkthrough-active-pulse');
                         
-                        // THE FIX: Instantly advance the tutorial instead of hiding it!
+                        // Instantly advance the tutorial instead of hiding it!
                         nextWalkStep();
                     };
                     el.addEventListener('click', window.currentWalkListener, { once: true });
@@ -2569,6 +2585,7 @@ function renderWalkStep() {
             maskEl.style.width = '0px';
             maskEl.style.height = '0px';
             tooltip.style.top = '50%';
+            tooltip.style.transform = 'translate(-50%, -50%)';
         }
     }, 300);
 }
