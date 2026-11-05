@@ -71,8 +71,7 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let isSpinning = false;
 let activeChallengePage = 'challengeContainer'; // Remembers if they were in a menu or a game
 let pendingTAFinish = false; // Flags if the timer hit 0 on another tab
-let lastSpun = null; // The one we just spun (the "mistake")
-let previousSpun = null;  // The one BEFORE that (the "rewind destination")
+let spinHistory = [];
 
 const subjects = ["Bible", "English", "Geography", "History", "Latin", "Math", "Science", "Timeline"];
 const subjectIcons = {
@@ -320,16 +319,16 @@ function spinBoth() {
       
       const lesson = lessonData[subject][week];
 
-      previousSpun = lastSpun ? { ...lastSpun } : null; 
-
-      lastSpun = {
+      spinHistory.push({
         subject: subject, 
         week: week,
         sIdx: subIdx,   
         wIdx: weekIdx,   
         prompt: lesson.p,
         answer: lesson.a
-      };
+      });
+      // Cap the history at 50 spins just to be safe with memory
+      if (spinHistory.length > 50) spinHistory.shift();
 
       promptDiv.textContent = lesson.p;
       ansDiv.innerHTML = lesson.a;
@@ -427,12 +426,15 @@ function toggleAnswer() {
 
 function undoLastSpin() {
     stopVoiceover();
-    if (!lastSpun) return;
+    if (spinHistory.length === 0) return;
 
-    // 1. Put the "mistake" back on the grid
-    gridState[lastSpun.subject][lastSpun.week] = true;
-    if (lastSpun.subject === "Latin" && currentCycle === 2) {
-        const group = latinTwinGroups.find(g => g.includes(lastSpun.week));
+    // 1. Pop the most recent spin off the top of the stack
+    const undoneSpin = spinHistory.pop();
+
+    // 2. Put it back on the grid
+    gridState[undoneSpin.subject][undoneSpin.week] = true;
+    if (undoneSpin.subject === "Latin" && currentCycle === 2) {
+        const group = latinTwinGroups.find(g => g.includes(undoneSpin.week));
         if (group) {
             group.forEach(twinWeek => {
                 gridState["Latin"][twinWeek] = true;
@@ -440,8 +442,10 @@ function undoLastSpin() {
         }
     }
     
-    // 2. Rewind the UI
-    if (previousSpun) {
+    // 3. Rewind the UI to the NEW top of the stack (if there is one)
+    if (spinHistory.length > 0) {
+        const prev = spinHistory[spinHistory.length - 1]; 
+        
         const subReel = document.getElementById('subjectReel');
         const weekReel = document.getElementById('weekReel');
 
@@ -461,30 +465,43 @@ function undoLastSpin() {
 
         void subReel.offsetHeight; 
         
-        prepVoiceover(previousSpun.subject, previousSpun.week, 'audioBtnMain');
+        prepVoiceover(prev.subject, prev.week, 'audioBtnMain');
+        prepInfoBtn(prev.subject, prev.week, 'infoBtnMain');
 
         subReel.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
         weekReel.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
 
-        subReel.style.transform = `translateY(-${previousSpun.sIdx * 80}px)`;
-        weekReel.style.transform = `translateY(-${previousSpun.wIdx * 80}px)`;
+        subReel.style.transform = `translateY(-${prev.sIdx * 80}px)`;
+        weekReel.style.transform = `translateY(-${prev.wIdx * 80}px)`;
 
-        document.getElementById('prompt').textContent = previousSpun.prompt;
-        document.getElementById('answerContent').innerHTML = previousSpun.answer;
+        document.getElementById('prompt').textContent = prev.prompt;
+        document.getElementById('answerContent').innerHTML = prev.answer;
         
-        lastSpun = { ...previousSpun };
-        previousSpun = null; 
+        document.getElementById('undoBtn').disabled = false; // Still history left!
     } else {
+        // The stack is completely empty!
         document.getElementById('subjectReel').style.transform = `translateY(0)`;
         document.getElementById('weekReel').style.transform = `translateY(0)`;
         document.getElementById('prompt').textContent = "Spin to start!";
         document.getElementById('answerContent').textContent = "";
-        lastSpun = null;
+        
+        const audioBtn = document.getElementById('audioBtnMain');
+        if (audioBtn) audioBtn.style.display = 'none';
+        
+        const infoBtn = document.getElementById('infoBtnMain');
+        if (infoBtn) infoBtn.style.display = 'none';
+        
+        document.getElementById('undoBtn').disabled = true; // Disable button
     }
 
-    // 3. Reset UI state
+    // 4. Reset UI state
     document.getElementById('answerContainer').classList.remove('open');
-    document.getElementById('undoBtn').disabled = true;
+    
+    // 5. Re-enable spin button in case they undid from a "Done" state
+    spinBtn.style.background = "var(--primary)"; 
+    spinBtn.disabled = false;
+    setSpinLabel('SPIN');
+    spinBtn.style.fontSize = '';
     
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
     updateFlagUI();
@@ -494,16 +511,16 @@ function undoLastSpin() {
 
 // NEW: Flagging Logic
 function toggleMistake() {
-    if (!lastSpun) return;
+    const currentSpin = spinHistory.length > 0 ? spinHistory[spinHistory.length - 1] : null;
+    if (!currentSpin) return;
     
-    // Check if the current lesson is already in the bank
-    const idx = mistakesBank.findIndex(m => m.subject === lastSpun.subject && m.week === lastSpun.week);
+    const idx = mistakesBank.findIndex(m => m.subject === currentSpin.subject && m.week === currentSpin.week);
     
     if (idx !== -1) {
-        mistakesBank.splice(idx, 1); // Remove it
+        mistakesBank.splice(idx, 1); 
     } else {
-        mistakesBank.push({ subject: lastSpun.subject, week: lastSpun.week }); // Add it
-        if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 50, 20]); // Double buzz!
+        mistakesBank.push({ subject: currentSpin.subject, week: currentSpin.week }); 
+        if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 50, 20]); 
     }
     
     saveToDevice();
@@ -532,12 +549,13 @@ function updateFlagUI() {
     // 1. Sync Main Spinner Flag
     const flagBtn = document.getElementById('flagBtn');
     if (flagBtn) {
-        if (!lastSpun) {
+        const currentSpin = spinHistory.length > 0 ? spinHistory[spinHistory.length - 1] : null;
+        if (!currentSpin) {
             flagBtn.disabled = true;
             flagBtn.classList.remove('flagged');
         } else {
             flagBtn.disabled = false;
-            const isFlagged = mistakesBank.some(m => m.subject === lastSpun.subject && m.week === lastSpun.week);
+            const isFlagged = mistakesBank.some(m => m.subject === currentSpin.subject && m.week === currentSpin.week);
             flagBtn.classList.toggle('flagged', isFlagged);
         }
     }
@@ -786,6 +804,7 @@ function resetGrid() { showResetConfirm(); }
 function resetGridConfirmed() {
   isSpinning = false;
   hideResetConfirm();
+  spinHistory = []; // NEW: Clear the undo stack!
   subjects.forEach(s => {
     gridState[s] = {};
     weeks.forEach(w => gridState[s][w] = true);
