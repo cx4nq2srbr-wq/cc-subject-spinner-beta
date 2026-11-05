@@ -2429,7 +2429,11 @@ const walkSteps = [
     
     // 2. Review
     { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Now, tap the Review tab at the bottom to browse your memory work sequentially.", interactive: true, delay: 500 },
-    { target: 'reviewSubjectLabel', mode: 'review', title: "Browse Lessons", desc: "You can use the arrows to cycle through lessons, or tap the names directly to open a quick-selection menu." },
+    
+    // NEW: Split the Subject and Week into distinct, interactive steps!
+    { target: 'reviewSubjectLabel', mode: 'review', title: "Change Subject", desc: "Tap the Subject name here to open the quick-selector menu.", interactive: true, delay: 500 },
+    { target: 'pickerGrid', mode: 'review', title: "Quick Select", desc: "Tap any subject in this grid to jump straight to it.", interactive: true, delay: 600, tooltipPos: '15%', keepPickerOpen: true },
+    { target: 'reviewWeekLabel', mode: 'review', title: "Change Week", desc: "You can also tap the Week number to jump to a specific week, or use the arrows to go one-by-one." },
     
     // 3. Lessons Grid
     { target: 'nav-grid', mode: 'review', title: "The Lessons Tab", desc: "Next, tap the Lessons tab. This controls the entire app.", interactive: true, delay: 500 },
@@ -2448,6 +2452,7 @@ const walkSteps = [
 ];
 
 let currentWalkStep = 0;
+let walkPulseTimeout = null;
 
 function showTutorial() {
     currentWalkStep = 0;
@@ -2458,61 +2463,62 @@ function showTutorial() {
 
 function renderWalkStep() {
     const step = walkSteps[currentWalkStep];
+    const maskEl = document.getElementById('walkthroughMask');
     
-    // Update Counter
+    // 1. INSTANT UI UPDATES & RESET TIMERS
+    clearTimeout(walkPulseTimeout);
+    if (maskEl) maskEl.classList.remove('walkthrough-active-pulse');
+    
     const counterEl = document.getElementById('walkCounter');
     if (counterEl) counterEl.textContent = (currentWalkStep + 1) + '/' + walkSteps.length;
     
-    // Force close the Review Picker if they accidentally opened it during the tour
-    if (typeof closePicker === 'function') closePicker();
+    document.getElementById('walkTitle').textContent = step.title;
+    document.getElementById('walkDesc').textContent = step.desc;
+
+    const nextBtn = document.getElementById('walkNextBtn');
     
-    // Only auto-switch tabs if the user didn't just physically tap to get there
+    if (step.interactive) {
+        nextBtn.textContent = "Tap highlighted area";
+        nextBtn.style.background = "#94a3b8"; 
+        nextBtn.style.boxShadow = "none";
+        nextBtn.style.pointerEvents = "none";
+    } else {
+        nextBtn.textContent = (currentWalkStep === walkSteps.length - 1) ? "Get Started!" : "Next";
+        nextBtn.style.background = (currentWalkStep === walkSteps.length - 1) ? "#22c55e" : "var(--primary)";
+        nextBtn.style.boxShadow = "0 4px 15px rgba(255,111,97,0.3)";
+        nextBtn.style.pointerEvents = "auto";
+    }
+    
+    // 2. STATE CLEANUP
+    if (typeof closePicker === 'function' && !step.keepPickerOpen) closePicker();
+    
     if (currentMode !== step.mode) {
         switchMode(step.mode);
     }
 
-    // Clean up any old interactive click listeners
     if (window.currentWalkListener && window.currentWalkTarget) {
         window.currentWalkTarget.removeEventListener('click', window.currentWalkListener);
         window.currentWalkTarget = null;
         window.currentWalkListener = null;
     }
 
-    // Ensure tutorial UI is visible
+    // 3. SHOW UI
     document.getElementById('walkthroughTooltip').style.display = 'block';
-    document.getElementById('walkthroughMask').style.display = 'block';
+    if (maskEl) maskEl.style.display = 'block';
 
+    // 4. DELAYED SPOTLIGHT CALCULATION
     setTimeout(() => {
-        const mask = document.getElementById('walkthroughMask');
         const tooltip = document.getElementById('walkthroughTooltip');
-        
-        document.getElementById('walkTitle').textContent = step.title;
-        document.getElementById('walkDesc').textContent = step.desc;
-
-        const nextBtn = document.getElementById('walkNextBtn');
-        
-        // Visually disable the "Next" button on interactive steps so they know they MUST tap the app UI
-        if (step.interactive) {
-            nextBtn.textContent = "Tap highlighted area";
-            nextBtn.style.background = "#94a3b8"; 
-            nextBtn.style.boxShadow = "none";
-            nextBtn.style.pointerEvents = "none";
-        } else {
-            nextBtn.textContent = (currentWalkStep === walkSteps.length - 1) ? "Get Started!" : "Next";
-            nextBtn.style.background = (currentWalkStep === walkSteps.length - 1) ? "#22c55e" : "var(--primary)";
-            nextBtn.style.boxShadow = "0 4px 15px rgba(255,111,97,0.3)";
-            nextBtn.style.pointerEvents = "auto";
-        }
 
         if (step.target) {
             const el = document.getElementById(step.target);
             if (el) {
                 const rect = el.getBoundingClientRect();
                 
-                mask.style.top = rect.top - 8 + 'px';
-                mask.style.left = rect.left - 8 + 'px';
-                mask.style.width = rect.width + 16 + 'px';
-                mask.style.height = rect.height + 16 + 'px';
+                maskEl.style.top = rect.top - 8 + 'px';
+                maskEl.style.left = rect.left - 8 + 'px';
+                maskEl.style.width = rect.width + 16 + 'px';
+                maskEl.style.height = rect.height + 16 + 'px';
                 
                 if (step.tooltipPos) {
                     tooltip.style.top = step.tooltipPos;
@@ -2521,10 +2527,20 @@ function renderWalkStep() {
                 }
 
                 if (step.interactive) {
+                    // Trigger the pulse if they wait 4 seconds to click!
+                    walkPulseTimeout = setTimeout(() => {
+                        if (maskEl && maskEl.style.display !== 'none') {
+                            maskEl.classList.add('walkthrough-active-pulse');
+                        }
+                    }, 4000);
+
                     window.currentWalkTarget = el;
                     window.currentWalkListener = () => {
+                        clearTimeout(walkPulseTimeout);
+                        if (maskEl) maskEl.classList.remove('walkthrough-active-pulse');
+                        
                         document.getElementById('walkthroughTooltip').style.display = 'none';
-                        document.getElementById('walkthroughMask').style.display = 'none';
+                        maskEl.style.display = 'none';
                         
                         setTimeout(() => {
                             nextWalkStep();
@@ -2534,10 +2550,10 @@ function renderWalkStep() {
                 }
             }
         } else {
-            mask.style.top = '50%';
-            mask.style.left = '50%';
-            mask.style.width = '0px';
-            mask.style.height = '0px';
+            maskEl.style.top = '50%';
+            maskEl.style.left = '50%';
+            maskEl.style.width = '0px';
+            maskEl.style.height = '0px';
             tooltip.style.top = '50%';
         }
     }, 300);
@@ -2554,11 +2570,19 @@ function nextWalkStep() {
 }
 
 function skipWalkthrough() {
+    clearTimeout(walkPulseTimeout);
+    const maskEl = document.getElementById('walkthroughMask');
+    if (maskEl) maskEl.classList.remove('walkthrough-active-pulse');
+
     if (window.currentWalkListener && window.currentWalkTarget) {
         window.currentWalkTarget.removeEventListener('click', window.currentWalkListener);
     }
+    
+    if (typeof closePicker === 'function') closePicker();
+    
     document.getElementById('walkthroughTooltip').style.display = 'none';
-    document.getElementById('walkthroughMask').style.display = 'none';
+    if (maskEl) maskEl.style.display = 'none';
+    
     localStorage.setItem('hasSeenStudioTutorial', 'true');
     switchMode('spinner');
     playVictoryChime();
