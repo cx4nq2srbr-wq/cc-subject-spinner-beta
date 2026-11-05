@@ -559,7 +559,7 @@ const cycleData = {
       4: { p: "Bordering Oceans and Seas", a: "Pacific Ocean<br>Beaufort Sea<br>Arctic Ocean<br>Labrador Sea<br>Atlantic Ocean" },
       5: { p: "Gulf, Bays, Straits and Basin", a: "Baffin Bay<br>Foxe Basin<br>Hudson Strait<br>Hudson Bay<br>James Bay<br>Gulf of St. Lawrence<br>Bay of Fundy" },
       6: { p: "Western Lakes", a: "Great Bear Lake<br>Great Slave Lake<br>Lake Athabasca<br>Lake Winnipeg<br>Reindeer Lake" },
-      7: { p: "Northern Rivers", a: "Mackenzie River<br>Reace River<br>Liard River<br>Yukon River" },
+      7: { p: "Northern Rivers", a: "Mackenzie River<br>Peace River<br>Liard River<br>Yukon River" },
       8: { p: "Southern Rivers", a: "Fraser River<br>Columbia River<br>Saskatchewan River<br>Churchill River<br>Red River<br>Ottawa River<br>St. Lawrence River" },
       9: { p: "Canadian Arctic North", a: "Banks Island<br>Victoria Island<br>Ellesmere Island<br>Baffin Island" },
       10: { p: "Mountain Ranges", a: "Coast Mountains<br>Appalachian Mountains<br>Laurentian Mountains<br>Canadian Rockies<br>St. Elias Mountains" },
