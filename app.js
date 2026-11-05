@@ -2423,36 +2423,35 @@ const walkSteps = [
     { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how CC Spinner works." },
     
     // 1. Spinner
-    { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap the SPIN button below to randomly select memory work.", interactive: true, delay: 2600 },
+    { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap the SPIN button below to randomly select memory work.", interactive: true },
     { target: 'undoBtn', mode: 'spinner', title: "Undo Spin", desc: "Made a mistake or got interrupted? The Undo button reverses your last spin." },
+    { target: 'flagBtn', mode: 'spinner', title: "Flag for Review", desc: "Tap the Flag button here (or in the Review tab) to add a lesson to your Mistake Bank. You can practice them later in the Focus games!" },
     { target: 'answerContainer', mode: 'spinner', title: "Songs & Extras", desc: "When a lesson has an accompanying song or map, an Audio or Info (i) button will appear right here." },
     
     // 2. Review
-    { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Now, tap the Review tab at the bottom to browse your memory work sequentially.", interactive: true, delay: 500 },
-    
-    // NEW: Split the Subject and Week into distinct, interactive steps!
-    { target: 'reviewSubjectLabel', mode: 'review', title: "Change Subject", desc: "Tap the Subject name here to open the quick-selector menu.", interactive: true, delay: 500 },
-    { target: 'pickerGrid', mode: 'review', title: "Quick Select", desc: "Tap any subject in this grid to jump straight to it.", interactive: true, delay: 600, tooltipPos: '15%', keepPickerOpen: true },
+    { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Now, tap the Review tab at the bottom to browse your memory work sequentially.", interactive: true },
+    { target: 'reviewSubjectLabel', mode: 'review', title: "Change Subject", desc: "Tap the Subject name here to open the quick-selector menu.", interactive: true },
+    { target: 'pickerGrid', mode: 'review', title: "Quick Select", desc: "Tap any subject in this grid to jump straight to it.", interactive: true, tooltipPos: '15%', keepPickerOpen: true },
     { target: 'reviewWeekLabel', mode: 'review', title: "Change Week", desc: "You can also tap the Week number to jump to a specific week, or use the arrows to go one-by-one." },
     
     // 3. Lessons Grid
-    { target: 'nav-grid', mode: 'review', title: "The Lessons Tab", desc: "Next, tap the Lessons tab. This controls the entire app.", interactive: true, delay: 500 },
+    { target: 'nav-grid', mode: 'review', title: "The Lessons Tab", desc: "Next, tap the Lessons tab. This controls the entire app.", interactive: true },
     { target: 'gridContent', mode: 'grid', title: "The Master Grid", desc: "This tracks your progress. White, green (or black in dark mode) squares are active. Grey squares are blocked or finished.", tooltipPos: '80%' },
     { target: 'grid', mode: 'grid', title: "Block a Subject", desc: "Tap a Subject name at the very top to instantly block or allow that entire column.", tooltipPos: '80%' },
     { target: 'grid', mode: 'grid', title: "Block a Week", desc: "Tap a Week number on the left side to instantly block or allow that entire row.", tooltipPos: '80%' },
     { target: 'gridControlsRow', mode: 'grid', title: "Set Your Pace", desc: "Change your Cycle here, and adjust your Max Week to match where you are in the school year." },
-    { target: 'resetGridBtnTour', mode: 'grid', title: "Start Fresh", desc: "Once you clear the board for the week, you can start over. Tap 'Reset Grid' to see what happens!", interactive: true, delay: 400 },
-    { target: 'confirmResetBtnTour', mode: 'grid', title: "Confirm Reset", desc: "Tap 'Yes, Reset' to clear the board. Don't worry, we won't lose your custom settings or Mistake Bank!", interactive: true, delay: 600 },
+    { target: 'resetGridBtnTour', mode: 'grid', title: "Start Fresh", desc: "Once you clear the board for the week, you can start over. Tap 'Reset Grid' to see what happens!", interactive: true },
+    { target: 'confirmResetBtnTour', mode: 'grid', title: "Confirm Reset", desc: "Tap 'Yes, Reset' to clear the board. Don't worry, we won't lose your custom settings or Mistake Bank!", interactive: true },
     
     // 4. Focus
-    { target: 'nav-challenge', mode: 'grid', title: "The Focus Tab", desc: "Ready for a challenge? Tap the Focus tab to explore the games.", interactive: true, delay: 500 },
+    { target: 'nav-challenge', mode: 'grid', title: "The Focus Tab", desc: "Ready for a challenge? Tap the Focus tab to explore the games.", interactive: true },
     { target: 'challengeContainer', mode: 'challenge', title: "Challenge Modes", desc: "Here you can review flagged mistakes, race the clock in Time Attack, sing Scripture songs, or take a Trivia Quiz.", tooltipPos: '85%' },
     
     { target: null, mode: 'spinner', title: "You're All Set!", desc: "You can replay this tutorial anytime from the Settings tab. Have fun mastering your memory work!" }
 ];
 
 let currentWalkStep = 0;
-let walkPulseTimeout = null;
+let walkPulseTimeout = null; 
 
 function showTutorial() {
     currentWalkStep = 0;
@@ -2539,12 +2538,8 @@ function renderWalkStep() {
                         clearTimeout(walkPulseTimeout);
                         if (maskEl) maskEl.classList.remove('walkthrough-active-pulse');
                         
-                        document.getElementById('walkthroughTooltip').style.display = 'none';
-                        maskEl.style.display = 'none';
-                        
-                        setTimeout(() => {
-                            nextWalkStep();
-                        }, step.delay || 1000);
+                        // THE FIX: Instantly advance the tutorial instead of hiding it!
+                        nextWalkStep();
                     };
                     el.addEventListener('click', window.currentWalkListener, { once: true });
                 }
