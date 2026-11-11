@@ -3,9 +3,11 @@
    ========================================================================== */
 let currentMode = 'spinner'; 
 
+
 function switchMode(mode) {
-    stopVoiceover();
-const challengeIds = ['challengeContainer', 'taMenuContainer', 'taGameContainer', 'mistakeGameContainer', 'mapMenuContainer', 'mapGameContainer', 'triviaMenuContainer', 'triviaGameContainer', 'scriptureContainer'];
+    pauseRadio(); // NEW: Stops music if they navigate away!
+    stopVoiceover(); // Stop anything playing in previous tab
+const challengeIds = ['challengeContainer', 'taMenuContainer', 'taGameContainer', 'mistakeGameContainer', 'mapMenuContainer', 'mapGameContainer', 'triviaMenuContainer', 'triviaGameContainer', 'scriptureContainer', 'radioContainer'];
     // THE FIX: Double-tap logic to return to the Focus menu
     if (mode === 'challenge' && currentMode === 'challenge') {
         challengeIds.forEach(id => {
@@ -229,7 +231,7 @@ window.onload = function() {
   if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
 
   checkStandaloneMode();
-  
+
   // Sync Version Tag
   fetch('manifest.json') 
     .then(r => r.ok ? r.json() : Promise.reject())
@@ -2618,7 +2620,7 @@ function submitContactForm() {
 }
 
 /* ==========================================================================
-   SPLASH SCREEN ENGINE
+   17. SPLASH SCREEN ENGINE
    ========================================================================== */
 function dismissSplashScreen() {
     const splash = document.getElementById('splashScreen');
@@ -2643,7 +2645,7 @@ function dismissSplashScreen() {
 }
 
 /* ==========================================================================
-   17. INTERACTIVE WALKTHROUGH ENGINE
+   18. INTERACTIVE WALKTHROUGH ENGINE
    ========================================================================== */
 const walkSteps = [
     { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how CC Spinner works." },
@@ -2829,7 +2831,7 @@ function skipWalkthrough() {
 }
 
 /* ==========================================================================
-   14. PWA INSTALLATION ENGINE
+   19. PWA INSTALLATION ENGINE
    ========================================================================== */
 let deferredPrompt;
 
@@ -2876,3 +2878,231 @@ window.addEventListener('appinstalled', () => {
     document.getElementById('installSettingContainer').style.display = 'none';
     deferredPrompt = null;
 });
+
+/* ==========================================================================
+   15. CC SPINNER RADIO ENGINE
+   ========================================================================== */
+const radioAudio = new Audio();
+let radioPlaylist = [];
+let radioOriginalList = [];
+let currentRadioIndex = 0;
+let isRadioPlaying = false;
+let radioRepeatMode = 0; // 0: Off, 1: All, 2: One
+let radioShuffleOn = false;
+let radioAutoSkipCount = 0; // Prevents infinite loops if files are missing
+
+// Audio Event Listeners
+radioAudio.addEventListener('timeupdate', updateRadioProgress);
+radioAudio.addEventListener('ended', handleRadioEnded);
+radioAudio.addEventListener('error', () => {
+    // If the file doesn't exist, instantly skip to the next one!
+    radioAutoSkipCount++;
+    if (radioAutoSkipCount >= radioPlaylist.length) {
+        pauseRadio(); // Everything failed
+        document.getElementById('radioTrackTitle').textContent = "No audio found!";
+    } else {
+        nextRadioTrack(true); // force skip
+    }
+});
+
+function openRadio() {
+    stopVoiceover(); // Silence the spinner/robot
+    document.getElementById('challengeContainer').classList.remove('active');
+    document.getElementById('radioContainer').classList.add('active');
+    activeChallengePage = 'radioContainer'; // Remembers you are here!
+    buildRadioPlaylist();
+}
+
+function closeRadio() {
+    pauseRadio();
+    document.getElementById('radioContainer').classList.remove('active');
+    document.getElementById('challengeContainer').classList.add('active');
+    activeChallengePage = 'challengeContainer';
+}
+
+function buildRadioPlaylist() {
+    radioPlaylist = [];
+    
+    // Generate the master list (Grouped by Subject, up to Max Week)
+    subjects.forEach(subject => {
+        const cleanSub = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
+        for (let w = 1; w <= userMaxWeek; w++) {
+            radioPlaylist.push({
+                subject: subject,
+                week: w,
+                url: `audio/c${currentCycle}/${cleanSub}/c${currentCycle}-${cleanSub}-w${w}.m4a`
+            });
+        }
+    });
+
+    radioOriginalList = [...radioPlaylist];
+    currentRadioIndex = 0;
+    radioAutoSkipCount = 0;
+    
+    if (radioShuffleOn) shuffleRadioList();
+    
+    loadRadioTrack(currentRadioIndex);
+}
+
+function loadRadioTrack(index) {
+    if (radioPlaylist.length === 0) return;
+    
+    const track = radioPlaylist[index];
+    radioAudio.src = track.url;
+    radioAudio.load();
+    
+    document.getElementById('radioTrackTitle').textContent = `${track.subject} - Week ${track.week}`;
+    document.getElementById('radioTrackSub').textContent = `Cycle ${currentCycle}`;
+    
+    // UI Reset
+    document.getElementById('radioSeeker').value = 0;
+    document.getElementById('radioTimeCurrent').textContent = "0:00";
+    document.getElementById('radioTimeTotal').textContent = "-:--";
+}
+
+function toggleRadioPlay() {
+    if (isRadioPlaying) {
+        pauseRadio();
+    } else {
+        playRadio();
+    }
+}
+
+function playRadio() {
+    if (radioPlaylist.length === 0) return;
+    
+    // Reclaim hardware audio focus (iOS fix)
+    if (typeof audioCtx !== 'undefined' && audioCtx.state !== 'running') {
+        audioCtx.resume();
+    }
+    
+    radioAudio.play().then(() => {
+        isRadioPlaying = true;
+        radioAutoSkipCount = 0; // Reset error loop counter
+        document.getElementById('radioPlayIcon').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); // Pause Icon
+        document.getElementById('radioArt').classList.add('radio-playing-art');
+    }).catch(err => {
+        // Will be caught by 'error' listener to auto-skip
+    });
+}
+
+function pauseRadio() {
+    radioAudio.pause();
+    isRadioPlaying = false;
+    document.getElementById('radioPlayIcon').setAttribute('d', 'M8 5v14l11-7z'); // Play Icon
+    document.getElementById('radioArt').classList.remove('radio-playing-art');
+}
+
+function handleRadioEnded() {
+    if (radioRepeatMode === 2) {
+        radioAudio.currentTime = 0;
+        playRadio();
+    } else {
+        nextRadioTrack(true);
+    }
+}
+
+function nextRadioTrack(autoSkip = false) {
+    currentRadioIndex++;
+    
+    if (currentRadioIndex >= radioPlaylist.length) {
+        if (radioRepeatMode === 1 || autoSkip) {
+            currentRadioIndex = 0; // Loop to start
+        } else {
+            currentRadioIndex = 0;
+            loadRadioTrack(currentRadioIndex);
+            pauseRadio();
+            return;
+        }
+    }
+    
+    loadRadioTrack(currentRadioIndex);
+    if (isRadioPlaying || autoSkip) playRadio();
+}
+
+function prevRadioTrack() {
+    // If we are more than 3 seconds in, just restart the track
+    if (radioAudio.currentTime > 3) {
+        radioAudio.currentTime = 0;
+        return;
+    }
+    
+    currentRadioIndex--;
+    if (currentRadioIndex < 0) {
+        currentRadioIndex = radioPlaylist.length - 1;
+    }
+    
+    loadRadioTrack(currentRadioIndex);
+    if (isRadioPlaying) playRadio();
+}
+
+// Controls Logic
+function toggleRadioShuffle() {
+    radioShuffleOn = !radioShuffleOn;
+    const btn = document.getElementById('radioShuffleBtn');
+    
+    if (radioShuffleOn) {
+        btn.classList.add('active');
+        shuffleRadioList();
+    } else {
+        btn.classList.remove('active');
+        // Unshuffle but keep current track playing
+        const currentTrack = radioPlaylist[currentRadioIndex];
+        radioPlaylist = [...radioOriginalList];
+        currentRadioIndex = radioPlaylist.findIndex(t => t.url === currentTrack.url);
+    }
+}
+
+function shuffleRadioList() {
+    const currentTrack = radioPlaylist[currentRadioIndex];
+    
+    for (let i = radioPlaylist.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [radioPlaylist[i], radioPlaylist[j]] = [radioPlaylist[j], radioPlaylist[i]];
+    }
+    // Force current track to index 0 so playback doesn't jump
+    if (currentTrack) {
+        const newIndex = radioPlaylist.findIndex(t => t.url === currentTrack.url);
+        [radioPlaylist[0], radioPlaylist[newIndex]] = [radioPlaylist[newIndex], radioPlaylist[0]];
+        currentRadioIndex = 0;
+    }
+}
+
+function toggleRadioRepeat() {
+    radioRepeatMode = (radioRepeatMode + 1) % 3;
+    const btn = document.getElementById('radioRepeatBtn');
+    
+    if (radioRepeatMode === 0) {
+        btn.classList.remove('active');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>`;
+    } else if (radioRepeatMode === 1) {
+        btn.classList.add('active');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>`;
+    } else {
+        btn.classList.add('active');
+        // Repeat One Icon
+        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2.5V15h3v-4H9.5v1.5h1.5v3H13z"></path></svg>`;
+    }
+}
+
+// Scrubber / Progress Bar Logic
+function updateRadioProgress() {
+    if (isNaN(radioAudio.duration)) return;
+    
+    const seeker = document.getElementById('radioSeeker');
+    seeker.max = radioAudio.duration;
+    seeker.value = radioAudio.currentTime;
+    
+    document.getElementById('radioTimeCurrent').textContent = formatTime(radioAudio.currentTime);
+    document.getElementById('radioTimeTotal').textContent = formatTime(radioAudio.duration);
+}
+
+document.getElementById('radioSeeker').addEventListener('input', (e) => {
+    radioAudio.currentTime = e.target.value;
+});
+
+function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+}

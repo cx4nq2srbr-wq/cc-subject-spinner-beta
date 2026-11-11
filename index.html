@@ -212,9 +212,12 @@
         </button>
 
 
-        <button class="challenge-btn" onclick="openRadio()" style="background: linear-gradient(135deg, #ec4899, #f43f5e);">
-            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a4 4 0 110-8 4 4 0 010 8zm0-6a2 2 0 100 4 2 2 0 000-4z"></path></svg>
-            CC Spinner Radio
+        <button class="setting-item" onclick="openRadio()">
+            <div class="setting-text">
+                <h4>CC Spinner Radio</h4>
+                <p>Listen to a playlist of your songs</p>
+            </div>
+            <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg></div>
         </button>
 
         <button class="setting-item" onclick="openScriptureMenu()">
@@ -682,7 +685,7 @@
 </div>
 
 <!-- CC SPINNER RADIO UI -->
-<div id="radioContainer" class="view-container" style="display: none; align-items: center; padding-top: 40px;">
+<div id="radioContainer" class="view-container" style="align-items: center; padding-top: 40px;">
     
     <!-- Top Nav -->
     <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding: 0 20px;">
