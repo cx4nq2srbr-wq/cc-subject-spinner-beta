@@ -695,20 +695,25 @@ function speakText(text) {
     }
 
     if (availableVoices.length > 0) {
-        // 1. Hunt for the highest quality voices available on the specific device
-        let bestVoice = availableVoices.find(v => 
-            v.name.includes('Google US English') || // Best natural voice on Chrome/Android
-            v.name.includes('Premium') ||           // Best natural voices on iOS/Mac
-            v.name.includes('Enhanced') ||          // Alternative high-quality iOS/Mac
-            v.name === 'Alex'                       // Very solid classic Apple voice
-        );
+        // 1. Try to grab the exact voice you set as your iPhone's default!
+        let bestVoice = availableVoices.find(v => v.default && v.lang.startsWith('en'));
         
-        // 2. If no premium voices are installed, fallback to any English voice
+        // 2. If Apple hides the default flag, hunt for high-quality alternatives
+        if (!bestVoice) {
+            bestVoice = availableVoices.find(v => 
+                v.name.includes('Siri') ||              // Newer iOS versions
+                v.name.includes('Premium') ||           // Older iOS premium voices
+                v.name.includes('Enhanced') ||          
+                v.name.includes('Google US English') || 
+                v.name === 'Alex'                       
+            );
+        }
+        
+        // 3. Absolute fallback
         if (!bestVoice) {
             bestVoice = availableVoices.find(v => v.lang.startsWith('en-US') || v.lang.startsWith('en'));
         }
         
-        // 3. Apply the chosen voice
         if (bestVoice) {
             utterance.voice = bestVoice;
         }
