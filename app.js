@@ -132,7 +132,8 @@ let userSettings = Object.assign({
     haptics: true,
     turbo: false,
     autoReveal: false,
-    darkMode: false
+    darkMode: false,
+    selectedVoice: "" // NEW: Stores the chosen voice name
 }, JSON.parse(localStorage.getItem('appSettings')) || {});
 
 function anyLessonsRemaining() {
@@ -670,12 +671,55 @@ function getSpinLabel() {
   return (spinBtn.textContent || '').trim();
 }
 
-// NEW: The device loads its voice list in the background, so we have to listen for it!
 let availableVoices = [];
+
+// NEW: Dynamically build the dropdown list when the device loads its voices
+function populateVoiceList() {
+    if (!('speechSynthesis' in window)) return;
+    
+    availableVoices = window.speechSynthesis.getVoices();
+    const voicePicker = document.getElementById('voicePicker');
+    if (!voicePicker) return;
+    
+    // Keep the default option
+    voicePicker.innerHTML = '<option value="">Auto-Select Best Voice</option>';
+    
+    // Filter for English voices to keep the list clean
+    const englishVoices = availableVoices.filter(v => v.lang.startsWith('en'));
+    
+    englishVoices.forEach(voice => {
+        const option = document.createElement('option');
+        // Clean up the name for display
+        let displayName = voice.name.replace(/ \(English \(United States\)\)/g, '').replace(/ \(en-US\)/g, '');
+        option.textContent = displayName;
+        option.value = voice.name;
+        
+        if (voice.name === userSettings.selectedVoice) {
+            option.selected = true;
+        }
+        
+        voicePicker.appendChild(option);
+    });
+}
+
 if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = () => {
-        availableVoices = window.speechSynthesis.getVoices();
-    };
+    populateVoiceList();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoiceList;
+    }
+}
+
+// NEW: Save the voice and test it!
+function changeVoice(voiceName) {
+    userSettings.selectedVoice = voiceName;
+    saveSettings();
+    
+    if (voiceName) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance("Testing new voice.");
+        utterance.voice = availableVoices.find(v => v.name === voiceName);
+        window.speechSynthesis.speak(utterance);
+    }
 }
 
 function speakText(text) {
@@ -689,27 +733,35 @@ function speakText(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9; 
     
-    // Safety fallback just in case the voices loaded instantly
     if (availableVoices.length === 0) {
         availableVoices = window.speechSynthesis.getVoices();
     }
 
     if (availableVoices.length > 0) {
-        // 1. Try to grab the exact voice you set as your iPhone's default!
-        let bestVoice = availableVoices.find(v => v.default && v.lang.startsWith('en'));
+        let bestVoice = null;
         
-        // 2. If Apple hides the default flag, hunt for high-quality alternatives
+        // 1. Check if user manually selected a voice
+        if (userSettings.selectedVoice) {
+            bestVoice = availableVoices.find(v => v.name === userSettings.selectedVoice);
+        }
+        
+        // 2. If no manual choice, try system default
+        if (!bestVoice) {
+            bestVoice = availableVoices.find(v => v.default && v.lang.startsWith('en'));
+        }
+        
+        // 3. Auto-hunt for high quality
         if (!bestVoice) {
             bestVoice = availableVoices.find(v => 
-                v.name.includes('Siri') ||              // Newer iOS versions
-                v.name.includes('Premium') ||           // Older iOS premium voices
+                v.name.includes('Siri') ||              
+                v.name.includes('Premium') ||           
                 v.name.includes('Enhanced') ||          
                 v.name.includes('Google US English') || 
                 v.name === 'Alex'                       
             );
         }
         
-        // 3. Absolute fallback
+        // 4. Absolute fallback
         if (!bestVoice) {
             bestVoice = availableVoices.find(v => v.lang.startsWith('en-US') || v.lang.startsWith('en'));
         }
