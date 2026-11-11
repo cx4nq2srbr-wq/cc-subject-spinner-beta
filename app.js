@@ -2923,10 +2923,13 @@ function closeRadio() {
 function buildRadioPlaylist() {
     radioPlaylist = [];
     
+    // THE FIX: Properly grab the Max Week from your app's global function
+    const currentMaxWeek = getMaxWeek();
+    
     // Generate the master list (Grouped by Subject, up to Max Week)
     subjects.forEach(subject => {
         const cleanSub = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
-        for (let w = 1; w <= userMaxWeek; w++) {
+        for (let w = 1; w <= currentMaxWeek; w++) {
             radioPlaylist.push({
                 subject: subject,
                 week: w,
