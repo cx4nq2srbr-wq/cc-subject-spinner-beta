@@ -224,10 +224,12 @@ window.onload = function() {
   buildGrid();
   
   setupAudioButtons(); // NEW: Initializes the long-press logic!
-  
+
   // Initial Vibration Feedback
   if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
 
+  checkStandaloneMode();
+  
   // Sync Version Tag
   fetch('manifest.json') 
     .then(r => r.ok ? r.json() : Promise.reject())
@@ -2577,7 +2579,7 @@ function closeTriviaResults() {
 }
 
 /* ==========================================================================
-   CONTACT FORM ENGINE
+   16. CONTACT FORM ENGINE
    ========================================================================== */
 function openContactModal() {
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
@@ -2641,7 +2643,7 @@ function dismissSplashScreen() {
 }
 
 /* ==========================================================================
-   INTERACTIVE WALKTHROUGH ENGINE
+   17. INTERACTIVE WALKTHROUGH ENGINE
    ========================================================================== */
 const walkSteps = [
     { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how CC Spinner works." },
@@ -2825,3 +2827,52 @@ function skipWalkthrough() {
     startConfetti();
     setTimeout(stopConfetti, 2500);
 }
+
+/* ==========================================================================
+   14. PWA INSTALLATION ENGINE
+   ========================================================================== */
+let deferredPrompt;
+
+// 1. Listen for the native Android/Chrome install prompt and catch it
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+});
+
+// 2. Hide the button if the app is already installed on the home screen!
+function checkStandaloneMode() {
+    const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone;
+    const installBlock = document.getElementById('installSettingContainer');
+    
+    if (isStandalone && installBlock) {
+        installBlock.style.display = 'none';
+    }
+}
+
+// 3. Handle the Install button click
+function promptInstall() {
+    if (deferredPrompt) {
+        // Android/Chrome: Trigger the native 1-click install popup
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                document.getElementById('installSettingContainer').style.display = 'none';
+            }
+            deferredPrompt = null; // Clean up
+        });
+    } else {
+        // iOS/Safari: Apple blocks automatic prompts, so we walk them through it
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            alert("To install on iPhone/iPad:\n\n1. Tap the Share button at the bottom of Safari (the square with an up arrow).\n2. Scroll down and tap 'Add to Home Screen'.");
+        } else {
+            alert("To install this app, open your browser menu and select 'Add to Home Screen' or 'Install App'.");
+        }
+    }
+}
+
+// 4. If they install it successfully, hide the button instantly
+window.addEventListener('appinstalled', () => {
+    document.getElementById('installSettingContainer').style.display = 'none';
+    deferredPrompt = null;
+});
