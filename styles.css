@@ -1322,3 +1322,10 @@ body.dark-mode .splash-text {
 .walkthrough-active-pulse {
     animation: walkthroughPulse 1.5s infinite ease-in-out !important;
 }
+
+/* Prevent text highlighting and context menus during long-press */
+#audioBtnMain, #audioBtnReview, #audioBtnMistake, #audioBtnTA {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
