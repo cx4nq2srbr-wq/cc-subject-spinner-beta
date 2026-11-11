@@ -685,17 +685,54 @@ function populateVoiceList() {
     // Keep the default option
     voicePicker.innerHTML = '<option value="">Auto-Select Best Voice</option>';
     
-    // Filter for English voices to keep the list clean
+    // 1. Filter for English voices
     const englishVoices = availableVoices.filter(v => v.lang.startsWith('en'));
     
+    // 2. Define our "Top Shelf" natural voices
+    const premiumNames = ['Samantha', 'Daniel', 'Moira', 'Karen', 'Siri', 'Alex', 'Premium', 'Enhanced', 'Google US English'];
+    
+    const seenNames = new Set();
+    const uniqueVoices = [];
+    
+    // 3. Clean names and remove duplicates!
     englishVoices.forEach(voice => {
-        const option = document.createElement('option');
-        // Clean up the name for display
-        let displayName = voice.name.replace(/ \(English \(United States\)\)/g, '').replace(/ \(en-US\)/g, '');
-        option.textContent = displayName;
-        option.value = voice.name;
+        // Strip out Apple and Google's messy regional tags
+        let displayName = voice.name.replace(/ \(English \(United States\)\)/g, '')
+                                    .replace(/ \(en-US\)/g, '')
+                                    .replace(/ \(en-GB\)/g, '')
+                                    .replace(/ \(en-AU\)/g, '')
+                                    .replace(/ \(en-IE\)/g, '')
+                                    .trim();
         
-        if (voice.name === userSettings.selectedVoice) {
+        // If we haven't added this name to the list yet, keep it!
+        if (!seenNames.has(displayName)) {
+            seenNames.add(displayName);
+            uniqueVoices.push({
+                originalName: voice.name,
+                displayName: displayName
+            });
+        }
+    });
+    
+    // 4. Sort the list: Premium voices at the top, everything else alphabetical
+    uniqueVoices.sort((a, b) => {
+        const aIsPremium = premiumNames.some(p => a.displayName.includes(p));
+        const bIsPremium = premiumNames.some(p => b.displayName.includes(p));
+        
+        if (aIsPremium && !bIsPremium) return -1; // 'a' moves up
+        if (!aIsPremium && bIsPremium) return 1;  // 'b' moves up
+        
+        // If both are premium (or neither are), sort them A-Z
+        return a.displayName.localeCompare(b.displayName);
+    });
+    
+    // 5. Inject them into the HTML dropdown
+    uniqueVoices.forEach(v => {
+        const option = document.createElement('option');
+        option.textContent = v.displayName;
+        option.value = v.originalName;
+        
+        if (v.originalName === userSettings.selectedVoice) {
             option.selected = true;
         }
         
