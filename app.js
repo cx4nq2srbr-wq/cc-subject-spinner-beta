@@ -670,22 +670,53 @@ function getSpinLabel() {
   return (spinBtn.textContent || '').trim();
 }
 
+// NEW: The device loads its voice list in the background, so we have to listen for it!
+let availableVoices = [];
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {
+        availableVoices = window.speechSynthesis.getVoices();
+    };
+}
+
 function speakText(text) {
     if (!text || !('speechSynthesis' in window)) return;
     
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
     
-    // Stop anything currently reading
     window.speechSynthesis.cancel(); 
-    
-    // Stop any recorded lesson audio so they don't talk over each other
     stopVoiceover(); 
     
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9; // Slightly slower so kids can process the words
+    utterance.rate = 0.9; 
+    
+    // Safety fallback just in case the voices loaded instantly
+    if (availableVoices.length === 0) {
+        availableVoices = window.speechSynthesis.getVoices();
+    }
+
+    if (availableVoices.length > 0) {
+        // 1. Hunt for the highest quality voices available on the specific device
+        let bestVoice = availableVoices.find(v => 
+            v.name.includes('Google US English') || // Best natural voice on Chrome/Android
+            v.name.includes('Premium') ||           // Best natural voices on iOS/Mac
+            v.name.includes('Enhanced') ||          // Alternative high-quality iOS/Mac
+            v.name === 'Alex'                       // Very solid classic Apple voice
+        );
+        
+        // 2. If no premium voices are installed, fallback to any English voice
+        if (!bestVoice) {
+            bestVoice = availableVoices.find(v => v.lang.startsWith('en-US') || v.lang.startsWith('en'));
+        }
+        
+        // 3. Apply the chosen voice
+        if (bestVoice) {
+            utterance.voice = bestVoice;
+        }
+    }
     
     window.speechSynthesis.speak(utterance);
 }
+
 /* ==========================================================================
    5. GRID & LESSON MANAGEMENT
    ========================================================================== */
