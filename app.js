@@ -670,6 +670,22 @@ function getSpinLabel() {
   return (spinBtn.textContent || '').trim();
 }
 
+function speakText(text) {
+    if (!text || !('speechSynthesis' in window)) return;
+    
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    
+    // Stop anything currently reading
+    window.speechSynthesis.cancel(); 
+    
+    // Stop any recorded lesson audio so they don't talk over each other
+    stopVoiceover(); 
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9; // Slightly slower so kids can process the words
+    
+    window.speechSynthesis.speak(utterance);
+}
 /* ==========================================================================
    5. GRID & LESSON MANAGEMENT
    ========================================================================== */
@@ -1683,6 +1699,7 @@ function stopVoiceover() {
         voiceAudio.pause();
         if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
     }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 
 /* ==========================================================================
