@@ -194,6 +194,7 @@
             </div>
             <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>
         </button>
+
         <button class="setting-item" onclick="openTimeAttackMenu()">
             <div class="setting-text">
                 <h4>Time Attack</h4>
@@ -201,6 +202,7 @@
             </div>
             <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><circle cx="12" cy="13" r="8"></circle><polyline points="12 9 12 13 14 15"></polyline><line x1="12" y1="2" x2="12" y2="4"></line></svg></div>
         </button>
+
         <button class="setting-item" onclick="openTriviaMenu()">
             <div class="setting-text">
                 <h4>Trivia Quiz</h4>
@@ -208,6 +210,13 @@
             </div>
             <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
         </button>
+
+
+        <button class="challenge-btn" onclick="openRadio()" style="background: linear-gradient(135deg, #ec4899, #f43f5e);">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a4 4 0 110-8 4 4 0 010 8zm0-6a2 2 0 100 4 2 2 0 000-4z"></path></svg>
+            CC Spinner Radio
+        </button>
+
         <button class="setting-item" onclick="openScriptureMenu()">
             <div class="setting-text">
                 <h4 id="scriptureBtnTitle">Scripture Song</h4>
@@ -498,7 +507,7 @@
             </div>
             <button class="settings-action-btn" onclick="promptInstall()">Install</button>
         </div>
-        
+
         <button class="setting-item" onclick="showTutorial()">
             <div class="setting-text">
                 <h4>App Tutorial</h4>
@@ -669,6 +678,63 @@
         <textarea id="contactMessage" rows="5" placeholder="Type your message here..." style="width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 20px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 16px; resize: none; box-sizing: border-box; background: white; color: var(--text-main);"></textarea>
 
         <button onclick="submitContactForm()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">Send Email</button>
+    </div>
+</div>
+
+<!-- CC SPINNER RADIO UI -->
+<div id="radioContainer" class="view-container" style="display: none; align-items: center; padding-top: 40px;">
+    
+    <!-- Top Nav -->
+    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding: 0 20px;">
+        <button onclick="closeRadio()" style="background: transparent; border: none; color: var(--text-muted); font-weight: 800; font-size: 16px; cursor: pointer;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+        <span style="font-weight: 800; color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Now Playing</span>
+        <div style="width: 24px;"></div> <!-- Spacer for center alignment -->
+    </div>
+
+    <!-- Album Art Placeholder -->
+    <div id="radioArt" style="width: 250px; height: 250px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; margin-bottom: 40px; transition: transform 0.3s ease;">
+        <svg viewBox="0 0 24 24" width="100" height="100" fill="white" opacity="0.8"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg>
+    </div>
+
+    <!-- Track Info -->
+    <div style="text-align: center; margin-bottom: 30px; width: 80%;">
+        <h2 id="radioTrackTitle" style="font-size: 28px; font-weight: 900; color: var(--text-main); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Loading...</h2>
+        <p id="radioTrackSub" style="font-size: 18px; color: var(--primary); font-weight: 700;">Preparing Playlist</p>
+    </div>
+
+    <!-- Scrubber / Progress Bar -->
+    <div style="width: 85%; max-width: 400px; margin-bottom: 40px;">
+        <input type="range" id="radioSeeker" value="0" max="100" style="width: 100%; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 700;">
+            <span id="radioTimeCurrent">0:00</span>
+            <span id="radioTimeTotal">-:--</span>
+        </div>
+    </div>
+
+    <!-- Playback Controls -->
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 85%; max-width: 350px;">
+        <!-- Shuffle -->
+        <button id="radioShuffleBtn" onclick="toggleRadioShuffle()" class="radio-ctrl-btn">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"></path></svg>
+        </button>
+        <!-- Prev -->
+        <button onclick="prevRadioTrack()" class="radio-ctrl-btn" style="transform: scale(1.2);">
+            <svg viewBox="0 0 24 24" width="32" height="32"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg>
+        </button>
+        <!-- Play/Pause -->
+        <button id="radioPlayPauseBtn" onclick="toggleRadioPlay()" class="radio-ctrl-btn" style="transform: scale(1.8); color: var(--primary);">
+            <svg viewBox="0 0 24 24" width="40" height="40"><path id="radioPlayIcon" d="M8 5v14l11-7z"></path></svg>
+        </button>
+        <!-- Next -->
+        <button onclick="nextRadioTrack()" class="radio-ctrl-btn" style="transform: scale(1.2);">
+            <svg viewBox="0 0 24 24" width="32" height="32"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
+        </button>
+        <!-- Repeat -->
+        <button id="radioRepeatBtn" onclick="toggleRadioRepeat()" class="radio-ctrl-btn">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>
+        </button>
     </div>
 </div>
 
