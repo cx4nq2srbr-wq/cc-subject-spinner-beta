@@ -223,6 +223,8 @@ window.onload = function() {
   document.getElementById('toggleAnswer').disabled = true;
   buildGrid();
   
+  setupAudioButtons(); // NEW: Initializes the long-press logic!
+  
   // Initial Vibration Feedback
   if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
 
@@ -1756,52 +1758,58 @@ function prepVoiceover(subject, week, btnId) {
     const btn = document.getElementById(btnId);
     if (!btn) return;
     
-    // Reset state
     btn.style.display = 'none';
     setAudioIcon(btnId, false);
     
-    // THE FIX: Added subfolders for Cycle and Subject (e.g., audio/c1/math/c1-math-w1.m4a)
     const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
     const url = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.m4a`;
+    
+    // NEW: Map the path for the full song
+    const fullUrl = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}-full.m4a`;
 
-    // "Ping" the server to see if the file exists without downloading it
     fetch(url, { method: 'HEAD' })
         .then(res => {
             if (res.ok) {
                 btn.dataset.url = url;
-                btn.style.display = 'flex'; // It exists! Show the button.
+                btn.dataset.fullUrl = fullUrl; // Save for long-press
+                btn.style.display = 'flex'; 
                 setAudioIcon(btnId, false);
             }
         })
         .catch(e => { /* File missing, keep button hidden */ });
 }
 
-function toggleVoiceover(e, btnId) {
-    if (e) e.stopPropagation(); // Prevents the Answer card from toggling open/closed!
+// NEW: Unified function handles both normal taps and long presses
+function playVoiceover(btnId, isFull) {
     const btn = document.getElementById(btnId);
     if (!btn) return;
     
-    const targetUrl = btn.dataset.url;
+    const targetUrl = isFull ? btn.dataset.fullUrl : btn.dataset.url;
     
-    // If clicking the currently playing button, pause it
     if (activeVoiceBtn === btnId && !voiceAudio.paused) {
         voiceAudio.pause();
         setAudioIcon(btnId, false);
         return;
     }
     
-    // If playing a new file, load it
     if (currentVoiceUrl !== targetUrl) {
         voiceAudio.src = targetUrl;
         currentVoiceUrl = targetUrl;
     }
     
-    // Reset old button icon if switching to a new card
     if (activeVoiceBtn && activeVoiceBtn !== btnId) {
         setAudioIcon(activeVoiceBtn, false);
     }
     
-    voiceAudio.play().catch(err => console.error("Audio play failed:", err));
+    voiceAudio.play().catch(err => {
+        console.error("Audio play failed:", err);
+        if (isFull) {
+            alert("No extended song found for this week.");
+            setAudioIcon(btnId, false);
+            activeVoiceBtn = null;
+        }
+    });
+    
     activeVoiceBtn = btnId;
     setAudioIcon(btnId, true);
 }
@@ -1810,11 +1818,9 @@ function setAudioIcon(btnId, isPlaying) {
     const btn = document.getElementById(btnId);
     if (!btn) return;
     if (isPlaying) {
-        // Add the playing class (turns the circle red) and show Pause Icon
         btn.classList.add('playing');
         btn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
     } else {
-        // Remove the playing class and show Play Icon
         btn.classList.remove('playing');
         btn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
     }
@@ -1826,21 +1832,62 @@ function stopVoiceover() {
         if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
     }
     
-    // Check if the robot is currently active
     if ('speechSynthesis' in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
         window.speechSynthesis.cancel();
         
-        // THE FIX: iOS Safari gives hardware audio focus to the Text-To-Speech engine.
-        // We have to forcibly reclaim the focus for our sound effects!
         if (typeof audioCtx !== 'undefined') {
             if (audioCtx.state !== 'running') {
                 audioCtx.resume();
             } else {
-                // If Safari thinks it's running but it's ghost-muted, this forces a hardware pipeline reset
                 audioCtx.suspend().then(() => audioCtx.resume());
             }
         }
     }
+}
+
+// NEW: Automatically binds the long-press logic to all audio buttons on startup
+function setupAudioButtons() {
+    const audioBtns = ['audioBtnMain', 'audioBtnReview', 'audioBtnMistake', 'audioBtnTA'];
+    
+    audioBtns.forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        
+        // Strip the old HTML click attribute so it doesn't double-fire
+        btn.removeAttribute('onclick');
+
+        let pressTimer;
+        let isLongPress = false;
+
+        const start = (e) => {
+            e.stopPropagation();
+            isLongPress = false;
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 40, 20]); // Double-buzz to confirm!
+                playVoiceover(id, true);
+            }, 600); // 600ms hold
+        };
+
+        const end = (e) => {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault(); // Stops ghost clicks on mobile
+            clearTimeout(pressTimer);
+            if (!isLongPress) {
+                playVoiceover(id, false);
+            }
+        };
+
+        const cancel = () => clearTimeout(pressTimer);
+
+        btn.addEventListener('touchstart', start, { passive: false });
+        btn.addEventListener('touchend', end, { passive: false });
+        btn.addEventListener('touchcancel', cancel);
+        
+        btn.addEventListener('mousedown', start);
+        btn.addEventListener('mouseup', end);
+        btn.addEventListener('mouseleave', cancel);
+    });
 }
 
 /* ==========================================================================
