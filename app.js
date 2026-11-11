@@ -604,7 +604,8 @@ function updateBadgeCounts() {
 function playSound(freq, type, duration, vol) {
   if (userSettings.muted) return;
   
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  // Aggressively wake up the audio context if the device put it to sleep
+  if (audioCtx.state !== 'running') audioCtx.resume();
   
   const osc = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
@@ -1787,7 +1788,22 @@ function stopVoiceover() {
         voiceAudio.pause();
         if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
     }
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    
+    // Check if the robot is currently active
+    if ('speechSynthesis' in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
+        window.speechSynthesis.cancel();
+        
+        // THE FIX: iOS Safari gives hardware audio focus to the Text-To-Speech engine.
+        // We have to forcibly reclaim the focus for our sound effects!
+        if (typeof audioCtx !== 'undefined') {
+            if (audioCtx.state !== 'running') {
+                audioCtx.resume();
+            } else {
+                // If Safari thinks it's running but it's ghost-muted, this forces a hardware pipeline reset
+                audioCtx.suspend().then(() => audioCtx.resume());
+            }
+        }
+    }
 }
 
 /* ==========================================================================
