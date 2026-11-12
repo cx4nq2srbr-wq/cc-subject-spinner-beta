@@ -771,6 +771,8 @@ function speakText(text) {
     
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
     
+    // THE FIX: Wake up the OS speech engine if it booted in a sleeping/paused state!
+    window.speechSynthesis.resume();
     window.speechSynthesis.cancel(); 
     stopVoiceover(); 
     
