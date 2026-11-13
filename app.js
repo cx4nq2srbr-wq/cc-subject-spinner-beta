@@ -1824,17 +1824,28 @@ function playVoiceover(btnId, isFull) {
     });
     
     activeVoiceBtn = btnId;
-    setAudioIcon(btnId, true);
+    setAudioIcon(btnId, true, ifFull);
 }
 
-function setAudioIcon(btnId, isPlaying) {
+function setAudioIcon(btnId, isPlaying, isFull = false) {
     const btn = document.getElementById(btnId);
     if (!btn) return;
+    
+    // Clean up previous states
+    btn.classList.remove('playing', 'playing-regular', 'playing-full');
+
     if (isPlaying) {
         btn.classList.add('playing');
+        
+        // Add specific classes to trigger the shape-shifting CSS
+        if (isFull) {
+            btn.classList.add('playing-full');
+        } else {
+            btn.classList.add('playing-regular');
+        }
+        
         btn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
     } else {
-        btn.classList.remove('playing');
         btn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
     }
 }

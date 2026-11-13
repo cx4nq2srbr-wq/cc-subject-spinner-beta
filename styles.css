@@ -351,52 +351,80 @@ button:disabled svg text {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* NEW: Shape-shifts into an oblong pill when a full song is found! */
-.audio-btn.has-full {
-    height: 64px;
-    border-radius: 21px; 
+/* NEW: Voiceover Audio Button (Circular UI) */
+.audio-btn {
+    position: absolute;
+    top: 27px;
+    right: 10px;
+    transform: translateY(-50%); 
+    height: 42px;
+    width: 42px;
+    background: rgba(255, 255, 255, 0.25); 
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%; 
+    color: white;
+    display: none; 
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    -webkit-tap-highlight-color: transparent;
 }
 
-.audio-btn.has-full::after {
-    content: "FULL ▼";
-    font-size: 8.5px;
-    font-weight: 800;
-    margin-top: 1px;
-    letter-spacing: 0.5px;
-    margin-left: 2px; /* Optically centers text under the play triangle */
-    opacity: 0.9;
-}
-
-.audio-btn.playing.has-full::after {
-    margin-left: 0; /* Re-centers text when the stop square is active */
-}
-
-.audio-btn:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.audio-btn:active { 
-    /* Keeps it perfectly centered even when shrinking on tap */
-    transform: translateY(-50%) scale(0.85); 
-}
+.audio-btn:hover { background: rgba(255, 255, 255, 0.4); }
+.audio-btn:active { transform: translateY(-50%) scale(0.85); }
 
 .audio-btn svg { 
     width: 18px; 
     height: 18px; 
     fill: currentColor; 
-    margin-left: 3px; /* Optically centers the play triangle */
+    margin-left: 3px; 
     transition: margin 0.2s ease;
 }
 
-/* Turns red and resets centering when playing/paused */
+/* Shape-shifts into a tighter oblong pill when a full song is found! */
+.audio-btn.has-full {
+    height: 54px; 
+    border-radius: 18px; 
+}
+
+.audio-btn.has-full::after {
+    content: "FULL ▼";
+    font-size: 8px; 
+    font-weight: 800;
+    margin-top: -2px; 
+    letter-spacing: 0.5px;
+    margin-left: 2px; 
+    opacity: 0.9;
+    transition: opacity 0.2s, font-size 0.2s, margin 0.2s; 
+}
+
+/* Base playing state (Turns red) */
 .audio-btn.playing {
     background: #ef4444; 
     border-color: #ef4444;
     box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
 }
+.audio-btn.playing svg { margin-left: 0; }
 
-.audio-btn.playing svg {
+/* When playing the REGULAR song, instantly shrink back to a perfect circle! */
+.audio-btn.playing-regular {
+    height: 42px !important;
+    border-radius: 50% !important;
+}
+.audio-btn.playing-regular::after {
+    opacity: 0; 
+    font-size: 0px; 
+    margin: 0;
+}
+
+/* When playing the FULL song, keep the pill shape but drop the arrow */
+.audio-btn.playing-full::after {
+    content: "FULL"; 
     margin-left: 0; 
+    margin-top: 1px;
 }
 /* ==========================================================================
    6. LESSONS GRID VIEW & CONTROLS
