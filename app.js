@@ -1824,7 +1824,7 @@ function playVoiceover(btnId, isFull) {
     });
     
     activeVoiceBtn = btnId;
-    setAudioIcon(btnId, true, ifFull);
+    setAudioIcon(btnId, true, isFull);
 }
 
 function setAudioIcon(btnId, isPlaying, isFull = false) {
