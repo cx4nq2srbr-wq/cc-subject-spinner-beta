@@ -1765,24 +1765,31 @@ function prepVoiceover(subject, week, btnId) {
     if (!btn) return;
     
     btn.style.display = 'none';
+    btn.classList.remove('has-full'); // Reset shape
     setAudioIcon(btnId, false);
     
     const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
     const url = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.m4a`;
-    
-    // NEW: Map the path for the full song
     const fullUrl = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}-full.m4a`;
 
     fetch(url, { method: 'HEAD' })
         .then(res => {
             if (res.ok) {
                 btn.dataset.url = url;
-                btn.dataset.fullUrl = fullUrl; // Save for long-press
                 btn.style.display = 'flex'; 
                 setAudioIcon(btnId, false);
+                
+                // NEW: Background check for the full song!
+                fetch(fullUrl, { method: 'HEAD' })
+                    .then(resFull => {
+                        if (resFull.ok) {
+                            btn.dataset.fullUrl = fullUrl;
+                            btn.classList.add('has-full'); // Triggers the shape shift!
+                        }
+                    }).catch(e => { /* Ignore */ });
             }
         })
-        .catch(e => { /* File missing, keep button hidden */ });
+        .catch(e => { /* File missing */ });
 }
 
 // NEW: Unified function handles both normal taps and long presses
@@ -1851,7 +1858,6 @@ function stopVoiceover() {
     }
 }
 
-// NEW: Automatically binds the long-press logic to all audio buttons on startup
 function setupAudioButtons() {
     const audioBtns = ['audioBtnMain', 'audioBtnReview', 'audioBtnMistake', 'audioBtnTA'];
     
@@ -1859,38 +1865,75 @@ function setupAudioButtons() {
         const btn = document.getElementById(id);
         if (!btn) return;
         
-        // Strip the old HTML click attribute so it doesn't double-fire
         btn.removeAttribute('onclick');
 
-        let pressTimer;
-        let isLongPress = false;
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+        let hasMoved = false;
 
         const start = (e) => {
             e.stopPropagation();
-            isLongPress = false;
-            pressTimer = setTimeout(() => {
-                isLongPress = true;
-                if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 40, 20]); // Double-buzz to confirm!
-                playVoiceover(id, true);
-            }, 600); // 600ms hold
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            startY = clientY;
+            currentY = clientY;
+            isDragging = true;
+            hasMoved = false;
+            btn.style.transition = 'none'; // Disable transition for instant finger tracking
+        };
+
+        const move = (e) => {
+            if (!isDragging) return;
+            currentY = e.touches ? e.touches[0].clientY : e.clientY;
+            let deltaY = currentY - startY;
+
+            // Only allow dragging downward IF it has a full song attached
+            if (btn.classList.contains('has-full') && deltaY > 0) {
+                e.preventDefault(); // Stop the screen from scrolling down!
+                
+                // Add physical resistance so it feels like pulling a rubber band
+                let pullDistance = Math.min(deltaY * 0.4, 30);
+                btn.style.transform = `translateY(calc(-50% + ${pullDistance}px)) scale(0.95)`;
+                hasMoved = true;
+            }
         };
 
         const end = (e) => {
             e.stopPropagation();
-            if (e.cancelable) e.preventDefault(); // Stops ghost clicks on mobile
-            clearTimeout(pressTimer);
-            if (!isLongPress) {
+            if (e.cancelable) e.preventDefault(); 
+            isDragging = false;
+            
+            // Snap back to normal centering instantly
+            btn.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            btn.style.transform = 'translateY(-50%) scale(1)';
+
+            let deltaY = currentY - startY;
+
+            // If they pulled the button down more than 15 pixels, play the Full Song!
+            if (btn.classList.contains('has-full') && deltaY > 15 && hasMoved) {
+                if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 30, 20]);
+                playVoiceover(id, true);
+            } else {
+                // Otherwise, it was just a normal tap!
                 playVoiceover(id, false);
             }
         };
 
-        const cancel = () => clearTimeout(pressTimer);
+        const cancel = () => {
+            isDragging = false;
+            btn.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            btn.style.transform = 'translateY(-50%) scale(1)';
+        };
 
+        // Bind touch events
         btn.addEventListener('touchstart', start, { passive: false });
+        btn.addEventListener('touchmove', move, { passive: false });
         btn.addEventListener('touchend', end, { passive: false });
         btn.addEventListener('touchcancel', cancel);
         
+        // Bind mouse events for testing on desktop
         btn.addEventListener('mousedown', start);
+        btn.addEventListener('mousemove', move);
         btn.addEventListener('mouseup', end);
         btn.addEventListener('mouseleave', cancel);
     });
