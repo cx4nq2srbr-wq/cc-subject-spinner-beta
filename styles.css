@@ -384,11 +384,10 @@ button:disabled svg text {
     transition: margin 0.2s ease;
 }
 
-/* Shape-shifts into an egg/teardrop shape when a full song is found! */
+/* Shape-shifts into a straight-sided pill when a full song is found! */
 .audio-btn.has-full {
     height: 56px; 
-    /* Keeps top a perfect circle, organically drops the bottom curve */
-    border-radius: 21px 21px 21px 21px / 21px 21px 35px 35px; 
+    border-radius: 21px; /* Standard pill shape, extends straight down */
 }
 
 /* Pull the play triangle up so it stays perfectly centered in the circular top half */
@@ -402,9 +401,9 @@ button:disabled svg text {
     bottom: 2px;
     left: 0;
     width: 100%;
-    height: 22px;
-    /* Renders a crisp SVG of curved text and a chevron arrow perfectly following the new border! */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 22'%3E%3Cpath id='p' d='M 8 4 A 13 13 0 0 0 34 4' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7.5' font-weight='800' fill='white' letter-spacing='1'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3Cpolyline points='18 6 21 9 24 6' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    height: 24px;
+    /* Gentler curve tracking the 21px border radius, with spaced text so it doesn't warp */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 3 A 16 16 0 0 0 37 3' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3Cpolyline points='18 5 21 8 24 5' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.9;
@@ -431,9 +430,9 @@ button:disabled svg text {
     opacity: 0; 
 }
 
-/* When playing the FULL song, keep the teardrop shape but drop the arrow from the SVG */
+/* When playing the FULL song, keep the pill shape but drop the arrow from the SVG */
 .audio-btn.playing-full::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 22'%3E%3Cpath id='p' d='M 8 4 A 13 13 0 0 0 34 4' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7.5' font-weight='800' fill='white' letter-spacing='1'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 3 A 16 16 0 0 0 37 3' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3C/svg%3E");
 }
 
 /* ==========================================================================
