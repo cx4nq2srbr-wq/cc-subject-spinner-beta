@@ -409,6 +409,14 @@ button:disabled svg text {
 }
 .audio-btn.playing svg { margin-left: 0; }
 
+/* Base playing state (Turns red) */
+.audio-btn.playing {
+    background: #ef4444; 
+    border-color: #ef4444;
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
+}
+.audio-btn.playing svg { margin-left: 0; }
+
 /* When playing the REGULAR song, instantly shrink back to a perfect circle! */
 .audio-btn.playing-regular {
     height: 42px !important;
