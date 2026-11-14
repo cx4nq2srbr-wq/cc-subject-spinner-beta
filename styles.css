@@ -109,14 +109,6 @@ input, button, select, textarea {
   transform: scale(1.01);
 }
 
-#answerContainer.open #answerContent, 
-#reviewAnswerContainer.open #reviewAnswerContent,
-#mistakeAnswerContainer.open #mistakeAnswerContent {
-    max-height: 450px;
-    padding: 20px;
-    border-top: 1px solid rgba(0,0,0,0.05);
-}
-
 #toggleAnswer, #toggleMistakeAnswer {
     width: 100%;
     padding: 18px;
@@ -139,12 +131,22 @@ input, button, select, textarea {
   padding: 0 20px;
   max-height: 0px;   
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* NEW: Smooth iOS scrolling */
+  overscroll-behavior: contain; /* NEW: Prevents page bounce */
   transition: all 0.3s ease;
   color: var(--text-muted);
   font-size: 17px;
   white-space: pre-wrap;
   text-align: center;
   box-sizing: border-box; 
+}
+
+#answerContainer.open #answerContent, 
+#reviewAnswerContainer.open #reviewAnswerContent,
+#mistakeAnswerContainer.open #mistakeAnswerContent {
+    max-height: 38vh; /* NEW: Dynamic height forces scrollbar before pushing off screen */
+    padding: 20px;
+    border-top: 1px solid rgba(0,0,0,0.05);
 }
 
 /* ==========================================================================
@@ -763,8 +765,8 @@ canvas[id$="ConfettiCanvas"], #confettiCanvas {
 
 .prompt-text { min-height: 100px; margin-bottom: 15px; }
 
-.review-always-open #reviewAnswerContent { max-height: none !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
-#reviewAnswerContent { max-height: none !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
+.review-always-open #reviewAnswerContent { max-height: calc(100vh - 400px) !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
+#reviewAnswerContent { max-height: calc(100vh - 400px) !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
 
 #reviewAnswerContainer.review-always-open {
     background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-radius: var(--radius); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: var(--shadow);
@@ -1016,7 +1018,7 @@ body.dark-mode #walkDesc { color: #cbd5e1 !important; }
 }
 
 #taAnswerContainer.open { border: 2px solid rgba(74, 144, 226, 0.4); transform: scale(1.01); }
-#taAnswerContainer.open #taAnswerContent { max-height: 450px; padding: 20px; border-top: 1px solid rgba(0,0,0,0.05); }
+#taAnswerContainer.open #taAnswerContent { max-height: 38vh; padding: 20px; border-top: 1px solid rgba(0,0,0,0.05); }
 
 #toggleTAAnswer {
     width: 100%; padding: 18px; background-color: var(--secondary); color: white; border: none;
@@ -1025,6 +1027,8 @@ body.dark-mode #walkDesc { color: #cbd5e1 !important; }
 
 #taAnswerContent {
     padding: 0 20px; max-height: 0px; overflow-y: auto; transition: all 0.3s ease;
+    -webkit-overflow-scrolling: touch; /* NEW */
+    overscroll-behavior: contain; /* NEW */
     color: var(--text-muted); font-size: 17px; white-space: pre-wrap; text-align: center; box-sizing: border-box;
 }
 
