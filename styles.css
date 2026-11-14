@@ -402,8 +402,8 @@ button:disabled svg text {
     left: 0;
     width: 100%;
     height: 24px;
-    /* Gentler curve tracking the 21px border radius, with spaced text so it doesn't warp */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 3 A 16 16 0 0 0 37 3' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3Cpolyline points='18 5 21 8 24 5' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    /* Lowered the arc path to Y=7 and the arrow to Y=9/12 to hug the bottom edge */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 7 A 16 16 0 0 0 37 7' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3Cpolyline points='18 9 21 12 24 9' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.9;
@@ -432,7 +432,8 @@ button:disabled svg text {
 
 /* When playing the FULL song, keep the pill shape but drop the arrow from the SVG */
 .audio-btn.playing-full::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 3 A 16 16 0 0 0 37 3' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3C/svg%3E");
+    /* Matches the lowered Y=7 arc path of the normal state */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 7 A 16 16 0 0 0 37 7' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3C/svg%3E");
 }
 
 /* ==========================================================================
