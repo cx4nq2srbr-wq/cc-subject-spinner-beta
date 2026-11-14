@@ -145,8 +145,8 @@ input, button, select, textarea {
 #answerContainer.open #answerContent, 
 #reviewAnswerContainer.open #reviewAnswerContent,
 #mistakeAnswerContainer.open #mistakeAnswerContent {
-    max-height: 38vh; /* NEW: Dynamic height forces scrollbar before pushing off screen */
-    padding: 20px;
+    max-height: 38vh; 
+    padding: 20px 20px 50px 20px; /* NEW: Adds 50px of empty space at the bottom of the scroll! */
     border-top: 1px solid rgba(0,0,0,0.05);
 }
 
@@ -766,8 +766,8 @@ canvas[id$="ConfettiCanvas"], #confettiCanvas {
 
 .prompt-text { min-height: 100px; margin-bottom: 15px; }
 
-.review-always-open #reviewAnswerContent { max-height: calc(100vh - 400px) !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
-#reviewAnswerContent { max-height: calc(100vh - 400px) !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
+.review-always-open #reviewAnswerContent { max-height: calc(100vh - 400px) !important; padding: 20px 20px 80px 20px !important; opacity: 1 !important; display: block !important; }
+#reviewAnswerContent { max-height: calc(100vh - 400px) !important; padding: 20px 20px 80px 20px !important; opacity: 1 !important; display: block !important; }
 
 #reviewAnswerContainer.review-always-open {
     background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-radius: var(--radius); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: var(--shadow);
