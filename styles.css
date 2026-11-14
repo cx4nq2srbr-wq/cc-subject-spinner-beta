@@ -46,6 +46,7 @@ body {
 }
 
 input, button, select, textarea {
+  font-family: inherit; /* NEW: Forces all buttons to use the Quicksand font */
   font-size: 16px !important; 
 }
 
