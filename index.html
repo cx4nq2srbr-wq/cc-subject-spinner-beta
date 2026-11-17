@@ -163,25 +163,27 @@
         <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 10px; flex-shrink: 0;">
             <button id="resetGridBtnTour" class="resetHeaderBtn" onclick="resetGrid()" style="padding: 10px 24px; font-size: 14px;">Reset Grid</button>
             
-            <div id="gridControlsRow" style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 5px; border-radius: 16px;">
+            <div id="gridControlsRow" style="display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; padding: 5px; border-radius: 16px; width: 100%;">
                 <select id="cyclePicker" onchange="changeCycle(this.value)">
                     <option value="1">Cycle 1</option>
                     <option value="2">Cycle 2</option>
                     <option value="3">Cycle 3</option>
                 </select>
                 
-                <!-- NEW: Min and Max Range Selectors -->
-                <div class="weekRangeControl">
-                    <span>Min:</span>
-                    <button id="decreaseMinWeek" class="weekBtn">-</button>
-                    <span id="minWeekDisplay">1</span>
-                    <button id="increaseMinWeek" class="weekBtn">+</button>
-                </div>
-                <div class="weekRangeControl">
-                    <span>Max:</span>
-                    <button id="decreaseMaxWeek" class="weekBtn">-</button>
-                    <span id="maxWeekDisplay">12</span>
-                    <button id="increaseMaxWeek" class="weekBtn">+</button>
+                <!-- Grouped the min/max pickers into their own dedicated row -->
+                <div style="display: flex; gap: 10px; align-items: center; justify-content: center; width: 100%;">
+                    <div class="weekRangeControl">
+                        <span>Min:</span>
+                        <button id="decreaseMinWeek" class="weekBtn">-</button>
+                        <span id="minWeekDisplay">1</span>
+                        <button id="increaseMinWeek" class="weekBtn">+</button>
+                    </div>
+                    <div class="weekRangeControl">
+                        <span>Max:</span>
+                        <button id="decreaseMaxWeek" class="weekBtn">-</button>
+                        <span id="maxWeekDisplay">12</span>
+                        <button id="increaseMaxWeek" class="weekBtn">+</button>
+                    </div>
                 </div>
             </div>
         </div>
