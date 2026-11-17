@@ -127,7 +127,7 @@ let mistakesBank = localStorage.getItem(getPrefix() + 'ccMistakesBank') ?
                 JSON.parse(localStorage.getItem(getPrefix() + 'ccMistakesBank')) : [];
 
 let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
-
+let savedMinWeek = localStorage.getItem(getPrefix() + 'ccMinWeek');
 // Global User Settings
 let userSettings = Object.assign({
     muted: false,
@@ -192,7 +192,9 @@ function changeCycle(cycleNum) {
 
     // Update UI
     const cycleMax = localStorage.getItem(getPrefix() + 'ccMaxWeek');
+    const cycleMin = localStorage.getItem(getPrefix() + 'ccMinWeek');
     setMaxWeek(cycleMax ? parseInt(cycleMax) : 24);
+    setMinWeek(cycleMin ? parseInt(cycleMin) : 1);
     buildGrid();
     if (currentMode === 'review') {
         updateReviewDisplay();
@@ -219,8 +221,9 @@ window.onload = function() {
 
   const prefix = getPrefix();
   const savedMax = localStorage.getItem(prefix + 'ccMaxWeek');
-  if (savedMax) setMaxWeek(parseInt(savedMax, 10));
-  else setMaxWeek(24);
+  const savedMin = localStorage.getItem(prefix + 'ccMinWeek');
+  if (savedMax) setMaxWeek(parseInt(savedMax, 10)); else setMaxWeek(24);
+  if (savedMin) setMinWeek(parseInt(savedMin, 10)); else setMinWeek(1);
 
   document.getElementById('toggleAnswer').disabled = true;
   buildGrid();
@@ -250,6 +253,7 @@ function saveToDevice() {
   const prefix = getPrefix();
   localStorage.setItem(prefix + 'ccSpinnerProgress', JSON.stringify(gridState));
   localStorage.setItem(prefix + 'ccMaxWeek', String(getMaxWeek()));
+  localStorage.setItem(prefix + 'ccMinWeek', String(getMinWeek()));
   localStorage.setItem(prefix + 'ccAllowedWeeks', JSON.stringify(allowedWeeks));
   localStorage.setItem(prefix + 'ccBlockedWeeks', JSON.stringify(blockedWeeks));
   localStorage.setItem(prefix + 'ccBlockedSubjects', JSON.stringify(blockedSubjects));
@@ -273,9 +277,11 @@ function spinBoth() {
   if (isSpinning) return;
   if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15); 
 
+  const minWeekLimit = getMinWeek();
   const maxWeekLimit = getMaxWeek();
+  
   const availableSubjects = subjects.filter(s =>
-    !blockedSubjects.includes(s) && weeks.some(w => (w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w])
+    !blockedSubjects.includes(s) && weeks.some(w => (w >= minWeekLimit && w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w])
   );
 
   if (availableSubjects.length === 0) {
@@ -303,9 +309,8 @@ function spinBoth() {
   promptDiv.textContent = "";
 
   const subject = availableSubjects[Math.floor(Math.random() * availableSubjects.length)];
-  const availableWeeks = weeks.filter(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[subject][w]);
+  const availableWeeks = weeks.filter(w => ((w >= minWeekLimit && w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[subject][w]);
   const week = availableWeeks[Math.floor(Math.random() * availableWeeks.length)];
-
   const subIdx = subjects.indexOf(subject);
   const weekIdx = weeks.indexOf(week);
 
@@ -364,7 +369,7 @@ function spinBoth() {
       buildGrid(); 
       
       const remaining = subjects.some(s =>
-        !blockedSubjects.includes(s) && weeks.some(w => ((w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[s][w])
+        !blockedSubjects.includes(s) && weeks.some(w => ((w >= minWeekLimit && w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[s][w])
       );
       if (!remaining) {
         setSpinLabel('Done');
@@ -826,6 +831,7 @@ function speakText(text) {
 
 function buildGrid(){
   saveToDevice();
+  const minWeek = getMinWeek();
   const maxWeek = getMaxWeek();
   const container = document.getElementById('gridContent');
   const containerWidth = container ? container.clientWidth : window.innerWidth;
@@ -855,10 +861,10 @@ function buildGrid(){
     subjects.forEach(s => {
       let cls = "";
       
-      // THE FIX: If the subject is in the blocked bank, turn the cell grey!
-      if (isBlocked || blockedSubjects.includes(s) || !gridState[s][w] || (w > maxWeek && !isAllowed)) {
+      // THE FIX: Grays out cells if they are below the Min or above the Max!
+      if (isBlocked || blockedSubjects.includes(s) || !gridState[s][w] || ((w < minWeek || w > maxWeek) && !isAllowed)) {
           cls = "completed";
-      } else if (isAllowed && w > maxWeek) {
+      } else if (isAllowed && (w < minWeek || w > maxWeek)) {
           cls = "override";
       }
       
@@ -936,15 +942,27 @@ function toggleHaptics() {
    7. WEEK SELECTION & RESET DIALOGS
    ========================================================================== */
 
+function getMinWeek() {
+  const el = document.getElementById("minWeekDisplay");
+  return Math.max(1, Math.min(24, parseInt(el.textContent, 10) || 1));
+}
+function setMinWeek(n) {
+  // Min week can never go higher than the current Max week
+  document.getElementById("minWeekDisplay").textContent = String(Math.max(1, Math.min(getMaxWeek(), Number(n) || 1)));
+}
+function increaseMinWeek() { setMinWeek(getMinWeek() + 1); buildGrid(); }
+function decreaseMinWeek() { setMinWeek(getMinWeek() - 1); buildGrid(); }
+
 function getMaxWeek() {
   const el = document.getElementById("maxWeekDisplay");
   return Math.max(1, Math.min(24, parseInt(el.textContent, 10) || 24));
 }
 function setMaxWeek(n) {
-  document.getElementById("maxWeekDisplay").textContent = String(Math.max(1, Math.min(24, Number(n) || 1)));
+  // Max week can never go lower than the current Min week
+  document.getElementById("maxWeekDisplay").textContent = String(Math.max(getMinWeek(), Math.min(24, Number(n) || 1)));
 }
-function increaseWeek() { setMaxWeek(getMaxWeek() + 1); buildGrid(); }
-function decreaseWeek() { setMaxWeek(getMaxWeek() - 1); buildGrid(); }
+function increaseMaxWeek() { setMaxWeek(getMaxWeek() + 1); buildGrid(); }
+function decreaseMaxWeek() { setMaxWeek(getMaxWeek() - 1); buildGrid(); }
 
 function showResetConfirm() { document.getElementById('resetConfirmOverlay').style.display = 'flex'; }
 function hideResetConfirm() { document.getElementById('resetConfirmOverlay').style.display = 'none'; }
@@ -1334,8 +1352,11 @@ function bindHoldButton(id, actionFn){
   el.addEventListener('mousedown', start); el.addEventListener('mouseup', stop); el.addEventListener('mouseleave', stop);
   el.addEventListener('touchstart', start, {passive:false}); el.addEventListener('touchend', stop);
 }
-bindHoldButton('increaseWeek', increaseWeek);
-bindHoldButton('decreaseWeek', decreaseWeek);
+
+bindHoldButton('increaseMaxWeek', increaseMaxWeek);
+bindHoldButton('decreaseMaxWeek', decreaseMaxWeek);
+bindHoldButton('increaseMinWeek', increaseMinWeek); // NEW
+bindHoldButton('decreaseMinWeek', decreaseMinWeek); // NEW
 
 // --- PWA Service Worker ---
 if ('serviceWorker' in navigator) {
@@ -1558,11 +1579,11 @@ function resumeTimeAttack() {
 }
 
     taAvailable = [];
-    const maxLimit = getMaxWeek();
+    const minLimit = getMinWeek(); const maxLimit = getMaxWeek();
     subjects.forEach(s => {
         if (blockedSubjects.includes(s)) return;
         weeks.forEach(w => {
-            if ((w <= maxLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w]) {
+            if ((w >= minLimit && w <= maxLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w]) {
                 taAvailable.push({ subject: s, week: w });
             }
         });
@@ -2270,7 +2291,7 @@ function initMapHitboxes() {
         const rawName = weekMatch[2];
 
         // If the week is higher than our max week, disable clicks and abort!
-        if (weekNum > currentMaxWeek) {
+        if (weekNum < currentMinWeek || weekNum > currentMaxWeek) {
             el.style.pointerEvents = 'none'; // Ensures it doesn't block clicks to the base map
             return;
         }
@@ -2434,17 +2455,14 @@ function openTriviaMenu() {
 
     // 1. Calculate all available questions
     fullTriviaDeck = [];
-    const maxLimit = getMaxWeek();
+    const minLimit = getMinWeek(); const maxLimit = getMaxWeek();
 
     if (typeof customTriviaBank !== 'undefined') {
         customTriviaBank.forEach(trivia => {
             if (trivia.cycle === currentCycle) {
                 const s = trivia.subject;
                 const w = trivia.week;
-                if (!blockedSubjects.includes(s) &&
-                    (w <= maxLimit || allowedWeeks.includes(w)) &&
-                    !blockedWeeks.includes(w) &&
-                    gridState[s] && gridState[s][w]) {
+                if ((w >= minLimit && w <= maxLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w]) {
                     fullTriviaDeck.push(trivia);
                 }
             }
@@ -2985,7 +3003,7 @@ function buildRadioPlaylist() {
     // Generate the master list (Grouped by Subject, up to Max Week)
     subjects.forEach(subject => {
         const cleanSub = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
-        for (let w = 1; w <= currentMaxWeek; w++) {
+        for (let w = currentMinWeek; w <= currentMaxWeek; w++) {
             radioPlaylist.push({
                 subject: subject,
                 week: w,
