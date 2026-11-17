@@ -2997,10 +2997,11 @@ function closeRadio() {
 function buildRadioPlaylist() {
     radioPlaylist = [];
     
-    // THE FIX: Properly grab the Max Week from your app's global function
+    // THE FIX: Define BOTH the Min and Max weeks by reading the UI!
+    const currentMinWeek = typeof getMinWeek === 'function' ? getMinWeek() : 1;
     const currentMaxWeek = getMaxWeek();
     
-    // Generate the master list (Grouped by Subject, up to Max Week)
+    // Generate the master list (Grouped by Subject, from Min Week to Max Week)
     subjects.forEach(subject => {
         const cleanSub = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
         for (let w = currentMinWeek; w <= currentMaxWeek; w++) {
