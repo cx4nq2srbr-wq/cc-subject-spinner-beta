@@ -2018,8 +2018,9 @@ function openInfoModal(e, btnId) {
     const img = document.createElement('img');
     img.id = 'infoImage';
     img.src = btn.dataset.url;
-    img.style.width = '100%';
-    img.style.borderRadius = '8px';
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '100%';
+    img.style.objectFit = 'contain';
     img.style.touchAction = 'none'; // Critical to stop the browser from fighting the zoom!
     
     contentDiv.appendChild(img);
