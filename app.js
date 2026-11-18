@@ -2018,6 +2018,13 @@ function openInfoModal(e, btnId) {
     const img = document.createElement('img');
     img.id = 'infoImage';
     img.src = btn.dataset.url;
+    
+    // NEW: Anti-hijack CSS to stop iOS and Android from stealing the touch events!
+    img.draggable = false; 
+    img.style.userSelect = 'none';
+    img.style.webkitUserSelect = 'none';
+    img.style.webkitTouchCallout = 'none';
+    
     img.style.maxWidth = '100%';
     img.style.maxHeight = '100%';
     img.style.objectFit = 'contain';
@@ -2026,15 +2033,39 @@ function openInfoModal(e, btnId) {
     contentDiv.appendChild(img);
     document.getElementById('infoModalOverlay').style.display = 'flex';
 
-    // Wait for the image to load, then attach the physics engine!
+    // Wait for the image to load, scale it perfectly, then attach the physics engine!
     img.onload = () => {
-        if (infoPanZoom) infoPanZoom.dispose(); // Clean up just in case
+        const wrapper = document.getElementById('infoModalContent');
+        const wrapperWidth = wrapper.clientWidth;
+        const wrapperHeight = wrapper.clientHeight;
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        const wrapperRatio = wrapperWidth / wrapperHeight;
+
+        // Strip the CSS constraints and calculate the exact physical pixels needed to fill the screen
+        let targetWidth, targetHeight;
+        if (imgRatio > wrapperRatio) {
+            targetWidth = wrapperWidth;
+            targetHeight = wrapperWidth / imgRatio;
+        } else {
+            targetHeight = wrapperHeight;
+            targetWidth = wrapperHeight * imgRatio;
+        }
+
+        img.style.width = targetWidth + 'px';
+        img.style.height = targetHeight + 'px';
+        img.style.maxWidth = 'none';
+        img.style.maxHeight = 'none';
+
+        if (infoPanZoom) infoPanZoom.dispose(); 
         infoPanZoom = panzoom(img, {
-            maxZoom: 5,
+            maxZoom: 6,
             minZoom: 1,
             bounds: true,
-            boundsPadding: 0.1
+            boundsPadding: 0.05
         });
+        
+        // Instantly center the map on the screen
+        infoPanZoom.moveTo((wrapperWidth - targetWidth) / 2, (wrapperHeight - targetHeight) / 2);
     };
 }
 
@@ -2197,6 +2228,11 @@ function startMapGame(selectedMapSvg) {
                 touchStartY = e.touches[0].clientY;
             }
         }, { passive: true });
+        // NEW: Track mouse clicks for testing on desktop!
+        wrapper.addEventListener('mousedown', (e) => {
+            touchStartX = e.clientX;
+            touchStartY = e.clientY;
+        }, { passive: true });
         isMapTouchTracked = true;
     }
 
@@ -2304,20 +2340,30 @@ function initMapHitboxes() {
         
         // Add the distance-checking tap listener
         const handleTap = (e) => {
+            let endX, endY;
             if (e.type === 'touchend' && e.changedTouches.length > 0) {
-                const endX = e.changedTouches[0].clientX;
-                const endY = e.changedTouches[0].clientY;
+                endX = e.changedTouches[0].clientX;
+                endY = e.changedTouches[0].clientY;
+            } else if (e.type === 'mouseup') {
+                endX = e.clientX;
+                endY = e.clientY;
+            }
+
+            // If the finger/mouse moved more than 10 pixels, they were scrolling! Ignore the tap.
+            if (endX !== undefined && endY !== undefined) {
                 if (Math.hypot(endX - touchStartX, endY - touchStartY) > 10) return; 
             }
 
-            if (isMapDragging) return; 
-            e.stopPropagation();
+            if (isMapProcessing) return; 
+            
+            e.stopPropagation(); // Only block events AFTER they lift their finger
             if (e.cancelable) e.preventDefault(); 
             
             handleMapClick(rawId, el);
         };
 
-        el.addEventListener('mousedown', handleTap);
+        // THE FIX: Removed mousedown entirely so the panzoom physics engine can catch the drag!
+        el.addEventListener('mouseup', handleTap);
         el.addEventListener('touchend', handleTap, { passive: false });
     });
 }
