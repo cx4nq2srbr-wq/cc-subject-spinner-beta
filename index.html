@@ -664,13 +664,12 @@
     </div>
 </div>
 
-<div id="infoModalOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 6000; touch-action: none;">
-    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative;">
-        <!-- Glass-morphism X button pushed to the very top right corner (clearing the notch) -->
-        <button onclick="closeInfoModal()" style="position: absolute; top: calc(env(safe-area-inset-top, 20px) + 15px); right: 20px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; font-weight: 800; font-size: 18px; cursor: pointer; color: white; z-index: 6001; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent;">X</button>
-        
-        <div id="infoModalContent"></div>
-    </div>
+<div id="infoModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; touch-action: none; overscroll-behavior: none;">
+    <!-- Glass-morphism X button pushed to the very top right corner (clearing the notch) -->
+    <button onclick="closeInfoModal()" style="position: absolute; top: max(20px, env(safe-area-inset-top)); right: 20px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; font-weight: 800; font-size: 18px; cursor: pointer; color: white; z-index: 6001; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent;">X</button>
+    
+    <!-- A pure, un-scrollable boundary for the physics engine -->
+    <div id="infoModalContent" style="width: 100%; height: 100%; position: relative; overflow: hidden;"></div>
 </div>
 
 <div id="contactModalOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 6000;">

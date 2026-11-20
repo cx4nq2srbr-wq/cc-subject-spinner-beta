@@ -2012,36 +2012,35 @@ function openInfoModal(e, btnId) {
     if (!btn || !btn.dataset.url) return;
     
     const contentDiv = document.getElementById('infoModalContent');
-    contentDiv.innerHTML = ""; // Clear old content
+    contentDiv.innerHTML = ""; 
     
-    // Create the image element safely
     const img = document.createElement('img');
     img.id = 'infoImage';
     img.src = btn.dataset.url;
     
-    // NEW: Anti-hijack CSS to stop iOS and Android from stealing the touch events!
+    // Anti-hijack CSS to stop iOS and Android from stealing the touch events!
     img.draggable = false; 
     img.style.userSelect = 'none';
     img.style.webkitUserSelect = 'none';
     img.style.webkitTouchCallout = 'none';
     
-    img.style.maxWidth = '100%';
-    img.style.maxHeight = '100%';
-    img.style.objectFit = 'contain';
-    img.style.touchAction = 'none'; // Critical to stop the browser from fighting the zoom!
+    // Absolute positioning guarantees the CSS layout engine doesn't fight the zoom math!
+    img.style.position = 'absolute';
+    img.style.top = '0';
+    img.style.left = '0';
+    img.style.transformOrigin = '0 0';
+    img.style.touchAction = 'none'; 
     
     contentDiv.appendChild(img);
-    document.getElementById('infoModalOverlay').style.display = 'flex';
+    // Display as a standard block, not a flexbox
+    document.getElementById('infoModalOverlay').style.display = 'block'; 
 
-    // Wait for the image to load, scale it perfectly, then attach the physics engine!
     img.onload = () => {
-        const wrapper = document.getElementById('infoModalContent');
-        const wrapperWidth = wrapper.clientWidth;
-        const wrapperHeight = wrapper.clientHeight;
+        const wrapperWidth = contentDiv.clientWidth;
+        const wrapperHeight = contentDiv.clientHeight;
         const imgRatio = img.naturalWidth / img.naturalHeight;
         const wrapperRatio = wrapperWidth / wrapperHeight;
 
-        // Strip the CSS constraints and calculate the exact physical pixels needed to fill the screen
         let targetWidth, targetHeight;
         if (imgRatio > wrapperRatio) {
             targetWidth = wrapperWidth;
@@ -2053,8 +2052,6 @@ function openInfoModal(e, btnId) {
 
         img.style.width = targetWidth + 'px';
         img.style.height = targetHeight + 'px';
-        img.style.maxWidth = 'none';
-        img.style.maxHeight = 'none';
 
         if (infoPanZoom) infoPanZoom.dispose(); 
         infoPanZoom = panzoom(img, {
