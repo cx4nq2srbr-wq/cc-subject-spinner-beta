@@ -240,6 +240,7 @@ window.onload = function() {
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(m => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = m.version; })
     .catch(() => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = "not available"; });
+    updateDailyStreak();
     updateFlagUI();
     updateScriptureButtonUI();
     // Reveal the splash screen ONLY after the layout and fonts have completely settled
@@ -2760,6 +2761,34 @@ function dismissSplashScreen() {
             showTutorial();
         }
     }, 400); 
+}
+
+function updateDailyStreak() {
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+    const lastVisit = localStorage.getItem('ccLastVisitDate');
+    let streak = parseInt(localStorage.getItem('ccCurrentStreak') || '0', 10);
+
+    if (lastVisit === todayStr) {
+        if (streak < 1) streak = 1;
+    } else if (lastVisit === yesterdayStr) {
+        streak += 1;
+    } else {
+        streak = 1;
+    }
+
+    localStorage.setItem('ccLastVisitDate', todayStr);
+    localStorage.setItem('ccCurrentStreak', String(streak));
+
+    const streakText = document.getElementById('splashStreakText');
+    if (streakText) {
+        streakText.textContent = `${streak}-day streak`;
+    }
 }
 
 /* ==========================================================================
