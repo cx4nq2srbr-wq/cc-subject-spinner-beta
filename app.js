@@ -1,133 +1,80 @@
 /* ==========================================================================
+   CC SPINNER — MAIN APPLICATION ENGINE (app.js)
+   ==========================================================================
+   1.  Global State & Constants
+   2.  Initialization, Persistence & Navigation
+   3.  Core Spinner Engine
+   4.  Mistakes Flagging & Badges
+   5.  Audio, Haptics & Text-to-Speech
+   6.  Voiceover Audio Engine
+   7.  Extra Info Modal (Panzoom)
+   8.  Lessons Grid & Week Range Controls
+   9.  Review Mode & Quick Picker
+   10. Settings Toggles
+   11. Challenge: Review Mistakes
+   12. Challenge: Time Attack
+   13. Challenge: Map Game
+   14. Challenge: Trivia Quiz
+   15. Challenge: CC Spinner Radio
+   16. Celebration & Confetti Engine
+   17. Splash Screen & Daily Streak
+   18. Interactive Walkthrough
+   19. Contact Form, Input Bindings & PWA
+   ========================================================================== */
+
+/* ==========================================================================
    1. GLOBAL STATE & CONSTANTS
    ========================================================================== */
-let currentMode = 'spinner'; 
-
-
-function switchMode(mode) {
-    pauseRadio(); // NEW: Stops music if they navigate away!
-    stopVoiceover(); // Stop anything playing in previous tab
-const challengeIds = ['challengeContainer', 'taMenuContainer', 'taGameContainer', 'mistakeGameContainer', 'mapMenuContainer', 'mapGameContainer', 'triviaMenuContainer', 'triviaGameContainer', 'scriptureContainer', 'radioContainer'];
-    // THE FIX: Double-tap logic to return to the Focus menu
-    if (mode === 'challenge' && currentMode === 'challenge') {
-        challengeIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('active');
-        });
-        document.getElementById('challengeContainer').classList.add('active');
-        activeChallengePage = 'challengeContainer';
-        
-        // Ensure pause triggers if we back out of the game
-        if (typeof pauseTimeAttack === "function") pauseTimeAttack(); 
-        return; 
-    }
-
-    // Toggle actual main pages
-    document.getElementById('spinnerContainer').classList.toggle('active', mode === 'spinner');
-    document.getElementById('reviewContainer').classList.toggle('active', mode === 'review');
-    document.getElementById('gridContainer').classList.toggle('active', mode === 'grid');
-    document.getElementById('settingsContainer').classList.toggle('active', mode === 'settings');
-
-    if (mode === 'challenge') {
-        // THE FIX: Force clear all challenge pages first so they don't overlap!
-        challengeIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('active');
-        });
-        
-        // Reactivate the specific challenge page they left off on
-        const target = document.getElementById(activeChallengePage || 'challengeContainer');
-        if (target) target.classList.add('active');
-        
-        if (typeof resumeTimeAttack === "function") resumeTimeAttack(); // Automatically unpause!
-        
-        if (pendingTAFinish) {
-            endTimeAttack(false);
-            pendingTAFinish = false;
-        }
-    } else {
-        // Save which challenge page is currently open, then hide it
-        challengeIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el && el.classList.contains('active')) {
-                activeChallengePage = id; // Remember for later
-                el.classList.remove('active');
-            }
-        });
-        if (typeof pauseTimeAttack === "function") pauseTimeAttack(); // Automatically pause!
-    }
-
-    currentMode = mode;
-    
-    // Handle nav bar highlighting
-    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    const activeNav = document.getElementById('nav-' + mode);
-    if (activeNav) activeNav.classList.add('active');
-
-    // Run setup if needed
-    if (mode === 'review') initReviewMode();
-    if (mode === 'grid') buildGrid();
-}
-
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let isSpinning = false;
-let activeChallengePage = 'challengeContainer'; // Remembers if they were in a menu or a game
-let pendingTAFinish = false; // Flags if the timer hit 0 on another tab
-let spinHistory = [];
 
 const subjects = ["Bible", "English", "Geography", "History", "Latin", "Math", "Science", "Timeline"];
 const subjectIcons = {
-  "Bible": "📜", "English": "📖", "Geography": "🌍", "History": "⚔️",
-  "Latin": "🏛️", "Math": "🔢", "Science": "🧪", "Timeline": "⏳"
+    "Bible": "📜", "English": "📖", "Geography": "🌍", "History": "⚔️",
+    "Latin": "🏛️", "Math": "🔢", "Science": "🧪", "Timeline": "⏳"
 };
-const weeks = Array.from({length: 24}, (_, i) => i + 1);
+const weeks = Array.from({ length: 24 }, (_, i) => i + 1);
 
-// Cached DOM elements (avoids repeated lookups)
+const latinTwinGroups = [
+    [1, 2, 13, 14],  // Present Tense
+    [3, 4, 15, 16],  // Imperfect Tense
+    [5, 6, 17, 18],  // Future Tense
+    [7, 8, 19, 20],  // Perfect Tense
+    [9, 10, 21, 22], // Pluperfect Tense
+    [11, 12, 23, 24] // Future Perfect Tense
+];
+
+const challengeIds = [
+    'challengeContainer', 'taMenuContainer', 'taGameContainer',
+    'mistakeGameContainer', 'mapMenuContainer', 'mapGameContainer',
+    'triviaMenuContainer', 'triviaGameContainer', 'scriptureContainer',
+    'radioContainer'
+];
+
+// Cached Core DOM Elements
 const spinBtn = document.getElementById("spinBtn");
 const toggleBtn = document.getElementById("toggleAnswer");
 const undoBtn = document.getElementById("undoBtn");
 const promptDiv = document.getElementById("prompt");
 const ansDiv = document.getElementById("answerContent");
 
-const latinTwinGroups = [
-  [1, 2, 13, 14], // Present Tense
-  [3, 4, 15, 16], // Imperfect Tense
-  [5, 6, 17, 18], // Future Tense
-  [7, 8, 19, 20], // Perfect Tense
-  [9, 10, 21, 22], // Pluperfect Tense
-  [11, 12, 23, 24] // Future Perfect Tense
-];
+// Core App State
+let currentMode = 'spinner';
+let activeChallengePage = 'challengeContainer';
+let isSpinning = false;
+let pendingTAFinish = false;
+let spinHistory = [];
 
-/* ==========================================================================
-   2. INITIALIZATION & DATA LOADING
-   ========================================================================== */
-
-/* --- Persistence for the active cycle --- */
-// MUST be defined before we try to load cycle-specific data
-let currentCycle = localStorage.getItem('ccActiveCycle') ? parseInt(localStorage.getItem('ccActiveCycle')) : 2;
-
-// Cycle-specific prefix for storage
+// Active Cycle & Storage Prefix
+let currentCycle = localStorage.getItem('ccActiveCycle') ? parseInt(localStorage.getItem('ccActiveCycle'), 10) : 2;
 const getPrefix = () => `cycle${currentCycle}_`;
 
-/* --- Persistence Helpers --- */
-// We load the data based on the prefix of the current cycle
-let gridState = localStorage.getItem(getPrefix() + 'ccSpinnerProgress') ? 
-                JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress')) : {};
+// Cycle-Specific Persisted State
+let gridState = JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress') || '{}');
+let allowedWeeks = JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks') || '[]');
+let blockedWeeks = JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks') || '[]');
+let blockedSubjects = JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects') || '[]');
+let mistakesBank = JSON.parse(localStorage.getItem(getPrefix() + 'ccMistakesBank') || '[]');
 
-let allowedWeeks = localStorage.getItem(getPrefix() + 'ccAllowedWeeks') ? 
-                JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks')) : [];
-
-let blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ? 
-                JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks')) : [];
-
-let blockedSubjects = localStorage.getItem(getPrefix() + 'ccBlockedSubjects') ? 
-                JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects')) : [];
-
-let mistakesBank = localStorage.getItem(getPrefix() + 'ccMistakesBank') ? 
-                JSON.parse(localStorage.getItem(getPrefix() + 'ccMistakesBank')) : [];
-
-let savedMaxWeek = localStorage.getItem(getPrefix() + 'ccMaxWeek');
-let savedMinWeek = localStorage.getItem(getPrefix() + 'ccMinWeek');
 // Global User Settings
 let userSettings = Object.assign({
     muted: false,
@@ -135,53 +82,107 @@ let userSettings = Object.assign({
     turbo: false,
     autoReveal: false,
     darkMode: false,
-    selectedVoice: "" // NEW: Stores the chosen voice name
-}, JSON.parse(localStorage.getItem('appSettings')) || {});
+    selectedVoice: ""
+}, JSON.parse(localStorage.getItem('appSettings') || '{}'));
 
-function anyLessonsRemaining() {
-  const maxWeek = getMaxWeek();
-  return subjects.some(s =>
-    weeks.some(w => ((w <= maxWeek || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w]))
-  );
+// Active Lesson Data Pointer (loaded from data.js)
+let lessonData = cycleData[currentCycle];
+
+if (Object.keys(gridState).length === 0) {
+    subjects.forEach(s => {
+        gridState[s] = {};
+        weeks.forEach(w => gridState[s][w] = true);
+    });
 }
 
+
+/* ==========================================================================
+   2. INITIALIZATION, PERSISTENCE & NAVIGATION
+   ========================================================================== */
 function saveSettings() {
     localStorage.setItem('appSettings', JSON.stringify(userSettings));
 }
 
-// Initialize lessonData pointer (Loaded from data.js)
-let lessonData = cycleData[currentCycle];
+function saveToDevice() {
+    const prefix = getPrefix();
+    localStorage.setItem(prefix + 'ccSpinnerProgress', JSON.stringify(gridState));
+    localStorage.setItem(prefix + 'ccMaxWeek', String(getMaxWeek()));
+    localStorage.setItem(prefix + 'ccMinWeek', String(getMinWeek()));
+    localStorage.setItem(prefix + 'ccAllowedWeeks', JSON.stringify(allowedWeeks));
+    localStorage.setItem(prefix + 'ccBlockedWeeks', JSON.stringify(blockedWeeks));
+    localStorage.setItem(prefix + 'ccBlockedSubjects', JSON.stringify(blockedSubjects));
+    localStorage.setItem(prefix + 'ccMistakesBank', JSON.stringify(mistakesBank));
+}
 
-// Initialize gridState if empty for this cycle
-if (Object.keys(gridState).length === 0) {
-  subjects.forEach(s => {
-    gridState[s] = {};
-    weeks.forEach(w => gridState[s][w] = true);
-  });
+function switchMode(mode) {
+    pauseRadio();
+    stopVoiceover();
+
+    // Double-tap Focus tab to return to the Focus menu
+    if (mode === 'challenge' && currentMode === 'challenge') {
+        challengeIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('active');
+        });
+        document.getElementById('challengeContainer').classList.add('active');
+        activeChallengePage = 'challengeContainer';
+        pauseTimeAttack();
+        return;
+    }
+
+    // Toggle main views
+    document.getElementById('spinnerContainer').classList.toggle('active', mode === 'spinner');
+    document.getElementById('reviewContainer').classList.toggle('active', mode === 'review');
+    document.getElementById('gridContainer').classList.toggle('active', mode === 'grid');
+    document.getElementById('settingsContainer').classList.toggle('active', mode === 'settings');
+
+    if (mode === 'challenge') {
+        challengeIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('active');
+        });
+
+        const target = document.getElementById(activeChallengePage || 'challengeContainer');
+        if (target) target.classList.add('active');
+
+        resumeTimeAttack();
+
+        if (pendingTAFinish) {
+            endTimeAttack(false);
+            pendingTAFinish = false;
+        }
+    } else {
+        challengeIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.classList.contains('active')) {
+                activeChallengePage = id;
+                el.classList.remove('active');
+            }
+        });
+        pauseTimeAttack();
+    }
+
+    currentMode = mode;
+
+    // Update bottom nav highlight
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    const activeNav = document.getElementById('nav-' + mode);
+    if (activeNav) activeNav.classList.add('active');
+
+    if (mode === 'review') initReviewMode();
+    if (mode === 'grid') buildGrid();
 }
 
 function changeCycle(cycleNum) {
-    currentCycle = parseInt(cycleNum);
+    currentCycle = parseInt(cycleNum, 10);
     localStorage.setItem('ccActiveCycle', currentCycle);
-    
-    // Update data pointer
     lessonData = cycleData[currentCycle];
-    
-    // Reload cycle-specific progress
-    gridState = localStorage.getItem(getPrefix() + 'ccSpinnerProgress') ? 
-                   JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress')) : {};
-    
-    allowedWeeks = localStorage.getItem(getPrefix() + 'ccAllowedWeeks') ? 
-                   JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks')) : [];
-                   
-    blockedWeeks = localStorage.getItem(getPrefix() + 'ccBlockedWeeks') ? 
-                   JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks')) : [];
-    
-    blockedSubjects = localStorage.getItem(getPrefix() + 'ccBlockedSubjects') ? 
-                   JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects')) : [];               
-    
-    mistakesBank = localStorage.getItem(getPrefix() + 'ccMistakesBank') ? 
-                   JSON.parse(localStorage.getItem(getPrefix() + 'ccMistakesBank')) : [];
+
+    gridState = JSON.parse(localStorage.getItem(getPrefix() + 'ccSpinnerProgress') || '{}');
+    allowedWeeks = JSON.parse(localStorage.getItem(getPrefix() + 'ccAllowedWeeks') || '[]');
+    blockedWeeks = JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedWeeks') || '[]');
+    blockedSubjects = JSON.parse(localStorage.getItem(getPrefix() + 'ccBlockedSubjects') || '[]');
+    mistakesBank = JSON.parse(localStorage.getItem(getPrefix() + 'ccMistakesBank') || '[]');
 
     if (Object.keys(gridState).length === 0) {
         subjects.forEach(s => {
@@ -190,261 +191,263 @@ function changeCycle(cycleNum) {
         });
     }
 
-    // Update UI
     const cycleMax = localStorage.getItem(getPrefix() + 'ccMaxWeek');
     const cycleMin = localStorage.getItem(getPrefix() + 'ccMinWeek');
-    setMaxWeek(cycleMax ? parseInt(cycleMax) : 24);
-    setMinWeek(cycleMin ? parseInt(cycleMin) : 1);
+    setMaxWeek(cycleMax ? parseInt(cycleMax, 10) : 24);
+    setMinWeek(cycleMin ? parseInt(cycleMin, 10) : 1);
+
     buildGrid();
-    if (currentMode === 'review') {
-        updateReviewDisplay();
-    }
+    if (currentMode === 'review') updateReviewDisplay();
     updateFlagUI();
     updateScriptureButtonUI();
 }
 
-// --- Window Load & App Config ---
-window.onload = function() {
-  document.getElementById('cyclePicker').value = currentCycle;
+function updateVh() {
+    document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+}
+window.addEventListener('resize', updateVh);
+updateVh();
 
-  const splashPicker = document.getElementById('splashCyclePicker');
-  if (splashPicker) splashPicker.value = currentCycle;
+window.onload = function () {
+    document.getElementById('cyclePicker').value = currentCycle;
+    const splashPicker = document.getElementById('splashCyclePicker');
+    if (splashPicker) splashPicker.value = currentCycle;
 
-  lessonData = cycleData[currentCycle];
-  
-  updateSettingsIcons();
+    lessonData = cycleData[currentCycle];
+    updateSettingsIcons();
 
-  if (!navigator.vibrate) {
-      const hapticsRow = document.getElementById('row-haptics');
-      if (hapticsRow) hapticsRow.style.display = 'none';
-  }
+    if (!navigator.vibrate) {
+        const hapticsRow = document.getElementById('row-haptics');
+        if (hapticsRow) hapticsRow.style.display = 'none';
+    }
 
-  const prefix = getPrefix();
-  const savedMax = localStorage.getItem(prefix + 'ccMaxWeek');
-  const savedMin = localStorage.getItem(prefix + 'ccMinWeek');
-  if (savedMax) setMaxWeek(parseInt(savedMax, 10)); else setMaxWeek(24);
-  if (savedMin) setMinWeek(parseInt(savedMin, 10)); else setMinWeek(1);
+    const prefix = getPrefix();
+    const savedMax = localStorage.getItem(prefix + 'ccMaxWeek');
+    const savedMin = localStorage.getItem(prefix + 'ccMinWeek');
+    setMaxWeek(savedMax ? parseInt(savedMax, 10) : 24);
+    setMinWeek(savedMin ? parseInt(savedMin, 10) : 1);
 
-  document.getElementById('toggleAnswer').disabled = true;
-  buildGrid();
-  
-  setupAudioButtons(); // NEW: Initializes the long-press logic!
+    document.getElementById('toggleAnswer').disabled = true;
+    buildGrid();
+    setupAudioButtons();
 
-  // Initial Vibration Feedback
-  if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
+    checkStandaloneMode();
 
-  checkStandaloneMode();
+    // Sync version tag from manifest
+    fetch('manifest.json')
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(m => {
+            const verEl = document.getElementById('app-version');
+            if (verEl) verEl.innerText = m.version;
+        })
+        .catch(() => {
+            const verEl = document.getElementById('app-version');
+            if (verEl) verEl.innerText = "not available";
+        });
 
-  // Sync Version Tag
-  fetch('manifest.json') 
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(m => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = m.version; })
-    .catch(() => { if(document.getElementById('app-version')) document.getElementById('app-version').innerText = "not available"; });
     updateDailyStreak();
     updateFlagUI();
     updateScriptureButtonUI();
-    // Reveal the splash screen ONLY after the layout and fonts have completely settled
+
+    // Reveal splash screen after layout and fonts settle
     setTimeout(() => {
         const splashInner = document.getElementById('splashContentWrapper');
         if (splashInner) splashInner.style.opacity = '1';
     }, 250);
 };
 
-function saveToDevice() {
-  const prefix = getPrefix();
-  localStorage.setItem(prefix + 'ccSpinnerProgress', JSON.stringify(gridState));
-  localStorage.setItem(prefix + 'ccMaxWeek', String(getMaxWeek()));
-  localStorage.setItem(prefix + 'ccMinWeek', String(getMinWeek()));
-  localStorage.setItem(prefix + 'ccAllowedWeeks', JSON.stringify(allowedWeeks));
-  localStorage.setItem(prefix + 'ccBlockedWeeks', JSON.stringify(blockedWeeks));
-  localStorage.setItem(prefix + 'ccBlockedSubjects', JSON.stringify(blockedSubjects));
-  localStorage.setItem(prefix + 'ccMistakesBank', JSON.stringify(mistakesBank));
-}
-
-function updateVh() { 
-  document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px'); 
-}
-window.addEventListener('resize', updateVh);
-updateVh();
 
 /* ==========================================================================
-   3. CORE APP LOGIC (Spinning & Toggling)
+   3. CORE SPINNER ENGINE
    ========================================================================== */
+function setSpinLabel(label) {
+    if (!spinBtn) return;
+    const tp = spinBtn.querySelector('textPath');
+    if (tp) tp.textContent = String(label).toUpperCase();
+    else spinBtn.textContent = String(label).toUpperCase();
+}
+
+function getSpinLabel() {
+    if (!spinBtn) return '';
+    const tp = spinBtn.querySelector('textPath');
+    if (tp) return (tp.textContent || '').trim();
+    return (spinBtn.textContent || '').trim();
+}
+
+function isWeekActive(w, minLimit, maxLimit) {
+    return ((w >= minLimit && w <= maxLimit) || allowedWeeks.includes(w)) && !blockedWeeks.includes(w);
+}
 
 function spinBoth() {
     stopVoiceover();
-  if (getSpinLabel().toLowerCase() === 'done') { finishLesson(); return; }
+    if (getSpinLabel().toLowerCase() === 'done') {
+        finishLesson();
+        return;
+    }
+    if (isSpinning) return;
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
 
-  if (isSpinning) return;
-  if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15); 
+    const minWeekLimit = getMinWeek();
+    const maxWeekLimit = getMaxWeek();
 
-  const minWeekLimit = getMinWeek();
-  const maxWeekLimit = getMaxWeek();
-  
-  const availableSubjects = subjects.filter(s =>
-    !blockedSubjects.includes(s) && weeks.some(w => (w >= minWeekLimit && w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w])
-  );
+    const availableSubjects = subjects.filter(s =>
+        !blockedSubjects.includes(s) &&
+        weeks.some(w => isWeekActive(w, minWeekLimit, maxWeekLimit) && gridState[s][w])
+    );
 
-  if (availableSubjects.length === 0) {
+    if (availableSubjects.length === 0) {
         setSpinLabel('Done');
-        const sBtn = document.getElementById('spinBtn');
-        if(sBtn) {
-            sBtn.style.background = '#22c55e';
-            sBtn.style.fontSize = '14px';
+        if (spinBtn) {
+            spinBtn.style.background = '#22c55e';
+            spinBtn.style.fontSize = '14px';
         }
-        finishLesson(); // Pop the confetti and show the Reset box!
+        finishLesson();
         return;
     }
 
-  // Lock State
-  isSpinning = true;
-  spinBtn.disabled = true;
-  toggleBtn.disabled = true;
-  undoBtn.disabled = true;
-  
-  document.getElementById('flagBtn').disabled = true;
+    // Lock UI during spin
+    isSpinning = true;
+    spinBtn.disabled = true;
+    toggleBtn.disabled = true;
+    undoBtn.disabled = true;
+    document.getElementById('flagBtn').disabled = true;
 
-  toggleBtn.textContent = '▼ Show Answer ▼';
-  document.getElementById('answerContainer').classList.remove('open');
-  ansDiv.textContent = "";
-  promptDiv.textContent = "";
+    toggleBtn.textContent = '▼ Show Answer ▼';
+    document.getElementById('answerContainer').classList.remove('open');
+    ansDiv.textContent = "";
+    promptDiv.textContent = "";
 
-  const subject = availableSubjects[Math.floor(Math.random() * availableSubjects.length)];
-  const availableWeeks = weeks.filter(w => ((w >= minWeekLimit && w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[subject][w]);
-  const week = availableWeeks[Math.floor(Math.random() * availableWeeks.length)];
-  const subIdx = subjects.indexOf(subject);
-  const weekIdx = weeks.indexOf(week);
+    const subject = availableSubjects[Math.floor(Math.random() * availableSubjects.length)];
+    const availableWeeks = weeks.filter(w => isWeekActive(w, minWeekLimit, maxWeekLimit) && gridState[subject][w]);
+    const week = availableWeeks[Math.floor(Math.random() * availableWeeks.length)];
+    const subIdx = subjects.indexOf(subject);
+    const weekIdx = weeks.indexOf(week);
 
-  // Apply Turbo Math
-  const spinDuration = userSettings.turbo ? 500 : 2000;
-  const weekDuration = userSettings.turbo ? 700 : 2800;
-  const finalTimeout = userSettings.turbo ? 750 : 2600;
+    const spinDuration = userSettings.turbo ? 500 : 2000;
+    const weekDuration = userSettings.turbo ? 700 : 2800;
+    const finalTimeout = userSettings.turbo ? 750 : 2600;
 
-  spinReel("subjectReel", availableSubjects, subject, spinDuration);
-  spinReel("weekReel", availableWeeks.map(w => "Week " + w), "Week " + week, weekDuration);
+    spinReel("subjectReel", availableSubjects, subject, spinDuration);
+    spinReel("weekReel", availableWeeks.map(w => "Week " + w), "Week " + week, weekDuration);
 
-  // Finalize Spin
-  setTimeout(() => {
-    try {
-      playSound(988, 'triangle', 0.1, 0.03);
-      setTimeout(() => playSound(1319, 'triangle', 0.2, 0.03), 100);
-      if (userSettings.haptics && navigator.vibrate) navigator.vibrate([40, 30, 40]);
-      
-      const lesson = lessonData[subject][week];
+    setTimeout(() => {
+        try {
+            playSound(988, 'triangle', 0.1, 0.03);
+            setTimeout(() => playSound(1319, 'triangle', 0.2, 0.03), 100);
+            if (userSettings.haptics && navigator.vibrate) navigator.vibrate([40, 30, 40]);
 
-      spinHistory.push({
-        subject: subject, 
-        week: week,
-        sIdx: subIdx,   
-        wIdx: weekIdx,   
-        prompt: lesson.p,
-        answer: lesson.a
-      });
-      // Cap the history at 50 spins just to be safe with memory
-      if (spinHistory.length > 50) spinHistory.shift();
+            const lesson = lessonData[subject][week];
 
-      promptDiv.textContent = lesson.p;
-      ansDiv.innerHTML = lesson.a;
-      
-      prepVoiceover(subject, week, 'audioBtnMain');
-      prepInfoBtn(subject, week, 'infoBtnMain');
+            spinHistory.push({
+                subject,
+                week,
+                sIdx: subIdx,
+                wIdx: weekIdx,
+                prompt: lesson.p,
+                answer: lesson.a
+            });
+            if (spinHistory.length > 50) spinHistory.shift();
 
-      // Handle Auto-Reveal
-      if (userSettings.autoReveal) {
-          document.getElementById('answerContainer').classList.add('open');
-          toggleBtn.textContent = '▲ Hide Answer ▲';
-      }
-      
-      gridState[subject][week] = false;
-      
-      if (subject === "Latin" && currentCycle === 2) {
-        const group = latinTwinGroups.find(g => g.includes(week));
-        if (group) {
-          group.forEach(twinWeek => {
-            gridState["Latin"][twinWeek] = false;
-          });
+            promptDiv.textContent = lesson.p;
+            ansDiv.innerHTML = lesson.a;
+
+            prepVoiceover(subject, week, 'audioBtnMain');
+            prepInfoBtn(subject, week, 'infoBtnMain');
+
+            if (userSettings.autoReveal) {
+                document.getElementById('answerContainer').classList.add('open');
+                toggleBtn.textContent = '▲ Hide Answer ▲';
+            }
+
+            gridState[subject][week] = false;
+
+            if (subject === "Latin" && currentCycle === 2) {
+                const group = latinTwinGroups.find(g => g.includes(week));
+                if (group) {
+                    group.forEach(twinWeek => {
+                        gridState["Latin"][twinWeek] = false;
+                    });
+                }
+            }
+
+            saveToDevice();
+            buildGrid();
+
+            const remaining = subjects.some(s =>
+                !blockedSubjects.includes(s) &&
+                weeks.some(w => isWeekActive(w, minWeekLimit, maxWeekLimit) && gridState[s][w])
+            );
+            if (!remaining) {
+                setSpinLabel('Done');
+                spinBtn.style.background = '#22c55e';
+                spinBtn.style.fontSize = '14px';
+            }
+        } catch (e) {
+            console.error("Spin Error:", e);
+            promptDiv.textContent = "Spinning error. Please try again!";
+        } finally {
+            isSpinning = false;
+            spinBtn.disabled = false;
+            toggleBtn.disabled = false;
+            undoBtn.disabled = false;
+            updateFlagUI();
         }
-      }
-
-      saveToDevice();
-      buildGrid(); 
-      
-      const remaining = subjects.some(s =>
-        !blockedSubjects.includes(s) && weeks.some(w => ((w >= minWeekLimit && w <= maxWeekLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w)) && gridState[s][w])
-      );
-      if (!remaining) {
-        setSpinLabel('Done');
-        spinBtn.style.background = '#22c55e';
-        spinBtn.style.fontSize = '14px';
-      }
-      
-    } catch (e) {
-      console.error("Spin Error:", e);
-      document.getElementById('prompt').textContent = "Spinning error. Please try again!";
-    } finally {
-      isSpinning = false;
-      spinBtn.disabled = false;
-      toggleBtn.disabled = false;
-      undoBtn.disabled = false;
-      updateFlagUI();
-    }
-  }, finalTimeout);
+    }, finalTimeout);
 }
 
 function spinReel(reelId, items, finalValue, duration = 2400) {
-  const reel = document.getElementById(reelId);
-  reel.innerHTML = "";
+    const reel = document.getElementById(reelId);
+    reel.innerHTML = "";
 
-  const sequence = [];
-  for (let i = 0; i < 20; i++) sequence.push(items[Math.floor(Math.random() * items.length)]);
-  sequence.push(finalValue);
+    const sequence = [];
+    for (let i = 0; i < 20; i++) {
+        sequence.push(items[Math.floor(Math.random() * items.length)]);
+    }
+    sequence.push(finalValue);
 
-  const fragment = document.createDocumentFragment();
+    const fragment = document.createDocumentFragment();
+    sequence.forEach(text => {
+        const div = document.createElement("div");
+        div.textContent = subjectIcons[text] ? `${subjectIcons[text]} ${text}` : text;
+        fragment.appendChild(div);
+    });
+    reel.appendChild(fragment);
 
-  sequence.forEach(text => {
-    const div = document.createElement("div");
-    div.textContent = subjectIcons[text] ? `${subjectIcons[text]} ${text}` : text;
-    fragment.appendChild(div);
-  });
+    const totalMove = (sequence.length - 1) * 80;
+    let currentTick = 0;
 
-  reel.appendChild(fragment);
+    function playNextTick() {
+        if (!isSpinning || currentTick >= sequence.length) return;
+        playSound(400, 'triangle', 0.02, 0.01);
+        currentTick++;
+        const nextDelay = (duration / sequence.length) * (1 + Math.pow(currentTick / sequence.length, 2) * 10);
+        if (currentTick < sequence.length) setTimeout(playNextTick, nextDelay);
+    }
+    playNextTick();
 
-  const totalMove = (sequence.length - 1) * 80;
-  let currentTick = 0;
-  
-  function playNextTick() {
-    if (!isSpinning || currentTick >= sequence.length) return;
-    playSound(400, 'triangle', 0.02, 0.01); 
-    currentTick++;
-    const nextDelay = (duration / sequence.length) * (1 + Math.pow(currentTick / sequence.length, 2) * 10);
-    if (currentTick < sequence.length) setTimeout(playNextTick, nextDelay);
-  }
-  playNextTick();
-
-  reel.style.transition = "none";
-  reel.style.transform = "translateY(0)";
-  setTimeout(() => {
-    reel.style.transition = `transform ${duration}ms cubic-bezier(0.15, 0, 0.15, 1)`;
-    reel.style.transform = `translateY(-${totalMove}px)`;
-  }, 20);
+    reel.style.transition = "none";
+    reel.style.transform = "translateY(0)";
+    setTimeout(() => {
+        reel.style.transition = `transform ${duration}ms cubic-bezier(0.15, 0, 0.15, 1)`;
+        reel.style.transform = `translateY(-${totalMove}px)`;
+    }, 20);
 }
 
 function toggleAnswer() {
-  if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-  const container = document.getElementById('answerContainer');
-  const btn = document.getElementById('toggleAnswer');
-  container.classList.toggle('open');
-  btn.textContent = container.classList.contains('open') ? '▲ Hide Answer ▲' : '▼ Show Answer ▼';
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    const container = document.getElementById('answerContainer');
+    container.classList.toggle('open');
+    toggleBtn.textContent = container.classList.contains('open') ? '▲ Hide Answer ▲' : '▼ Show Answer ▼';
 }
 
 function undoLastSpin() {
     stopVoiceover();
     if (spinHistory.length === 0) return;
 
-    // 1. Pop the most recent spin off the top of the stack
     const undoneSpin = spinHistory.pop();
 
-    // 2. Put it back on the grid
+    // Restore lesson on the grid
     gridState[undoneSpin.subject][undoneSpin.week] = true;
     if (undoneSpin.subject === "Latin" && currentCycle === 2) {
         const group = latinTwinGroups.find(g => g.includes(undoneSpin.week));
@@ -454,11 +457,10 @@ function undoLastSpin() {
             });
         }
     }
-    
-    // 3. Rewind the UI to the NEW top of the stack (if there is one)
+
+    // Rewind UI to previous spin if available
     if (spinHistory.length > 0) {
-        const prev = spinHistory[spinHistory.length - 1]; 
-        
+        const prev = spinHistory[spinHistory.length - 1];
         const subReel = document.getElementById('subjectReel');
         const weekReel = document.getElementById('weekReel');
 
@@ -476,90 +478,82 @@ function undoLastSpin() {
             weekReel.appendChild(div);
         });
 
-        void subReel.offsetHeight; 
-        
+        void subReel.offsetHeight;
+
         prepVoiceover(prev.subject, prev.week, 'audioBtnMain');
         prepInfoBtn(prev.subject, prev.week, 'infoBtnMain');
 
         subReel.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
         weekReel.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-
         subReel.style.transform = `translateY(-${prev.sIdx * 80}px)`;
         weekReel.style.transform = `translateY(-${prev.wIdx * 80}px)`;
 
-        document.getElementById('prompt').textContent = prev.prompt;
-        document.getElementById('answerContent').innerHTML = prev.answer;
-        
-        document.getElementById('undoBtn').disabled = false; // Still history left!
+        promptDiv.textContent = prev.prompt;
+        ansDiv.innerHTML = prev.answer;
+        undoBtn.disabled = false;
     } else {
-        // The stack is completely empty!
         document.getElementById('subjectReel').style.transform = `translateY(0)`;
         document.getElementById('weekReel').style.transform = `translateY(0)`;
-        document.getElementById('prompt').textContent = "Spin to start!";
-        document.getElementById('answerContent').textContent = "";
-        
+        promptDiv.textContent = "Spin to start!";
+        ansDiv.textContent = "";
+
         const audioBtn = document.getElementById('audioBtnMain');
         if (audioBtn) audioBtn.style.display = 'none';
-        
         const infoBtn = document.getElementById('infoBtnMain');
         if (infoBtn) infoBtn.style.display = 'none';
-        
-        document.getElementById('undoBtn').disabled = true; // Disable button
+
+        undoBtn.disabled = true;
     }
 
-    // 4. Reset UI state
     document.getElementById('answerContainer').classList.remove('open');
-    
-    // 5. Re-enable spin button in case they undid from a "Done" state
-    spinBtn.style.background = "var(--primary)"; 
+    spinBtn.style.background = "var(--primary)";
     spinBtn.disabled = false;
     setSpinLabel('SPIN');
     spinBtn.style.fontSize = '';
-    
+
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(40);
     updateFlagUI();
     saveToDevice();
     buildGrid();
 }
 
-// NEW: Flagging Logic
+
+/* ==========================================================================
+   4. MISTAKES FLAGGING & BADGES
+   ========================================================================== */
 function toggleMistake() {
     const currentSpin = spinHistory.length > 0 ? spinHistory[spinHistory.length - 1] : null;
     if (!currentSpin) return;
-    
+
     const idx = mistakesBank.findIndex(m => m.subject === currentSpin.subject && m.week === currentSpin.week);
-    
     if (idx !== -1) {
-        mistakesBank.splice(idx, 1); 
+        mistakesBank.splice(idx, 1);
     } else {
-        mistakesBank.push({ subject: currentSpin.subject, week: currentSpin.week }); 
-        if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 50, 20]); 
+        mistakesBank.push({ subject: currentSpin.subject, week: currentSpin.week });
+        if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 50, 20]);
     }
-    
+
     saveToDevice();
     updateFlagUI();
 }
 
-// NEW: Flagging from Review Mode
 function toggleMistakeFromReview() {
     const subject = subjects[reviewSubjectIdx];
     const week = weeks[reviewWeekIdx];
 
     const idx = mistakesBank.findIndex(m => m.subject === subject && m.week === week);
-    
     if (idx !== -1) {
         mistakesBank.splice(idx, 1);
     } else {
         mistakesBank.push({ subject, week });
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 50, 20]);
     }
-    
+
     saveToDevice();
-    updateFlagUI(); 
+    updateFlagUI();
 }
 
 function updateFlagUI() {
-    // 1. Sync Main Spinner Flag
     const flagBtn = document.getElementById('flagBtn');
     if (flagBtn) {
         const currentSpin = spinHistory.length > 0 ? spinHistory[spinHistory.length - 1] : null;
@@ -573,7 +567,6 @@ function updateFlagUI() {
         }
     }
 
-    // 2. Sync Review Mode Flag
     const reviewFlagBtn = document.getElementById('reviewFlagBtn');
     if (reviewFlagBtn) {
         const subject = subjects[reviewSubjectIdx];
@@ -582,7 +575,6 @@ function updateFlagUI() {
         reviewFlagBtn.classList.toggle('flagged', isFlagged);
     }
 
-    // 3. Sync Notification Badges
     updateBadgeCounts();
 }
 
@@ -590,164 +582,120 @@ function updateBadgeCounts() {
     const count = mistakesBank.length;
     const navBadge = document.getElementById('navMistakeBadge');
     const menuBadge = document.getElementById('menuMistakeBadge');
-    
+
     if (navBadge) {
         const oldText = navBadge.textContent;
         navBadge.textContent = count;
         navBadge.style.display = count > 0 ? 'flex' : 'none';
-        
-        // Satisfying "pop" animation when the number goes up!
-        if (count > parseInt(oldText || 0)) {
+
+        if (count > parseInt(oldText || 0, 10)) {
             navBadge.style.transform = 'scale(1.4)';
             setTimeout(() => navBadge.style.transform = 'scale(1)', 200);
         }
     }
-    
+
     if (menuBadge) {
         menuBadge.textContent = count;
         menuBadge.style.display = count > 0 ? 'flex' : 'none';
     }
 }
 
-/* ==========================================================================
-   4. AUDIO & HAPTICS HELPERS
-   ========================================================================== */
 
+/* ==========================================================================
+   5. AUDIO, HAPTICS & TEXT-TO-SPEECH
+   ========================================================================== */
 function playSound(freq, type, duration, vol) {
-  if (userSettings.muted) return;
-  
-  // Aggressively wake up the audio context if the device put it to sleep
-  if (audioCtx.state !== 'running') audioCtx.resume();
-  
-  const osc = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-  
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  
-  gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  
-  osc.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-  
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
+    if (userSettings.muted) return;
+    if (audioCtx.state !== 'running') audioCtx.resume();
+
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
 }
-  
+
 function playVictoryChime() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
-    
+
     const notes = [
-        { freq: 261.63, delay: 0,   duration: 0.1 },  // C4
-        { freq: 392.00, delay: 80,  duration: 0.1 },  // G4
-        { freq: 523.25, delay: 160, duration: 0.1 },  // C5
-        { freq: 659.25, delay: 240, duration: 0.1 },  // E5
-        { freq: 784.00, delay: 320, duration: 0.2 },  // G5
+        { freq: 261.63, delay: 0,   duration: 0.1 },
+        { freq: 392.00, delay: 80,  duration: 0.1 },
+        { freq: 523.25, delay: 160, duration: 0.1 },
+        { freq: 659.25, delay: 240, duration: 0.1 },
+        { freq: 784.00, delay: 320, duration: 0.2 },
 
-        { freq: 349.23, delay: 500, duration: 0.15 }, // F4
-        { freq: 440.00, delay: 500, duration: 0.15 }, // A4
-        { freq: 523.25, delay: 500, duration: 0.15 }, // C5
+        { freq: 349.23, delay: 500, duration: 0.15 },
+        { freq: 440.00, delay: 500, duration: 0.15 },
+        { freq: 523.25, delay: 500, duration: 0.15 },
 
-        { freq: 392.00, delay: 650, duration: 0.15 }, // G4
-        { freq: 493.88, delay: 650, duration: 0.15 }, // B4
-        { freq: 587.33, delay: 650, duration: 0.15 }, // D5
+        { freq: 392.00, delay: 650, duration: 0.15 },
+        { freq: 493.88, delay: 650, duration: 0.15 },
+        { freq: 587.33, delay: 650, duration: 0.15 },
 
-        { freq: 261.63, delay: 850, duration: 0.8 },  // C4 (Bass)
-        { freq: 392.00, delay: 850, duration: 0.8 },  // G4
-        { freq: 523.25, delay: 850, duration: 0.8 },  // C5
-        { freq: 659.25, delay: 850, duration: 0.8 },  // E5
-        { freq: 784.00, delay: 850, duration: 0.8 }   // G5 (Melody peak)
+        { freq: 261.63, delay: 850, duration: 0.8 },
+        { freq: 392.00, delay: 850, duration: 0.8 },
+        { freq: 523.25, delay: 850, duration: 0.8 },
+        { freq: 659.25, delay: 850, duration: 0.8 },
+        { freq: 784.00, delay: 850, duration: 0.8 }
     ];
-    
-    notes.forEach(note => {
-        setTimeout(() => {
-            playSound(note.freq, 'triangle', note.duration, 0.04);
-        }, note.delay);
-    });
-}
-  
-function setSpinLabel(label) {
-  const spinBtn = document.getElementById('spinBtn');
-  if (!spinBtn) return;
-  const tp = spinBtn.querySelector('textPath');
-  if (tp) tp.textContent = String(label).toUpperCase();
-  else spinBtn.textContent = String(label).toUpperCase();
-}
 
-function getSpinLabel() {
-  const spinBtn = document.getElementById('spinBtn');
-  if (!spinBtn) return '';
-  const tp = spinBtn.querySelector('textPath');
-  if (tp) return (tp.textContent || '').trim();
-  return (spinBtn.textContent || '').trim();
+    notes.forEach(note => {
+        setTimeout(() => playSound(note.freq, 'triangle', note.duration, 0.04), note.delay);
+    });
 }
 
 let availableVoices = [];
 
-// NEW: Dynamically build the dropdown list when the device loads its voices
 function populateVoiceList() {
     if (!('speechSynthesis' in window)) return;
-    
+
     availableVoices = window.speechSynthesis.getVoices();
     const voicePicker = document.getElementById('voicePicker');
     if (!voicePicker) return;
-    
-    // Keep the default option
-    voicePicker.innerHTML = '<option value="">Auto-Select Best Voice</option>';
-    
-    // 1. Filter for English voices
+
+    voicePicker.innerHTML = '<option value="">Auto-Select</option>';
+
     const englishVoices = availableVoices.filter(v => v.lang.startsWith('en'));
-    
-    // 2. Define our "Top Shelf" natural voices
     const premiumNames = ['Samantha', 'Daniel', 'Moira', 'Karen', 'Siri', 'Alex', 'Premium', 'Enhanced', 'Google US English'];
-    
     const seenNames = new Set();
     const uniqueVoices = [];
-    
-    // 3. Clean names and remove duplicates!
+
     englishVoices.forEach(voice => {
-        // Strip out Apple and Google's messy regional tags
-        let displayName = voice.name.replace(/ \(English \(United States\)\)/g, '')
-                                    .replace(/ \(en-US\)/g, '')
-                                    .replace(/ \(en-GB\)/g, '')
-                                    .replace(/ \(en-AU\)/g, '')
-                                    .replace(/ \(en-IE\)/g, '')
-                                    .trim();
-        
-        // If we haven't added this name to the list yet, keep it!
+        const displayName = voice.name
+            .replace(/ \(English \(United States\)\)/g, '')
+            .replace(/ \(en-(US|GB|AU|IE)\)/g, '')
+            .trim();
+
         if (!seenNames.has(displayName)) {
             seenNames.add(displayName);
-            uniqueVoices.push({
-                originalName: voice.name,
-                displayName: displayName
-            });
+            uniqueVoices.push({ originalName: voice.name, displayName });
         }
     });
-    
-    // 4. Sort the list: Premium voices at the top, everything else alphabetical
+
     uniqueVoices.sort((a, b) => {
         const aIsPremium = premiumNames.some(p => a.displayName.includes(p));
         const bIsPremium = premiumNames.some(p => b.displayName.includes(p));
-        
-        if (aIsPremium && !bIsPremium) return -1; // 'a' moves up
-        if (!aIsPremium && bIsPremium) return 1;  // 'b' moves up
-        
-        // If both are premium (or neither are), sort them A-Z
+        if (aIsPremium && !bIsPremium) return -1;
+        if (!aIsPremium && bIsPremium) return 1;
         return a.displayName.localeCompare(b.displayName);
     });
-    
-    // 5. Inject them into the HTML dropdown
+
     uniqueVoices.forEach(v => {
         const option = document.createElement('option');
         option.textContent = v.displayName;
         option.value = v.originalName;
-        
-        if (v.originalName === userSettings.selectedVoice) {
-            option.selected = true;
-        }
-        
+        if (v.originalName === userSettings.selectedVoice) option.selected = true;
         voicePicker.appendChild(option);
     });
 }
@@ -759,11 +707,10 @@ if ('speechSynthesis' in window) {
     }
 }
 
-// NEW: Save the voice and test it!
 function changeVoice(voiceName) {
     userSettings.selectedVoice = voiceName;
     saveSettings();
-    
+
     if (voiceName) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance("Testing new voice.");
@@ -774,248 +721,501 @@ function changeVoice(voiceName) {
 
 function speakText(text) {
     if (!text || !('speechSynthesis' in window)) return;
-    
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-    
-    // THE FIX: Wake up the OS speech engine if it booted in a sleeping/paused state!
+
+    // Wake up OS speech engine if sleeping
     window.speechSynthesis.resume();
-    window.speechSynthesis.cancel(); 
-    stopVoiceover(); 
-    
+    window.speechSynthesis.cancel();
+    stopVoiceover();
+
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9; 
-    
+    utterance.rate = 0.9;
+
     if (availableVoices.length === 0) {
         availableVoices = window.speechSynthesis.getVoices();
     }
 
     if (availableVoices.length > 0) {
         let bestVoice = null;
-        
-        // 1. Check if user manually selected a voice
         if (userSettings.selectedVoice) {
             bestVoice = availableVoices.find(v => v.name === userSettings.selectedVoice);
         }
-        
-        // 2. If no manual choice, try system default
         if (!bestVoice) {
             bestVoice = availableVoices.find(v => v.default && v.lang.startsWith('en'));
         }
-        
-        // 3. Auto-hunt for high quality
         if (!bestVoice) {
-            bestVoice = availableVoices.find(v => 
-                v.name.includes('Siri') ||              
-                v.name.includes('Premium') ||           
-                v.name.includes('Enhanced') ||          
-                v.name.includes('Google US English') || 
-                v.name === 'Alex'                       
+            bestVoice = availableVoices.find(v =>
+                v.name.includes('Siri') ||
+                v.name.includes('Premium') ||
+                v.name.includes('Enhanced') ||
+                v.name.includes('Google US English') ||
+                v.name === 'Alex'
             );
         }
-        
-        // 4. Absolute fallback
         if (!bestVoice) {
             bestVoice = availableVoices.find(v => v.lang.startsWith('en-US') || v.lang.startsWith('en'));
         }
-        
-        if (bestVoice) {
-            utterance.voice = bestVoice;
-        }
+        if (bestVoice) utterance.voice = bestVoice;
     }
-    
+
     window.speechSynthesis.speak(utterance);
 }
 
-/* ==========================================================================
-   5. GRID & LESSON MANAGEMENT
-   ========================================================================== */
-
-function buildGrid(){
-  saveToDevice();
-  const minWeek = getMinWeek();
-  const maxWeek = getMaxWeek();
-  const container = document.getElementById('gridContent');
-  const containerWidth = container ? container.clientWidth : window.innerWidth;
-  const availableForSubjects = Math.max(120, containerWidth - 48 - 12);
-  const subjectWidth = Math.max(32, Math.floor(availableForSubjects / subjects.length));
-
-  let html = `<table><colgroup><col style="width:48px">`;
-  subjects.forEach(() => { html += `<col style="width:${subjectWidth}px">`; });
-  
-  html += '</colgroup><thead><tr><th class="top-header empty-header"></th>';
-  
-  subjects.forEach(s => { 
-    // THE FIX: Check the new blockedSubjects memory bank!
-    const isSubjectBlocked = blockedSubjects.includes(s);
-    const subClass = isSubjectBlocked ? "subjectHeader top-header blocked-header" : "subjectHeader top-header";
-    
-    html += `<th class="${subClass}" onclick="toggleSubject('${s}')"><span>${s}</span></th>`; 
-  });
-  html += '</tr></thead><tbody>';
-
-  weeks.forEach(w => {
-    const isAllowed = allowedWeeks.includes(w);
-    const isBlocked = blockedWeeks.includes(w);
-    const numClass = isBlocked ? 'blocked' : (isAllowed ? 'active' : '');
-    html += `<tr><th class="week-header" data-week="${w}"><button class="weekNumber ${numClass}" data-week="${w}">${w}</button></th>`;
-    
-    subjects.forEach(s => {
-      let cls = "";
-      
-      // THE FIX: Grays out cells if they are below the Min or above the Max!
-      if (isBlocked || blockedSubjects.includes(s) || !gridState[s][w] || ((w < minWeek || w > maxWeek) && !isAllowed)) {
-          cls = "completed";
-      } else if (isAllowed && (w < minWeek || w > maxWeek)) {
-          cls = "override";
-      }
-      
-      html += `<td class="${cls}" onclick="toggleCell('${s}',${w})"></td>`;
-    });
-    html += '</tr>';
-  });
-  document.getElementById('grid').innerHTML = html + '</tbody></table>';
-  bindWeekHeaderHandlers();
-}
-
-function toggleCell(s,w){ gridState[s][w] = !gridState[s][w]; buildGrid(); }
-
-// THE FIX: Add or remove from the memory bank instead of deleting gridState progress!
-function toggleSubject(s){ 
-    const idx = blockedSubjects.indexOf(s);
-    if (idx !== -1) blockedSubjects.splice(idx, 1);
-    else blockedSubjects.push(s);
-    saveToDevice();
-    buildGrid(); 
-}
-
-function toggleWeek(w){ const anyOn = subjects.some(s => gridState[s][w]); subjects.forEach(s => gridState[s][w] = !anyOn); buildGrid(); }
-
-function toggleAllowWeek(e, w) {
-  const maxWeek = getMaxWeek();
-  const blockedIdx = blockedWeeks.indexOf(w);
-  if (blockedIdx !== -1) blockedWeeks.splice(blockedIdx, 1);
-  else {
-    const allowedIdx = allowedWeeks.indexOf(w);
-    if (allowedIdx !== -1) allowedWeeks.splice(allowedIdx, 1);
-    else (w > maxWeek) ? allowedWeeks.push(w) : blockedWeeks.push(w);
-  }
-  saveToDevice(); buildGrid();
-}
-
-function bindWeekHeaderHandlers(){
-  document.querySelectorAll('#grid th.week-header').forEach(th => th.addEventListener('click', ()=> toggleWeek(Number(th.getAttribute('data-week')))));
-  document.querySelectorAll('#grid .weekNumber').forEach(btn => btn.addEventListener('click', function(e){ e.stopPropagation(); toggleAllowWeek(e, Number(this.getAttribute('data-week'))); }));
-}
 
 /* ==========================================================================
-   6. QUICK SETTINGS TOGGLES
+   6. VOICEOVER AUDIO ENGINE
    ========================================================================== */
+const voiceAudio = new Audio();
+let activeVoiceBtn = null;
+let currentVoiceUrl = "";
 
-function updateSettingsIcons() {
-    // THE FIX: Use strict booleans (!!) so the sliders never "blindly flip"
-    document.getElementById('switch-sound').classList.toggle('on', !userSettings.muted);
-    document.getElementById('switch-haptics').classList.toggle('on', !!userSettings.haptics);
-    document.getElementById('switch-turbo').classList.toggle('on', !!userSettings.turbo);
-    document.getElementById('switch-reveal').classList.toggle('on', !!userSettings.autoReveal);
-    document.getElementById('switch-dark').classList.toggle('on', !!userSettings.darkMode);
+voiceAudio.addEventListener('ended', () => {
+    if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
+    activeVoiceBtn = null;
+});
 
-    if(!navigator.vibrate) {
-        const hapticsRow = document.getElementById('row-haptics');
-        if(hapticsRow) hapticsRow.style.display = 'none';
+function prepVoiceover(subject, week, btnId) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+
+    btn.style.display = 'none';
+    btn.classList.remove('has-full');
+    setAudioIcon(btnId, false);
+
+    const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const url = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.m4a`;
+    const fullUrl = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}-full.m4a`;
+
+    fetch(url, { method: 'HEAD' })
+        .then(res => {
+            if (res.ok) {
+                btn.dataset.url = url;
+                btn.style.display = 'flex';
+                setAudioIcon(btnId, false);
+
+                // Check for extended full song
+                fetch(fullUrl, { method: 'HEAD' })
+                    .then(resFull => {
+                        if (resFull.ok) {
+                            btn.dataset.fullUrl = fullUrl;
+                            btn.classList.add('has-full');
+                        }
+                    })
+                    .catch(() => {});
+            }
+        })
+        .catch(() => {});
+}
+
+function playVoiceover(btnId, isFull) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+
+    const targetUrl = isFull ? btn.dataset.fullUrl : btn.dataset.url;
+
+    if (activeVoiceBtn === btnId && !voiceAudio.paused) {
+        voiceAudio.pause();
+        setAudioIcon(btnId, false);
+        return;
     }
 
-    document.documentElement.classList.toggle('dark-mode', !!userSettings.darkMode);
-    document.body.classList.toggle('dark-mode', !!userSettings.darkMode);
+    if (currentVoiceUrl !== targetUrl) {
+        voiceAudio.src = targetUrl;
+        currentVoiceUrl = targetUrl;
+    }
+
+    if (activeVoiceBtn && activeVoiceBtn !== btnId) {
+        setAudioIcon(activeVoiceBtn, false);
+    }
+
+    voiceAudio.play().catch(err => {
+        console.error("Audio play failed:", err);
+        if (isFull) {
+            alert("No extended song found for this week.");
+            setAudioIcon(btnId, false);
+            activeVoiceBtn = null;
+        }
+    });
+
+    activeVoiceBtn = btnId;
+    setAudioIcon(btnId, true, isFull);
 }
 
-function toggleSound() { userSettings.muted = !userSettings.muted; saveSettings(); updateSettingsIcons(); }
-function toggleTurbo() { userSettings.turbo = !userSettings.turbo; saveSettings(); updateSettingsIcons(); }
-function toggleAutoReveal() { userSettings.autoReveal = !userSettings.autoReveal; saveSettings(); updateSettingsIcons(); }
-function toggleDarkMode() { userSettings.darkMode = !userSettings.darkMode; saveSettings(); updateSettingsIcons(); }
-function toggleHaptics() { 
-    userSettings.haptics = !userSettings.haptics; 
-    saveSettings(); 
-    updateSettingsIcons(); 
-    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(15); 
+function setAudioIcon(btnId, isPlaying, isFull = false) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+
+    btn.classList.remove('playing', 'playing-regular', 'playing-full');
+
+    if (isPlaying) {
+        btn.classList.add('playing', isFull ? 'playing-full' : 'playing-regular');
+        btn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+    } else {
+        btn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+    }
 }
+
+function stopVoiceover() {
+    if (!voiceAudio.paused) {
+        voiceAudio.pause();
+        if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
+    }
+
+    if ('speechSynthesis' in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
+        window.speechSynthesis.cancel();
+        if (typeof audioCtx !== 'undefined') {
+            if (audioCtx.state !== 'running') audioCtx.resume();
+            else audioCtx.suspend().then(() => audioCtx.resume());
+        }
+    }
+}
+
+function setupAudioButtons() {
+    const audioBtns = ['audioBtnMain', 'audioBtnReview', 'audioBtnMistake', 'audioBtnTA'];
+
+    audioBtns.forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+
+        btn.removeAttribute('onclick');
+
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+        let hasMoved = false;
+
+        const start = (e) => {
+            e.stopPropagation();
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            startY = clientY;
+            currentY = clientY;
+            isDragging = true;
+            hasMoved = false;
+            btn.style.transition = 'none';
+        };
+
+        const move = (e) => {
+            if (!isDragging) return;
+            currentY = e.touches ? e.touches[0].clientY : e.clientY;
+            const deltaY = currentY - startY;
+
+            if (btn.classList.contains('has-full') && deltaY > 0) {
+                e.preventDefault();
+                const pullDistance = Math.min(deltaY * 0.4, 30);
+                btn.style.transform = `translateY(calc(-50% + ${pullDistance}px)) scale(0.95)`;
+                hasMoved = true;
+            }
+        };
+
+        const end = (e) => {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+            isDragging = false;
+
+            btn.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            btn.style.transform = 'translateY(-50%) scale(1)';
+
+            const deltaY = currentY - startY;
+            if (btn.classList.contains('has-full') && deltaY > 15 && hasMoved) {
+                if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 30, 20]);
+                playVoiceover(id, true);
+            } else {
+                playVoiceover(id, false);
+            }
+        };
+
+        const cancel = () => {
+            isDragging = false;
+            btn.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            btn.style.transform = 'translateY(-50%) scale(1)';
+        };
+
+        btn.addEventListener('touchstart', start, { passive: false });
+        btn.addEventListener('touchmove', move, { passive: false });
+        btn.addEventListener('touchend', end, { passive: false });
+        btn.addEventListener('touchcancel', cancel);
+
+        btn.addEventListener('mousedown', start);
+        btn.addEventListener('mousemove', move);
+        btn.addEventListener('mouseup', end);
+        btn.addEventListener('mouseleave', cancel);
+    });
+}
+
 
 /* ==========================================================================
-   7. WEEK SELECTION & RESET DIALOGS
+   7. EXTRA INFO MODAL (PANZOOM)
    ========================================================================== */
+let infoPanZoom = null;
 
+function prepInfoBtn(subject, week, btnId) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+
+    btn.style.display = 'none';
+
+    const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const jpgUrl = `extra/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.jpg`;
+    const pngUrl = `extra/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.png`;
+
+    fetch(jpgUrl, { method: 'HEAD' })
+        .then(res => {
+            if (res.ok) {
+                btn.dataset.url = jpgUrl;
+                btn.style.display = 'flex';
+            } else {
+                return fetch(pngUrl, { method: 'HEAD' }).then(resPng => {
+                    if (resPng.ok) {
+                        btn.dataset.url = pngUrl;
+                        btn.style.display = 'flex';
+                    }
+                });
+            }
+        })
+        .catch(() => {});
+}
+
+function openInfoModal(e, btnId) {
+    if (e) e.stopPropagation();
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+
+    const btn = document.getElementById(btnId);
+    if (!btn || !btn.dataset.url) return;
+
+    const contentDiv = document.getElementById('infoModalContent');
+    contentDiv.innerHTML = "";
+
+    const img = document.createElement('img');
+    img.id = 'infoImage';
+    img.src = btn.dataset.url;
+    img.draggable = false;
+    img.style.userSelect = 'none';
+    img.style.webkitUserSelect = 'none';
+    img.style.webkitTouchCallout = 'none';
+    img.style.position = 'absolute';
+    img.style.top = '0';
+    img.style.left = '0';
+    img.style.transformOrigin = '0 0';
+    img.style.touchAction = 'none';
+
+    contentDiv.appendChild(img);
+    document.getElementById('infoModalOverlay').style.display = 'block';
+
+    img.onload = () => {
+        const wrapperWidth = contentDiv.clientWidth;
+        const wrapperHeight = contentDiv.clientHeight;
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        const wrapperRatio = wrapperWidth / wrapperHeight;
+
+        let targetWidth, targetHeight;
+        if (imgRatio > wrapperRatio) {
+            targetWidth = wrapperWidth;
+            targetHeight = wrapperWidth / imgRatio;
+        } else {
+            targetHeight = wrapperHeight;
+            targetWidth = wrapperHeight * imgRatio;
+        }
+
+        img.style.width = targetWidth + 'px';
+        img.style.height = targetHeight + 'px';
+
+        if (infoPanZoom) infoPanZoom.dispose();
+        infoPanZoom = panzoom(img, {
+            maxZoom: 6,
+            minZoom: 1,
+            bounds: true,
+            boundsPadding: 0.05
+        });
+
+        infoPanZoom.moveTo((wrapperWidth - targetWidth) / 2, (wrapperHeight - targetHeight) / 2);
+    };
+}
+
+function closeInfoModal() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+
+    if (infoPanZoom) {
+        infoPanZoom.dispose();
+        infoPanZoom = null;
+    }
+
+    document.getElementById('infoModalOverlay').style.display = 'none';
+    document.getElementById('infoModalContent').innerHTML = "";
+}
+
+
+/* ==========================================================================
+   8. LESSONS GRID & WEEK RANGE CONTROLS
+   ========================================================================== */
 function getMinWeek() {
-  const el = document.getElementById("minWeekDisplay");
-  return Math.max(1, Math.min(24, parseInt(el.textContent, 10) || 1));
+    const el = document.getElementById("minWeekDisplay");
+    return Math.max(1, Math.min(24, parseInt(el.textContent, 10) || 1));
 }
+
 function setMinWeek(n) {
-  // Min week can never go higher than the current Max week
-  document.getElementById("minWeekDisplay").textContent = String(Math.max(1, Math.min(getMaxWeek(), Number(n) || 1)));
+    document.getElementById("minWeekDisplay").textContent = String(Math.max(1, Math.min(getMaxWeek(), Number(n) || 1)));
 }
+
 function increaseMinWeek() { setMinWeek(getMinWeek() + 1); buildGrid(); }
 function decreaseMinWeek() { setMinWeek(getMinWeek() - 1); buildGrid(); }
 
 function getMaxWeek() {
-  const el = document.getElementById("maxWeekDisplay");
-  return Math.max(1, Math.min(24, parseInt(el.textContent, 10) || 24));
+    const el = document.getElementById("maxWeekDisplay");
+    return Math.max(1, Math.min(24, parseInt(el.textContent, 10) || 24));
 }
+
 function setMaxWeek(n) {
-  // Max week can never go lower than the current Min week
-  document.getElementById("maxWeekDisplay").textContent = String(Math.max(getMinWeek(), Math.min(24, Number(n) || 1)));
+    document.getElementById("maxWeekDisplay").textContent = String(Math.max(getMinWeek(), Math.min(24, Number(n) || 1)));
 }
+
 function increaseMaxWeek() { setMaxWeek(getMaxWeek() + 1); buildGrid(); }
 function decreaseMaxWeek() { setMaxWeek(getMaxWeek() - 1); buildGrid(); }
 
+function buildGrid() {
+    saveToDevice();
+    const minWeek = getMinWeek();
+    const maxWeek = getMaxWeek();
+    const container = document.getElementById('gridContent');
+    const containerWidth = container ? container.clientWidth : window.innerWidth;
+    const availableForSubjects = Math.max(120, containerWidth - 48 - 12);
+    const subjectWidth = Math.max(32, Math.floor(availableForSubjects / subjects.length));
+
+    let html = `<table><colgroup><col style="width:48px">`;
+    subjects.forEach(() => { html += `<col style="width:${subjectWidth}px">`; });
+    html += '</colgroup><thead><tr><th class="top-header empty-header"></th>';
+
+    subjects.forEach(s => {
+        const isSubjectBlocked = blockedSubjects.includes(s);
+        const subClass = isSubjectBlocked ? "subjectHeader top-header blocked-header" : "subjectHeader top-header";
+        html += `<th class="${subClass}" onclick="toggleSubject('${s}')"><span>${s}</span></th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    weeks.forEach(w => {
+        const isAllowed = allowedWeeks.includes(w);
+        const isBlocked = blockedWeeks.includes(w);
+        const numClass = isBlocked ? 'blocked' : (isAllowed ? 'active' : '');
+        html += `<tr><th class="week-header" data-week="${w}"><button class="weekNumber ${numClass}" data-week="${w}">${w}</button></th>`;
+
+        subjects.forEach(s => {
+            let cls = "";
+            if (isBlocked || blockedSubjects.includes(s) || !gridState[s][w] || ((w < minWeek || w > maxWeek) && !isAllowed)) {
+                cls = "completed";
+            } else if (isAllowed && (w < minWeek || w > maxWeek)) {
+                cls = "override";
+            }
+            html += `<td class="${cls}" onclick="toggleCell('${s}',${w})"></td>`;
+        });
+        html += '</tr>';
+    });
+
+    document.getElementById('grid').innerHTML = html + '</tbody></table>';
+    bindWeekHeaderHandlers();
+}
+
+function toggleCell(s, w) {
+    gridState[s][w] = !gridState[s][w];
+    buildGrid();
+}
+
+function toggleSubject(s) {
+    const idx = blockedSubjects.indexOf(s);
+    if (idx !== -1) blockedSubjects.splice(idx, 1);
+    else blockedSubjects.push(s);
+    saveToDevice();
+    buildGrid();
+}
+
+function toggleWeek(w) {
+    const anyOn = subjects.some(s => gridState[s][w]);
+    subjects.forEach(s => gridState[s][w] = !anyOn);
+    buildGrid();
+}
+
+function toggleAllowWeek(e, w) {
+    const minWeek = getMinWeek();
+    const maxWeek = getMaxWeek();
+    const blockedIdx = blockedWeeks.indexOf(w);
+
+    if (blockedIdx !== -1) {
+        blockedWeeks.splice(blockedIdx, 1);
+    } else {
+        const allowedIdx = allowedWeeks.indexOf(w);
+        if (allowedIdx !== -1) {
+            allowedWeeks.splice(allowedIdx, 1);
+        } else if (w < minWeek || w > maxWeek) {
+            allowedWeeks.push(w);
+        } else {
+            blockedWeeks.push(w);
+        }
+    }
+    saveToDevice();
+    buildGrid();
+}
+
+function bindWeekHeaderHandlers() {
+    document.querySelectorAll('#grid th.week-header').forEach(th => {
+        th.addEventListener('click', () => toggleWeek(Number(th.getAttribute('data-week'))));
+    });
+    document.querySelectorAll('#grid .weekNumber').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleAllowWeek(e, Number(this.getAttribute('data-week')));
+        });
+    });
+}
+
 function showResetConfirm() { document.getElementById('resetConfirmOverlay').style.display = 'flex'; }
 function hideResetConfirm() { document.getElementById('resetConfirmOverlay').style.display = 'none'; }
-
 function resetGrid() { showResetConfirm(); }
 
 function resetGridConfirmed() {
-  isSpinning = false;
-  hideResetConfirm();
-  spinHistory = []; // NEW: Clear the undo stack!
-  subjects.forEach(s => {
-    gridState[s] = {};
-    weeks.forEach(w => gridState[s][w] = true);
-  });
-  allowedWeeks = [];
-  blockedWeeks = [];
-  blockedSubjects = [];
-  saveToDevice();
-  buildGrid();
-  
-  spinBtn.style.background = "var(--primary)"; 
-  spinBtn.disabled = false;
-  setSpinLabel('SPIN');
-  spinBtn.style.fontSize = '';
-  
-  document.getElementById('prompt').textContent = "Cycle " + currentCycle;
-  document.getElementById('answerContent').textContent = ""; 
-  document.getElementById('answerContainer').classList.remove('open');
-  document.getElementById('toggleAnswer').disabled = true;
+    isSpinning = false;
+    hideResetConfirm();
+    spinHistory = [];
+
+    subjects.forEach(s => {
+        gridState[s] = {};
+        weeks.forEach(w => gridState[s][w] = true);
+    });
+    allowedWeeks = [];
+    blockedWeeks = [];
+    blockedSubjects = [];
+    saveToDevice();
+    buildGrid();
+
+    spinBtn.style.background = "var(--primary)";
+    spinBtn.disabled = false;
+    setSpinLabel('SPIN');
+    spinBtn.style.fontSize = '';
+
+    promptDiv.textContent = "Cycle " + currentCycle;
+    ansDiv.textContent = "";
+    document.getElementById('answerContainer').classList.remove('open');
+    toggleBtn.disabled = true;
 }
 
+
 /* ==========================================================================
-   8. Review Mode Logic
+   9. REVIEW MODE & QUICK PICKER
    ========================================================================== */
-let reviewSubjectIdx = localStorage.getItem('reviewSubjectIdx') ? parseInt(localStorage.getItem('reviewSubjectIdx')) : 0;
-let reviewWeekIdx = localStorage.getItem('reviewWeekIdx') ? parseInt(localStorage.getItem('reviewWeekIdx')) : 0;
+let reviewSubjectIdx = localStorage.getItem('reviewSubjectIdx') ? parseInt(localStorage.getItem('reviewSubjectIdx'), 10) : 0;
+let reviewWeekIdx = localStorage.getItem('reviewWeekIdx') ? parseInt(localStorage.getItem('reviewWeekIdx'), 10) : 0;
+let currentPickerType = '';
 
 function initReviewMode() {
     updateReviewDisplay();
 }
 
-// Direction is 1 (Next) or -1 (Prev)
 function changeReviewSubject(dir) {
-    // Math logic to perfectly loop around the array if they go past the ends
     reviewSubjectIdx = (reviewSubjectIdx + dir + subjects.length) % subjects.length;
-    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
     updateReviewDisplay();
 }
 
 function changeReviewWeek(dir) {
     reviewWeekIdx = (reviewWeekIdx + dir + weeks.length) % weeks.length;
-    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
     updateReviewDisplay();
 }
 
@@ -1025,21 +1225,15 @@ function updateReviewDisplay() {
     const week = weeks[reviewWeekIdx];
     const lesson = lessonData[subject][week];
 
-    // Update Text Labels
     document.getElementById('reviewSubjectLabel').innerHTML = `${subjectIcons[subject]} ${subject}`;
     document.getElementById('reviewWeekLabel').textContent = `Week ${week}`;
-
-    // Update Card Content
     document.getElementById('reviewPrompt').textContent = lesson.p;
     document.getElementById('reviewAnswerContent').innerHTML = lesson.a;
 
     prepVoiceover(subject, week, 'audioBtnReview');
     prepInfoBtn(subject, week, 'infoBtnReview');
-    updateFlagUI(); // Ensure flag color updates when scrolling!
+    updateFlagUI();
 }
-
-// --- Quick Picker Modal Logic ---
-let currentPickerType = '';
 
 function openPicker(type) {
     currentPickerType = type;
@@ -1071,12 +1265,10 @@ function openPicker(type) {
     } else if (type === 'taMinutes') {
         title.textContent = 'Select Minutes';
         grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(60px, 1fr))';
-        
-        // Find out what is currently selected on the wheel
         const scroll = document.getElementById('taMinuteScroll');
         const currentIdx = Math.round(scroll.scrollTop / 80);
 
-        for(let i = 1; i <= 60; i++) {
+        for (let i = 1; i <= 60; i++) {
             const btn = document.createElement('button');
             btn.className = `picker-btn ${i - 1 === currentIdx ? 'selected' : ''}`;
             btn.textContent = i;
@@ -1086,8 +1278,6 @@ function openPicker(type) {
     } else if (type === 'triviaCount') {
         title.textContent = 'Select Amount';
         grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(80px, 1fr))';
-        
-        // Find out what is currently selected on the wheel
         const scroll = document.getElementById('triviaCountScroll');
         const currentIdx = Math.round(scroll.scrollTop / 80);
 
@@ -1099,7 +1289,7 @@ function openPicker(type) {
             grid.appendChild(btn);
         });
     }
-    
+
     overlay.style.display = 'flex';
 }
 
@@ -1119,279 +1309,48 @@ function selectPickerItem(idx) {
     } else if (currentPickerType === 'triviaCount') {
         document.getElementById('triviaCountScroll').scrollTo({ top: idx * 80, behavior: 'smooth' });
     }
-    
-    if(userSettings.haptics && navigator.vibrate) navigator.vibrate(20);
+
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(20);
     closePicker();
 }
 
+
 /* ==========================================================================
-   9. Finish / Confetti Helpers
+   10. SETTINGS TOGGLES
    ========================================================================== */
-let confettiAnimationId = null;
-let confettiParticles = null;
-let confettiResizeHandler = null;
-let isConfettiStopping = false; 
+function updateSettingsIcons() {
+    document.getElementById('switch-sound').classList.toggle('on', !userSettings.muted);
+    document.getElementById('switch-haptics').classList.toggle('on', !!userSettings.haptics);
+    document.getElementById('switch-turbo').classList.toggle('on', !!userSettings.turbo);
+    document.getElementById('switch-reveal').classList.toggle('on', !!userSettings.autoReveal);
+    document.getElementById('switch-dark').classList.toggle('on', !!userSettings.darkMode);
 
-function finishLesson() {
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
-    playVictoryChime(); 
-    showDoneOverlay();
+    if (!navigator.vibrate) {
+        const hapticsRow = document.getElementById('row-haptics');
+        if (hapticsRow) hapticsRow.style.display = 'none';
+    }
+
+    document.documentElement.classList.toggle('dark-mode', !!userSettings.darkMode);
+    document.body.classList.toggle('dark-mode', !!userSettings.darkMode);
 }
 
-function showDoneOverlay() {
-    const overlay = document.getElementById('doneOverlay');
-    if (!overlay) return;
-    
-    overlay.style.background = 'rgba(0,0,0,0.45)';
-    overlay.style.pointerEvents = 'auto';
-    const box = overlay.querySelector('.doneBox');
-    if (box) box.style.display = 'block';
-
-    overlay.style.display = 'flex';
-    
-    startConfetti();
+function toggleSound() { userSettings.muted = !userSettings.muted; saveSettings(); updateSettingsIcons(); }
+function toggleTurbo() { userSettings.turbo = !userSettings.turbo; saveSettings(); updateSettingsIcons(); }
+function toggleAutoReveal() { userSettings.autoReveal = !userSettings.autoReveal; saveSettings(); updateSettingsIcons(); }
+function toggleDarkMode() { userSettings.darkMode = !userSettings.darkMode; saveSettings(); updateSettingsIcons(); }
+function toggleHaptics() {
+    userSettings.haptics = !userSettings.haptics;
+    saveSettings();
+    updateSettingsIcons();
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
 }
 
-function hideDoneOverlay() {
-    isConfettiStopping = true;
-    const overlay = document.getElementById('doneOverlay');
-    const box = overlay.querySelector('.doneBox');
-    
-    if (box) box.style.display = 'none';
-    overlay.style.background = 'transparent';
-    overlay.style.pointerEvents = 'none'; 
-}
-
-function startConfetti(canvasId = 'confettiCanvas') {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    isConfettiStopping = false;
-
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-    }
-    resize();
-    confettiResizeHandler = resize;
-    window.addEventListener('resize', confettiResizeHandler);
-
-    // THE FIX: The Randomizer!
-    const styles = ['confetti', 'fireworks', 'emojis'];
-    const activeStyle = styles[Math.floor(Math.random() * styles.length)];
-    
-    const colors = ['#ef4444','#f97316','#f59e0b','#22c55e','#06b6d4','#6366f1','#ec4899'];
-    const emojiList = ['📜', '📖', '🌍', '⚔️', '🏛️', '🔢', '🧪', '⏳'];
-    const parts = [];
-
-    // Pre-load particles for Confetti and Emojis
-    if (activeStyle === 'confetti' || activeStyle === 'emojis') {
-        for (let i = 0; i < 100; i++) {
-            parts.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * -canvas.height,
-                vx: (Math.random() - 0.5) * 4,
-                vy: Math.random() * 3 + 2,
-                r: Math.random() * 8 + 4,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                emoji: emojiList[Math.floor(Math.random() * emojiList.length)],
-                size: Math.random() * 20 + 20,
-                rot: Math.random() * 360,
-                vr: (Math.random() - 0.5) * 10
-            });
-        }
-    }
-
-    function frame() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        if (activeStyle === 'confetti') {
-            for (let p of parts) {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += 0.02; // Gravity
-                p.rot += p.vr;
-                
-                ctx.save();
-                ctx.translate(p.x, p.y);
-                ctx.rotate(p.rot * Math.PI / 180);
-                ctx.fillStyle = p.color;
-                ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.6);
-                ctx.restore();
-
-                if (p.y > canvas.height + 20) {
-                    if (!isConfettiStopping) {
-                        p.y = -10;
-                        p.x = Math.random() * canvas.width;
-                        p.vy = Math.random() * 3 + 2;
-                    }
-                }
-            }
-            if (isConfettiStopping && parts.every(p => p.y > canvas.height + 20)) { stopConfetti(canvasId); return; }
-        
-        } else if (activeStyle === 'emojis') {
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            for (let p of parts) {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += 0.02; // Gravity
-                p.rot += p.vr;
-
-                ctx.save();
-                ctx.translate(p.x, p.y);
-                ctx.rotate(p.rot * Math.PI / 180);
-                ctx.font = `${p.size}px Arial`;
-                ctx.fillText(p.emoji, 0, 0);
-                ctx.restore();
-
-                if (p.y > canvas.height + 40) {
-                    if (!isConfettiStopping) {
-                        p.y = -40;
-                        p.x = Math.random() * canvas.width;
-                        p.vy = Math.random() * 3 + 2;
-                    }
-                }
-            }
-            if (isConfettiStopping && parts.every(p => p.y > canvas.height + 40)) { stopConfetti(canvasId); return; }
-        
-        } else if (activeStyle === 'fireworks') {
-            ctx.globalCompositeOperation = 'lighter';
-            
-            // Randomly spawn new firework bursts
-            if (Math.random() < 0.06 && !isConfettiStopping) {
-                const bx = Math.random() * canvas.width;
-                const by = Math.random() * (canvas.height * 0.5); // Explode in the top half of the screen
-                const fColor = colors[Math.floor(Math.random() * colors.length)];
-                for (let i = 0; i < 40; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = Math.random() * 5 + 2;
-                    parts.push({
-                        x: bx, y: by,
-                        vx: Math.cos(angle) * speed,
-                        vy: Math.sin(angle) * speed,
-                        color: fColor,
-                        alpha: 1,
-                        decay: Math.random() * 0.015 + 0.015,
-                        r: Math.random() * 3 + 1
-                    });
-                }
-            }
-
-            for (let i = parts.length - 1; i >= 0; i--) {
-                let p = parts[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.vy += 0.05; // Gravity
-                p.vx *= 0.94; // Air friction slows the explosion down
-                p.alpha -= p.decay; // Fade out over time
-
-                if (p.alpha <= 0) {
-                    parts.splice(i, 1);
-                    continue;
-                }
-
-                ctx.globalAlpha = p.alpha;
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            
-            ctx.globalAlpha = 1; 
-            ctx.globalCompositeOperation = 'source-over'; 
-
-            if (isConfettiStopping && parts.length === 0) { stopConfetti(canvasId); return; }
-        }
-
-        confettiAnimationId = requestAnimationFrame(frame);
-    }
-    confettiAnimationId = requestAnimationFrame(frame);
-}
-
-function stopConfetti(canvasId = 'confettiCanvas') {
-    if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
-    confettiAnimationId = null;
-    confettiParticles = null;
-    
-    if (confettiResizeHandler) {
-        window.removeEventListener('resize', confettiResizeHandler);
-        confettiResizeHandler = null;
-    }
-    
-    const canvas = document.getElementById(canvasId);
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    // Only hide the Main Grid doneOverlay if we are running the main game confetti
-    if (canvasId === 'confettiCanvas') {
-        const overlay = document.getElementById('doneOverlay');
-        if (overlay) {
-            overlay.style.display = 'none';
-            overlay.style.background = 'rgba(0,0,0,0.45)';
-            overlay.style.pointerEvents = 'auto';
-            const box = overlay.querySelector('.doneBox');
-            if (box) box.style.display = 'block';
-        }
-    }
-}
 
 /* ==========================================================================
-   10. INPUT & SERVICE WORKER BINDINGS
-   ========================================================================== */
-
-function bindHoldButton(id, actionFn){
-  const el = document.getElementById(id);
-  if(!el) return;
-  let holdTimeout, holdInterval;
-  const start = (e) => { e.preventDefault(); actionFn(); holdTimeout = setTimeout(()=> holdInterval = setInterval(actionFn, 110), 350); };
-  const stop = () => { clearTimeout(holdTimeout); clearInterval(holdInterval); };
-  el.addEventListener('mousedown', start); el.addEventListener('mouseup', stop); el.addEventListener('mouseleave', stop);
-  el.addEventListener('touchstart', start, {passive:false}); el.addEventListener('touchend', stop);
-}
-
-bindHoldButton('increaseMaxWeek', increaseMaxWeek);
-bindHoldButton('decreaseMaxWeek', decreaseMaxWeek);
-bindHoldButton('increaseMinWeek', increaseMinWeek); // NEW
-bindHoldButton('decreaseMinWeek', decreaseMinWeek); // NEW
-
-// --- PWA Service Worker ---
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js').then(reg => {
-            
-            // 1. Force the phone to check for updates the millisecond the app loads
-            reg.update();
-
-            // 2. Force the phone to check for updates EVERY time you minimize and reopen the app!
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    reg.update();
-                }
-            });
-        });
-    });
-
-    // 3. Silently reload the app if the new worker just installed in the background
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-            window.location.reload();
-            refreshing = true;
-        }
-    });
-}
-
-/* ==========================================================================
-   11. CHALLENGE MODES (Review Mistakes)
+   11. CHALLENGE: REVIEW MISTAKES
    ========================================================================== */
 let mistakeQueue = [];
 let currentMistake = null;
-let isMistakeSpinning = false;
 
 function startMistakeReview() {
     if (mistakesBank.length === 0) {
@@ -1399,80 +1358,62 @@ function startMistakeReview() {
         return;
     }
 
-    // Hide challenge menu, show game
     document.getElementById('challengeContainer').classList.remove('active');
     document.getElementById('mistakeGameContainer').classList.add('active');
 
-    // Shuffle the mistakes into a fresh deck for this session
     mistakeQueue = [...mistakesBank].sort(() => Math.random() - 0.5);
-    
     spinNextMistake();
 }
 
 function exitMistakeReview() {
-    stopVoiceover(); 
+    stopVoiceover();
     document.getElementById('mistakeGameContainer').classList.remove('active');
     document.getElementById('challengeContainer').classList.add('active');
-    activeChallengePage = 'challengeContainer'; // THE FIX
+    activeChallengePage = 'challengeContainer';
 }
 
 function spinNextMistake() {
     try {
-        stopVoiceover(); 
-        
-        // 1. Check if the deck is empty
+        stopVoiceover();
+
         if (!mistakeQueue || mistakeQueue.length === 0) {
             finishMistakeReview();
             return;
         }
 
-        // 2. Pull the next card
-        currentMistake = mistakeQueue.shift(); 
-        
-        // 3. Auto-Heal: If the phone's memory saved a blank mistake, skip it!
+        currentMistake = mistakeQueue.shift();
         if (!currentMistake || !currentMistake.subject || !currentMistake.week) {
             console.warn("Skipped corrupted mistake data:", currentMistake);
-            spinNextMistake(); 
+            spinNextMistake();
             return;
         }
 
-        // 4. Update the text labels safely
         const remainingEl = document.getElementById('mistakesRemaining');
         if (remainingEl) remainingEl.textContent = `Remaining: ${mistakeQueue.length + 1}`;
-        
+
         const labelEl = document.getElementById('mistakeSubjectLabel');
         if (labelEl) labelEl.textContent = `${subjectIcons[currentMistake.subject]} ${currentMistake.subject} - Week ${currentMistake.week}`;
-        
-        // 5. Fetch the actual lesson text
+
         const lesson = lessonData[currentMistake.subject][currentMistake.week];
         if (!lesson) throw new Error("Lesson data not found for this week.");
-        
+
         document.getElementById('mistakePrompt').textContent = lesson.p;
         document.getElementById('mistakeAnswerContent').innerHTML = lesson.a;
 
-        // 6. Reset UI states
         document.getElementById('mistakeAnswerContainer').classList.remove('open');
         document.getElementById('toggleMistakeAnswer').textContent = '▼ Show Answer ▼';
+        if (userSettings.autoReveal) toggleMistakeAnswerBtn();
 
-        if (userSettings.autoReveal) {
-            toggleMistakeAnswerBtn();
-        }
-
-        // 7. Light up the buttons
         const needsWorkBtn = document.getElementById('mistakeNeedsWorkBtn');
         const correctBtn = document.getElementById('mistakeCorrectBtn');
-        
         if (needsWorkBtn) { needsWorkBtn.disabled = false; needsWorkBtn.style.opacity = '1'; }
         if (correctBtn) { correctBtn.disabled = false; correctBtn.style.opacity = '1'; }
 
-        // 8. Prep Audio
         prepVoiceover(currentMistake.subject, currentMistake.week, 'audioBtnMistake');
         prepInfoBtn(currentMistake.subject, currentMistake.week, 'infoBtnMistake');
-
     } catch (error) {
         console.error("Mistake Review Crash:", error);
         alert("Oops! A corrupted lesson got stuck in the deck. We've cleared the error, please try again.");
-        // Purge the corrupt memory bank and reset
         mistakesBank = [];
         saveToDevice();
         updateFlagUI();
@@ -1489,25 +1430,21 @@ function toggleMistakeAnswerBtn() {
 }
 
 function processMistake(isCorrect) {
-    if (isMistakeSpinning) return;
-    
     if (isCorrect) {
-        // Remove it permanently from the phone's memory
         const idx = mistakesBank.findIndex(m => m.subject === currentMistake.subject && m.week === currentMistake.week);
         if (idx !== -1) mistakesBank.splice(idx, 1);
         saveToDevice();
     } else {
-        // Shove it to the back of the queue so they have to get it right before winning!
         mistakeQueue.push(currentMistake);
     }
-    
+
     spinNextMistake();
     updateFlagUI();
 }
 
 function finishMistakeReview() {
     playVictoryChime();
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);    
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60, 30, 60]);
     document.getElementById('mistakeResultsOverlay').style.display = 'flex';
     startConfetti('mistakeConfettiCanvas');
 }
@@ -1518,8 +1455,9 @@ function closeMistakeResults() {
     exitMistakeReview();
 }
 
+
 /* ==========================================================================
-   12. CHALLENGE MODES (Time Attack)
+   12. CHALLENGE: TIME ATTACK
    ========================================================================== */
 let taTimer = null;
 let taTimeLeft = 0;
@@ -1533,36 +1471,25 @@ let isTAPaused = false;
 function openTimeAttackMenu() {
     document.getElementById('challengeContainer').classList.remove('active');
     document.getElementById('taMenuContainer').classList.add('active');
-    
+
     const reel = document.getElementById('taMinuteReel');
     if (reel.innerHTML === "") {
-        for(let i=1; i<=60; i++) {
+        for (let i = 1; i <= 60; i++) {
             const div = document.createElement("div");
             div.textContent = i;
             reel.appendChild(div);
         }
-        // Snap the wheel to 3 minutes by default
-        setTimeout(() => { document.getElementById('taMinuteScroll').scrollTo({ top: 160, behavior: 'auto' }); }, 50); 
+        setTimeout(() => {
+            document.getElementById('taMinuteScroll').scrollTo({ top: 160, behavior: 'auto' });
+        }, 50);
     }
 }
 
 function exitTimeAttackMenu() {
     document.getElementById('taMenuContainer').classList.remove('active');
     document.getElementById('challengeContainer').classList.add('active');
-    activeChallengePage = 'challengeContainer'; // THE FIX
+    activeChallengePage = 'challengeContainer';
 }
-
-function startTimeAttack() {
-    const scroll = document.getElementById('taMinuteScroll');
-    const minutes = Math.round(scroll.scrollTop / 80) + 1; 
-    
-    taTimeLeft = minutes * 60;
-    taTotalStartingTime = taTimeLeft;
-    taScoreRight = 0;
-    taScoreWrong = 0;
-    document.getElementById('taScoreRight').textContent = "0";
-    document.getElementById('taScoreWrong').textContent = "0";
-    updateTATimerUI();
 
 function pauseTimeAttack() {
     if (taTimer && taTimeLeft > 0) {
@@ -1579,12 +1506,25 @@ function resumeTimeAttack() {
     }
 }
 
+function startTimeAttack() {
+    const scroll = document.getElementById('taMinuteScroll');
+    const minutes = Math.round(scroll.scrollTop / 80) + 1;
+
+    taTimeLeft = minutes * 60;
+    taTotalStartingTime = taTimeLeft;
+    taScoreRight = 0;
+    taScoreWrong = 0;
+    document.getElementById('taScoreRight').textContent = "0";
+    document.getElementById('taScoreWrong').textContent = "0";
+    updateTATimerUI();
+
     taAvailable = [];
-    const minLimit = getMinWeek(); const maxLimit = getMaxWeek();
+    const minLimit = getMinWeek();
+    const maxLimit = getMaxWeek();
     subjects.forEach(s => {
         if (blockedSubjects.includes(s)) return;
         weeks.forEach(w => {
-            if ((w >= minLimit && w <= maxLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w]) {
+            if (isWeekActive(w, minLimit, maxLimit) && gridState[s][w]) {
                 taAvailable.push({ subject: s, week: w });
             }
         });
@@ -1597,7 +1537,7 @@ function resumeTimeAttack() {
 
     document.getElementById('taMenuContainer').classList.remove('active');
     document.getElementById('taGameContainer').classList.add('active');
-    
+
     nextTAQuestion();
     taTimer = setInterval(tickTATimer, 1000);
 }
@@ -1605,15 +1545,11 @@ function resumeTimeAttack() {
 function tickTATimer() {
     taTimeLeft--;
     updateTATimerUI();
-    
+
     if (taTimeLeft <= 0) {
         clearInterval(taTimer);
-        
-        if (currentMode === 'challenge') {
-            endTimeAttack(false); // False = Time ran out naturally
-        } else {
-            pendingTAFinish = true; 
-        }
+        if (currentMode === 'challenge') endTimeAttack(false);
+        else pendingTAFinish = true;
     }
 }
 
@@ -1626,7 +1562,7 @@ function updateTATimerUI() {
 function nextTAQuestion() {
     stopVoiceover();
     if (taAvailable.length === 0) {
-        endTimeAttack(true); // True = They cleared the board early!
+        endTimeAttack(true);
         return;
     }
 
@@ -1638,10 +1574,9 @@ function nextTAQuestion() {
     document.getElementById('taPrompt').textContent = lesson.p;
     document.getElementById('taAnswerContent').innerHTML = lesson.a;
 
-    const container = document.getElementById('taAnswerContainer');
-    container.classList.remove('open');
+    document.getElementById('taAnswerContainer').classList.remove('open');
     document.getElementById('toggleTAAnswer').textContent = '▼ Show Answer ▼';
-    
+
     prepVoiceover(taCurrent.subject, taCurrent.week, 'audioBtnTA');
     prepInfoBtn(taCurrent.subject, taCurrent.week, 'infoBtnTA');
 }
@@ -1655,50 +1590,44 @@ function toggleTAAnswerBtn() {
 }
 
 function processTA(isCorrect) {
-    if (taTimeLeft <= 0) return; 
-    
+    if (taTimeLeft <= 0) return;
+
     if (isCorrect) {
         taScoreRight++;
         document.getElementById('taScoreRight').textContent = taScoreRight;
-        
-        // Mark it complete on the grid!
         gridState[taCurrent.subject][taCurrent.week] = false;
-        
-        // Handle Latin twin weeks for cycle 2
+
         if (taCurrent.subject === "Latin" && currentCycle === 2) {
             const group = latinTwinGroups.find(g => g.includes(taCurrent.week));
             if (group) {
                 group.forEach(twinWeek => {
                     gridState["Latin"][twinWeek] = false;
-                    // Remove twin weeks from the active deck
                     taAvailable = taAvailable.filter(item => !(item.subject === "Latin" && group.includes(item.week)));
                 });
             }
         }
-        
+
         saveToDevice();
-        buildGrid(); // Update the visual grid silently in the background
-        
+        buildGrid();
     } else {
         taScoreWrong++;
         document.getElementById('taScoreWrong').textContent = taScoreWrong;
-        
+
         const idx = mistakesBank.findIndex(m => m.subject === taCurrent.subject && m.week === taCurrent.week);
         if (idx === -1) {
             mistakesBank.push({ subject: taCurrent.subject, week: taCurrent.week });
             saveToDevice();
-            updateFlagUI(); 
+            updateFlagUI();
         }
     }
-    
+
     taAvailable = taAvailable.filter(item => !(item.subject === taCurrent.subject && item.week === taCurrent.week));
-    
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
-    nextTAQuestion(); 
+    nextTAQuestion();
 }
 
 function quitTimeAttack() {
-    stopVoiceover(); 
+    stopVoiceover();
     clearInterval(taTimer);
     taTimer = null;
     isTAPaused = false;
@@ -1710,21 +1639,17 @@ function quitTimeAttack() {
 function endTimeAttack(clearedBoard = false) {
     stopVoiceover();
     clearInterval(taTimer);
-
-    taTimer = null;         
-    taTimeLeft = 0;         
+    taTimer = null;
     isTAPaused = false;
 
     playVictoryChime();
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
-    
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60, 30, 60]);
+
     const total = taScoreRight + taScoreWrong;
     const accuracy = total > 0 ? Math.round((taScoreRight / total) * 100) : 0;
-    
     const titleEl = document.getElementById('taResultsTitle');
     const subtitleEl = document.getElementById('taResultsSubtitle');
-    
-    // Handle the early Victory display
+
     if (clearedBoard) {
         const elapsed = taTotalStartingTime - taTimeLeft;
         const m = Math.floor(elapsed / 60);
@@ -1733,32 +1658,27 @@ function endTimeAttack(clearedBoard = false) {
         subtitleEl.textContent = `You finished the lesson in only ${m}:${s}!`;
         subtitleEl.style.display = 'block';
 
-        // NEW: Automatically reset the grid in the background!
         subjects.forEach(s => {
             weeks.forEach(w => gridState[s][w] = true);
         });
         saveToDevice();
         buildGrid();
-        
-        // Ensure the main spinner button resets to "SPIN" (not "DONE")
-        const mainSpinBtn = document.getElementById('spinBtn');
-        if (mainSpinBtn) {
-            mainSpinBtn.style.background = "var(--primary)"; 
-            mainSpinBtn.disabled = false;
-            setSpinLabel('SPIN');
-            mainSpinBtn.style.fontSize = '';
-        }
 
+        if (spinBtn) {
+            spinBtn.style.background = "var(--primary)";
+            spinBtn.disabled = false;
+            setSpinLabel('SPIN');
+            spinBtn.style.fontSize = '';
+        }
     } else {
         titleEl.textContent = "Time's Up!";
         subtitleEl.style.display = 'none';
     }
-    
+
+    taTimeLeft = 0;
     document.getElementById('taFinalScore').textContent = `${taScoreRight} / ${total}`;
     document.getElementById('taAccuracy').textContent = `Accuracy: ${accuracy}%`;
-    
     document.getElementById('taResultsOverlay').style.display = 'flex';
-    
     startConfetti('taConfettiCanvas');
 }
 
@@ -1767,323 +1687,13 @@ function closeTAResults() {
     document.getElementById('taResultsOverlay').style.display = 'none';
     document.getElementById('taGameContainer').classList.remove('active');
     document.getElementById('challengeContainer').classList.add('active');
-    activeChallengePage = 'challengeContainer'; // THE FIX
+    activeChallengePage = 'challengeContainer';
 }
+
 
 /* ==========================================================================
-   13. VOICEOVER AUDIO ENGINE
+   13. CHALLENGE: MAP GAME
    ========================================================================== */
-const voiceAudio = new Audio();
-let activeVoiceBtn = null;
-let currentVoiceUrl = "";
-
-voiceAudio.addEventListener('ended', () => {
-    if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
-    activeVoiceBtn = null;
-});
-
-function prepVoiceover(subject, week, btnId) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    
-    btn.style.display = 'none';
-    btn.classList.remove('has-full'); // Reset shape
-    setAudioIcon(btnId, false);
-    
-    const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const url = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.m4a`;
-    const fullUrl = `audio/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}-full.m4a`;
-
-    fetch(url, { method: 'HEAD' })
-        .then(res => {
-            if (res.ok) {
-                btn.dataset.url = url;
-                btn.style.display = 'flex'; 
-                setAudioIcon(btnId, false);
-                
-                // NEW: Background check for the full song!
-                fetch(fullUrl, { method: 'HEAD' })
-                    .then(resFull => {
-                        if (resFull.ok) {
-                            btn.dataset.fullUrl = fullUrl;
-                            btn.classList.add('has-full'); // Triggers the shape shift!
-                        }
-                    }).catch(e => { /* Ignore */ });
-            }
-        })
-        .catch(e => { /* File missing */ });
-}
-
-// NEW: Unified function handles both normal taps and long presses
-function playVoiceover(btnId, isFull) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    
-    const targetUrl = isFull ? btn.dataset.fullUrl : btn.dataset.url;
-    
-    if (activeVoiceBtn === btnId && !voiceAudio.paused) {
-        voiceAudio.pause();
-        setAudioIcon(btnId, false);
-        return;
-    }
-    
-    if (currentVoiceUrl !== targetUrl) {
-        voiceAudio.src = targetUrl;
-        currentVoiceUrl = targetUrl;
-    }
-    
-    if (activeVoiceBtn && activeVoiceBtn !== btnId) {
-        setAudioIcon(activeVoiceBtn, false);
-    }
-    
-    voiceAudio.play().catch(err => {
-        console.error("Audio play failed:", err);
-        if (isFull) {
-            alert("No extended song found for this week.");
-            setAudioIcon(btnId, false);
-            activeVoiceBtn = null;
-        }
-    });
-    
-    activeVoiceBtn = btnId;
-    setAudioIcon(btnId, true, isFull);
-}
-
-function setAudioIcon(btnId, isPlaying, isFull = false) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    
-    // Clean up previous states
-    btn.classList.remove('playing', 'playing-regular', 'playing-full');
-
-    if (isPlaying) {
-        btn.classList.add('playing');
-        
-        // Add specific classes to trigger the shape-shifting CSS
-        if (isFull) {
-            btn.classList.add('playing-full');
-        } else {
-            btn.classList.add('playing-regular');
-        }
-        
-        btn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
-    } else {
-        btn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-    }
-}
-
-function stopVoiceover() {
-    if (!voiceAudio.paused) {
-        voiceAudio.pause();
-        if (activeVoiceBtn) setAudioIcon(activeVoiceBtn, false);
-    }
-    
-    if ('speechSynthesis' in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
-        window.speechSynthesis.cancel();
-        
-        if (typeof audioCtx !== 'undefined') {
-            if (audioCtx.state !== 'running') {
-                audioCtx.resume();
-            } else {
-                audioCtx.suspend().then(() => audioCtx.resume());
-            }
-        }
-    }
-}
-
-function setupAudioButtons() {
-    const audioBtns = ['audioBtnMain', 'audioBtnReview', 'audioBtnMistake', 'audioBtnTA'];
-    
-    audioBtns.forEach(id => {
-        const btn = document.getElementById(id);
-        if (!btn) return;
-        
-        btn.removeAttribute('onclick');
-
-        let startY = 0;
-        let currentY = 0;
-        let isDragging = false;
-        let hasMoved = false;
-
-        const start = (e) => {
-            e.stopPropagation();
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            startY = clientY;
-            currentY = clientY;
-            isDragging = true;
-            hasMoved = false;
-            btn.style.transition = 'none'; // Disable transition for instant finger tracking
-        };
-
-        const move = (e) => {
-            if (!isDragging) return;
-            currentY = e.touches ? e.touches[0].clientY : e.clientY;
-            let deltaY = currentY - startY;
-
-            // Only allow dragging downward IF it has a full song attached
-            if (btn.classList.contains('has-full') && deltaY > 0) {
-                e.preventDefault(); // Stop the screen from scrolling down!
-                
-                // Add physical resistance so it feels like pulling a rubber band
-                let pullDistance = Math.min(deltaY * 0.4, 30);
-                btn.style.transform = `translateY(calc(-50% + ${pullDistance}px)) scale(0.95)`;
-                hasMoved = true;
-            }
-        };
-
-        const end = (e) => {
-            e.stopPropagation();
-            if (e.cancelable) e.preventDefault(); 
-            isDragging = false;
-            
-            // Snap back to normal centering instantly
-            btn.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            btn.style.transform = 'translateY(-50%) scale(1)';
-
-            let deltaY = currentY - startY;
-
-            // If they pulled the button down more than 15 pixels, play the Full Song!
-            if (btn.classList.contains('has-full') && deltaY > 15 && hasMoved) {
-                if (userSettings.haptics && navigator.vibrate) navigator.vibrate([20, 30, 20]);
-                playVoiceover(id, true);
-            } else {
-                // Otherwise, it was just a normal tap!
-                playVoiceover(id, false);
-            }
-        };
-
-        const cancel = () => {
-            isDragging = false;
-            btn.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            btn.style.transform = 'translateY(-50%) scale(1)';
-        };
-
-        // Bind touch events
-        btn.addEventListener('touchstart', start, { passive: false });
-        btn.addEventListener('touchmove', move, { passive: false });
-        btn.addEventListener('touchend', end, { passive: false });
-        btn.addEventListener('touchcancel', cancel);
-        
-        // Bind mouse events for testing on desktop
-        btn.addEventListener('mousedown', start);
-        btn.addEventListener('mousemove', move);
-        btn.addEventListener('mouseup', end);
-        btn.addEventListener('mouseleave', cancel);
-    });
-}
-
-/* ==========================================================================
-   EXTRA INFO ENGINE
-   ========================================================================== */
-let infoPanZoom = null; 
-
-function prepInfoBtn(subject, week, btnId) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    
-    btn.style.display = 'none';
-    
-    // THE FIX: Added subfolders for Cycle and Subject (e.g., extra/c1/math/c1-math-w1.jpg)
-    const cleanSubject = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const jpgUrl = `extra/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.jpg`;
-    const pngUrl = `extra/c${currentCycle}/${cleanSubject}/c${currentCycle}-${cleanSubject}-w${week}.png`;
-
-    fetch(jpgUrl, { method: 'HEAD' })
-        .then(res => {
-            if (res.ok) {
-                btn.dataset.url = jpgUrl;
-                btn.style.display = 'flex'; 
-            } else {
-                return fetch(pngUrl, { method: 'HEAD' }).then(resPng => {
-                    if (resPng.ok) {
-                        btn.dataset.url = pngUrl;
-                        btn.style.display = 'flex'; 
-                    }
-                });
-            }
-        })
-        .catch(e => { /* Files missing */ });
-}
-
-function openInfoModal(e, btnId) {
-    if (e) e.stopPropagation(); 
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-    
-    const btn = document.getElementById(btnId);
-    if (!btn || !btn.dataset.url) return;
-    
-    const contentDiv = document.getElementById('infoModalContent');
-    contentDiv.innerHTML = ""; 
-    
-    const img = document.createElement('img');
-    img.id = 'infoImage';
-    img.src = btn.dataset.url;
-    
-    // Anti-hijack CSS to stop iOS and Android from stealing the touch events!
-    img.draggable = false; 
-    img.style.userSelect = 'none';
-    img.style.webkitUserSelect = 'none';
-    img.style.webkitTouchCallout = 'none';
-    
-    // Absolute positioning guarantees the CSS layout engine doesn't fight the zoom math!
-    img.style.position = 'absolute';
-    img.style.top = '0';
-    img.style.left = '0';
-    img.style.transformOrigin = '0 0';
-    img.style.touchAction = 'none'; 
-    
-    contentDiv.appendChild(img);
-    // Display as a standard block, not a flexbox
-    document.getElementById('infoModalOverlay').style.display = 'block'; 
-
-    img.onload = () => {
-        const wrapperWidth = contentDiv.clientWidth;
-        const wrapperHeight = contentDiv.clientHeight;
-        const imgRatio = img.naturalWidth / img.naturalHeight;
-        const wrapperRatio = wrapperWidth / wrapperHeight;
-
-        let targetWidth, targetHeight;
-        if (imgRatio > wrapperRatio) {
-            targetWidth = wrapperWidth;
-            targetHeight = wrapperWidth / imgRatio;
-        } else {
-            targetHeight = wrapperHeight;
-            targetWidth = wrapperHeight * imgRatio;
-        }
-
-        img.style.width = targetWidth + 'px';
-        img.style.height = targetHeight + 'px';
-
-        if (infoPanZoom) infoPanZoom.dispose(); 
-        infoPanZoom = panzoom(img, {
-            maxZoom: 6,
-            minZoom: 1,
-            bounds: true,
-            boundsPadding: 0.05
-        });
-        
-        // Instantly center the map on the screen
-        infoPanZoom.moveTo((wrapperWidth - targetWidth) / 2, (wrapperHeight - targetHeight) / 2);
-    };
-}
-
-function closeInfoModal() {
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-    
-    // Safely destroy the physics engine so it doesn't glitch future popups
-    if (infoPanZoom) {
-        infoPanZoom.dispose();
-        infoPanZoom = null;
-    }
-    
-    document.getElementById('infoModalOverlay').style.display = 'none';
-    document.getElementById('infoModalContent').innerHTML = ""; 
-}
-
-/* ==========================================================================
-   14. MAP GAME LOGIC
-   ========================================================================== */
-// Our upgraded Map Database with "Coming Soon" flags!
 const mapDatabase = {
     1: [
         { id: 'c1_africa', name: 'Africa', svg: null, comingSoon: true },
@@ -2099,17 +1709,23 @@ const mapDatabase = {
     ]
 };
 
-// --- NEW: Universal Name Cleaner ---
+let mapTargets = [];
+let availableMapTargets = [];
+let currentMapTarget = null;
+let mapScoreRight = 0;
+let mapAttempts = 0;
+let mapPanZoom = null;
+let isMapProcessing = false;
+let mapPromptTimeout = null;
+let touchStartX = 0;
+let touchStartY = 0;
+let isMapTouchTracked = false;
+let lastMapClickTime = 0;
+
 function formatMapTargetName(rawId) {
-    // 1. Convert to a string and trim any accidental spaces
-    let name = String(rawId).trim();
-    
-    // 2. Aggressively search and destroy the "w3_", "W3 ", or "w03-" at the start
-    name = name.replace(/^w\d+[_\-\s]*/i, '');
-    
-    // 3. Format whatever is left into clean, capitalized words!
+    let name = String(rawId).trim().replace(/^w\d+[_\-\s]*/i, '');
     return name.split(/[_\-\s]+/)
-        .filter(word => word.length > 0) 
+        .filter(word => word.length > 0)
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
@@ -2118,30 +1734,25 @@ function openMapMenu() {
     document.getElementById('challengeContainer').classList.remove('active');
     document.getElementById('mapMenuContainer').classList.add('active');
     activeChallengePage = 'mapMenuContainer';
-    
+
     document.getElementById('mapMenuCycleDisplay').textContent = currentCycle;
-    
     const list = document.getElementById('mapSelectionList');
-    list.innerHTML = ''; // Clear old buttons
-    
+    list.innerHTML = '';
+
     const availableMaps = mapDatabase[currentCycle] || [];
-    
     if (availableMaps.length === 0) {
         list.innerHTML = `<p style="color: var(--text-muted); font-weight: bold;">Maps for Cycle ${currentCycle} coming soon!</p>`;
         return;
     }
-    
-    // Generate a button for every map in the current cycle
+
     availableMaps.forEach(mapObj => {
         const btn = document.createElement('button');
-        btn.className = 'setting-item'; 
-        
+        btn.className = 'setting-item';
+
         if (mapObj.comingSoon) {
-            // NEW: Greyed out "Coming Soon" styling
             btn.style.opacity = '0.5';
             btn.style.cursor = 'default';
-            btn.style.pointerEvents = 'none'; // Completely blocks clicks
-            
+            btn.style.pointerEvents = 'none';
             btn.innerHTML = `
                 <div class="setting-text" style="text-align: left;">
                     <h4>${mapObj.name}</h4>
@@ -2150,7 +1761,6 @@ function openMapMenu() {
                 <div style="font-size: 22px; opacity: 0.5;">🔒</div>
             `;
         } else {
-            // Normal active styling
             btn.onclick = () => startMapGame(mapObj.svg);
             btn.innerHTML = `
                 <div class="setting-text" style="text-align: left;">
@@ -2160,7 +1770,6 @@ function openMapMenu() {
                 <div style="font-size: 24px; color: var(--primary);">➔</div>
             `;
         }
-        
         list.appendChild(btn);
     });
 }
@@ -2171,29 +1780,13 @@ function exitMapMenu() {
     activeChallengePage = 'challengeContainer';
 }
 
-let mapTargets = [];
-let availableMapTargets = [];
-let currentMapTarget = null;
-let mapScoreRight = 0;
-let mapAttempts = 0;
-let mapPanZoom = null;
-let isMapDragging = false;
-let isMapProcessing = false;
-let mapPromptTimeout = null;
-let mapDragTimeout = null;
-let touchStartX = 0;
-let touchStartY = 0;
-let isMapTouchTracked = false;
-let lastMapClickTime = 0;
-
 function startMapGame(selectedMapSvg) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
 
-    // Hide the Menu, show the Game
     document.getElementById('mapMenuContainer').classList.remove('active');
     document.getElementById('mapGameContainer').classList.add('active');
     activeChallengePage = 'mapGameContainer';
-    
+
     mapScoreRight = 0;
     mapAttempts = 0;
     isMapProcessing = false;
@@ -2207,26 +1800,24 @@ function startMapGame(selectedMapSvg) {
         reminder.style.opacity = '1';
     }
 
-    // THE FIX 1: Safely shut down the old engine BEFORE destroying its HTML!
-    if (typeof mapPanZoom !== 'undefined' && mapPanZoom) {
+    if (mapPanZoom) {
         mapPanZoom.dispose();
         mapPanZoom = null;
     }
 
     const wrapper = document.getElementById('svgMapWrapper');
-    wrapper.innerHTML = selectedMapSvg; // Now it's safe to swap the map
+    wrapper.innerHTML = selectedMapSvg;
 
     wrapper.addEventListener('touchstart', hideMapReminder, { once: true });
     wrapper.addEventListener('mousedown', hideMapReminder, { once: true });
 
     if (!isMapTouchTracked) {
         wrapper.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) { 
+            if (e.touches.length === 1) {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
             }
         }, { passive: true });
-        // NEW: Track mouse clicks for testing on desktop!
         wrapper.addEventListener('mousedown', (e) => {
             touchStartX = e.clientX;
             touchStartY = e.clientY;
@@ -2240,41 +1831,34 @@ function startMapGame(selectedMapSvg) {
         const viewBox = svg.getAttribute('viewBox');
 
         if (viewBox) {
-            // Safer regex to catch any weird formatting Figma might export
             const vbParts = viewBox.match(/[\d\.]+/g);
             if (vbParts && vbParts.length >= 4) {
                 const vbWidth = parseFloat(vbParts[2]);
                 const vbHeight = parseFloat(vbParts[3]);
 
-                // THE FIX: Strip Figma's hardcoded sizes
                 svg.removeAttribute('width');
                 svg.removeAttribute('height');
 
-                // Force the SVG DOM element to perfectly match the screen's exact pixel width
                 const targetWidth = wrapper.clientWidth;
                 const targetHeight = targetWidth * (vbHeight / vbWidth);
-
                 svg.style.width = targetWidth + 'px';
                 svg.style.height = targetHeight + 'px';
 
-                // If the map is shorter than the screen, calculate the exact zoom needed to stretch it to the top/bottom!
                 if (targetHeight < wrapper.clientHeight) {
                     initialZoom = wrapper.clientHeight / targetHeight;
                 }
             }
         }
 
-        // Build the engine with the proper physics padding!
         mapPanZoom = panzoom(svg, {
             maxZoom: 6,
             minZoom: initialZoom,
             bounds: true,
-            boundsPadding: 0.05 
+            boundsPadding: 0.05
         });
-        
-        // Instantly snap to our perfect zoom
+
         mapPanZoom.zoomAbs(wrapper.clientWidth / 2, wrapper.clientHeight / 2, initialZoom);
-        mapPanZoom.moveTo(0, 0); 
+        mapPanZoom.moveTo(0, 0);
     }
 
     initMapHitboxes();
@@ -2282,7 +1866,6 @@ function startMapGame(selectedMapSvg) {
     nextMapQuestion();
 }
 
-// NEW: Helper function to gracefully fade out the reminder pill
 function hideMapReminder() {
     const reminder = document.getElementById('twoFingerReminder');
     if (reminder) {
@@ -2292,7 +1875,7 @@ function hideMapReminder() {
 }
 
 function exitMapGame() {
-    clearTimeout(mapPromptTimeout); // Stop timers if they leave early
+    clearTimeout(mapPromptTimeout);
     isMapProcessing = false;
     document.getElementById('mapGameContainer').classList.remove('active');
     document.getElementById('challengeContainer').classList.add('active');
@@ -2304,39 +1887,28 @@ function initMapHitboxes() {
     const svg = document.querySelector('#svgMapWrapper svg');
     if (!svg) return;
 
-    // Grab the current Max Week from the global Lesson Grid display
-    const maxWeekDisplay = document.getElementById('maxWeekDisplay');
-    const currentMaxWeek = maxWeekDisplay ? parseInt(maxWeekDisplay.textContent) : 24;
-
-    // Find every element in the SVG that has an ID
+    const currentMinWeek = getMinWeek();
+    const currentMaxWeek = getMaxWeek();
     const interactables = svg.querySelectorAll('[id]');
 
     interactables.forEach(el => {
         const rawId = el.getAttribute('id');
-        
         if (!rawId || rawId.startsWith('Vector') || rawId.startsWith('Group') || rawId.startsWith('mask')) return;
 
         const weekMatch = rawId.match(/^w(\d+)[_\-\s]+(.+)/i);
         if (!weekMatch) return;
 
-        // THE FIX: Instantly hide ALL correctly labeled game pieces, regardless of what week they are!
         el.style.opacity = '0';
+        const weekNum = parseInt(weekMatch[1], 10);
 
-        const weekNum = parseInt(weekMatch[1]);
-        const rawName = weekMatch[2];
-
-        // If the week is higher than our max week, disable clicks and abort!
         if (weekNum < currentMinWeek || weekNum > currentMaxWeek) {
-            el.style.pointerEvents = 'none'; // Ensures it doesn't block clicks to the base map
+            el.style.pointerEvents = 'none';
             return;
         }
 
-        // If it survived the Max Week check, add it to the game!
         mapTargets.push(rawId);
-        
         el.classList.add('map-target');
-        
-        // Add the distance-checking tap listener
+
         const handleTap = (e) => {
             let endX, endY;
             if (e.type === 'touchend' && e.changedTouches.length > 0) {
@@ -2347,20 +1919,16 @@ function initMapHitboxes() {
                 endY = e.clientY;
             }
 
-            // If the finger/mouse moved more than 10 pixels, they were scrolling! Ignore the tap.
             if (endX !== undefined && endY !== undefined) {
-                if (Math.hypot(endX - touchStartX, endY - touchStartY) > 10) return; 
+                if (Math.hypot(endX - touchStartX, endY - touchStartY) > 10) return;
             }
+            if (isMapProcessing) return;
 
-            if (isMapProcessing) return; 
-            
-            e.stopPropagation(); // Only block events AFTER they lift their finger
-            if (e.cancelable) e.preventDefault(); 
-            
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
             handleMapClick(rawId, el);
         };
 
-        // THE FIX: Removed mousedown entirely so the panzoom physics engine can catch the drag!
         el.addEventListener('mouseup', handleTap);
         el.addEventListener('touchend', handleTap, { passive: false });
     });
@@ -2368,108 +1936,81 @@ function initMapHitboxes() {
 
 function nextMapQuestion() {
     if (availableMapTargets.length === 0) {
-        finishMapGame(); 
+        finishMapGame();
         return;
     }
-    
+
     const randIdx = Math.floor(Math.random() * availableMapTargets.length);
     currentMapTarget = availableMapTargets[randIdx];
     availableMapTargets.splice(randIdx, 1);
-    
-    // --- THE GHOST TRICK LOGIC ---
+
     const overlays = ['peninsula', 'mountains', 'river', 'alps'];
-    let activeOverlay = overlays.find(o => currentMapTarget.includes(o)) || 'base';
+    const activeOverlay = overlays.find(o => currentMapTarget.includes(o)) || 'base';
 
     mapTargets.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         const isShapeOverlay = overlays.find(o => id.includes(o));
-
-        if (isShapeOverlay && isShapeOverlay !== activeOverlay) {
-            el.style.pointerEvents = 'none';
-        } else {
-            el.style.pointerEvents = 'all';
-        }
+        el.style.pointerEvents = (isShapeOverlay && isShapeOverlay !== activeOverlay) ? 'none' : 'all';
     });
-   
-    const cleanName = formatMapTargetName(currentMapTarget);
-    document.getElementById('mapPrompt').textContent = `Find: ${cleanName}`;
+
+    document.getElementById('mapPrompt').textContent = `Find: ${formatMapTargetName(currentMapTarget)}`;
 }
 
 function handleMapClick(clickedId, element) {
-    // Speed limit to prevent accidental double-taps
     const now = Date.now();
-    if (now - lastMapClickTime < 500) return; 
+    if (now - lastMapClickTime < 500 || isMapProcessing) return;
     lastMapClickTime = now;
 
-    if (isMapProcessing) return; 
-
-    // THE FIX: We only increment this exactly ONCE per tap!
     mapAttempts++;
-    
+
     if (clickedId === currentMapTarget) {
-        // CORRECT!
-        isMapProcessing = true; 
-        clearTimeout(mapPromptTimeout); 
+        isMapProcessing = true;
+        clearTimeout(mapPromptTimeout);
 
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate([30, 50, 30]);
-        
         playSound(988, 'triangle', 0.1, 0.03);
         setTimeout(() => playSound(1319, 'triangle', 0.2, 0.03), 100);
-        
+
         mapScoreRight++;
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
-        
         document.getElementById('mapPrompt').textContent = "Correct!";
 
-        element.style.transition = 'none'; 
-        element.style.opacity = '0.8';     
-        element.classList.add('flash-correct'); 
-        
+        element.style.transition = 'none';
+        element.style.opacity = '0.8';
+        element.classList.add('flash-correct');
+
         setTimeout(() => {
-            element.style.transition = 'opacity 1s ease-out'; 
-            element.style.opacity = '0'; 
+            element.style.transition = 'opacity 1s ease-out';
+            element.style.opacity = '0';
             setTimeout(() => element.classList.remove('flash-correct'), 1000);
         }, 50);
 
         mapPromptTimeout = setTimeout(() => {
-            isMapProcessing = false; 
+            isMapProcessing = false;
             nextMapQuestion();
         }, 1000);
-
     } else {
-        // WRONG!
-        clearTimeout(mapPromptTimeout); 
-
+        clearTimeout(mapPromptTimeout);
         if (userSettings.haptics && navigator.vibrate) navigator.vibrate(50);
-        playSound(200, 'triangle', 0.1, 0.05); 
-        
-        // THE FIX: The duplicate mapAttempts++ was deleted from right here!
+        playSound(200, 'triangle', 0.1, 0.05);
+
         document.getElementById('mapScoreDisplay').textContent = `Score: ${mapScoreRight} / ${mapAttempts}`;
-        
-        const cleanClickedName = formatMapTargetName(clickedId);
-        document.getElementById('mapPrompt').textContent = `Oops! That's ${cleanClickedName}. Try again!`;
-        
+        document.getElementById('mapPrompt').textContent = `Oops! That's ${formatMapTargetName(clickedId)}. Try again!`;
+
         mapPromptTimeout = setTimeout(() => {
-            const rightName = formatMapTargetName(currentMapTarget);
-            document.getElementById('mapPrompt').textContent = `Find: ${rightName}`;
+            document.getElementById('mapPrompt').textContent = `Find: ${formatMapTargetName(currentMapTarget)}`;
         }, 2000);
     }
 }
 
 function finishMapGame() {
-    // 1. Play sounds and haptics
     playVictoryChime();
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
-    
-    // 2. Calculate the math
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60, 30, 60]);
+
     const accuracy = mapAttempts > 0 ? Math.round((mapScoreRight / mapAttempts) * 100) : 0;
-    
-    // 3. Inject the math into the HTML
     document.getElementById('mapFinalScore').textContent = `${mapScoreRight} / ${mapAttempts}`;
     document.getElementById('mapAccuracy').textContent = `Accuracy: ${accuracy}%`;
-    
-    // 4. Show the overlay and pop the confetti!
     document.getElementById('mapResultsOverlay').style.display = 'flex';
     startConfetti('mapConfettiCanvas');
 }
@@ -2477,13 +2018,12 @@ function finishMapGame() {
 function closeMapResults() {
     stopConfetti('mapConfettiCanvas');
     document.getElementById('mapResultsOverlay').style.display = 'none';
-    
-    // Clean up the map game and go back to the menu!
-    exitMapGame(); 
+    exitMapGame();
 }
 
+
 /* ==========================================================================
-   15. TRIVIA GAME LOGIC
+   14. CHALLENGE: TRIVIA QUIZ
    ========================================================================== */
 let fullTriviaDeck = [];
 let triviaQueue = [];
@@ -2491,30 +2031,31 @@ let currentTrivia = null;
 let triviaScoreRight = 0;
 let triviaScoreWrong = 0;
 let isTriviaProcessing = false;
-let currentTriviaIncrements = []; // <--- NEW: Saves the list for the popup picker
+let currentTriviaIncrements = [];
 
 function openTriviaMenu() {
     document.getElementById('challengeContainer').classList.remove('active');
     document.getElementById('triviaMenuContainer').classList.add('active');
     activeChallengePage = 'triviaMenuContainer';
 
-    // 1. Calculate all available questions
     fullTriviaDeck = [];
-    const minLimit = getMinWeek(); const maxLimit = getMaxWeek();
+    const minLimit = getMinWeek();
+    const maxLimit = getMaxWeek();
 
     if (typeof customTriviaBank !== 'undefined') {
         customTriviaBank.forEach(trivia => {
             if (trivia.cycle === currentCycle) {
                 const s = trivia.subject;
                 const w = trivia.week;
-                if ((w >= minLimit && w <= maxLimit || allowedWeeks.includes(w)) && !blockedWeeks.includes(w) && gridState[s][w]) {
+                if (!blockedSubjects.includes(s) &&
+                    isWeekActive(w, minLimit, maxLimit) &&
+                    gridState[s] && gridState[s][w]) {
                     fullTriviaDeck.push(trivia);
                 }
             }
         });
     }
 
-    // 2. Populate the Reel
     const reel = document.getElementById('triviaCountReel');
     reel.innerHTML = "";
 
@@ -2526,22 +2067,20 @@ function openTriviaMenu() {
     }
 
     const maxQ = fullTriviaDeck.length;
-    currentTriviaIncrements = []; // <--- NEW: Reset the global list
-    
-    // Create increments of 5 up to the max
-    for (let i = 5; i < maxQ; i += 5) {
-        currentTriviaIncrements.push(i);
-    }
+    currentTriviaIncrements = [];
+    for (let i = 5; i < maxQ; i += 5) currentTriviaIncrements.push(i);
     currentTriviaIncrements.push(`All (${maxQ})`);
 
-    currentTriviaIncrements.forEach((val) => {
+    currentTriviaIncrements.forEach(val => {
         const div = document.createElement("div");
         div.textContent = val;
         div.dataset.val = (typeof val === 'number') ? val : maxQ;
         reel.appendChild(div);
     });
 
-    setTimeout(() => { document.getElementById('triviaCountScroll').scrollTo({ top: 0, behavior: 'auto' }); }, 50); 
+    setTimeout(() => {
+        document.getElementById('triviaCountScroll').scrollTo({ top: 0, behavior: 'auto' });
+    }, 50);
 }
 
 function exitTriviaMenu() {
@@ -2557,15 +2096,10 @@ function startTriviaGame() {
         return;
     }
 
-    // 1. Read the wheel to see how many questions they selected
     const scroll = document.getElementById('triviaCountScroll');
     const selectedIndex = Math.round(scroll.scrollTop / 80);
     const reelDivs = document.getElementById('triviaCountReel').children;
-    
-    let amount = fullTriviaDeck.length;
-    if (reelDivs[selectedIndex]) {
-        amount = parseInt(reelDivs[selectedIndex].dataset.val);
-    }
+    const amount = reelDivs[selectedIndex] ? parseInt(reelDivs[selectedIndex].dataset.val, 10) : fullTriviaDeck.length;
 
     document.getElementById('triviaMenuContainer').classList.remove('active');
     document.getElementById('triviaGameContainer').classList.add('active');
@@ -2575,10 +2109,8 @@ function startTriviaGame() {
     triviaScoreWrong = 0;
     document.getElementById('triviaScoreDisplay').textContent = `Score: 0`;
 
-    // 2. Shuffle the master deck, then slice off exactly the amount they requested!
     fullTriviaDeck.sort(() => Math.random() - 0.5);
     triviaQueue = fullTriviaDeck.slice(0, amount);
-
     nextTriviaQuestion();
 }
 
@@ -2599,39 +2131,32 @@ function nextTriviaQuestion() {
     }
 
     currentTrivia = triviaQueue.shift();
-
     document.getElementById('triviaSubjectLabel').textContent = `${subjectIcons[currentTrivia.subject]} ${currentTrivia.subject}`;
     document.getElementById('triviaPrompt').textContent = currentTrivia.q;
 
-    // THE FIX: Dynamically handle any amount of options (2, 3, or 4)
-    let allOptions = currentTrivia.options.map((text, idx) => {
-        return { text: text, isCorrect: currentTrivia.answerIndex === idx };
-    });
+    const allOptions = currentTrivia.options
+        .map((text, idx) => ({ text, isCorrect: currentTrivia.answerIndex === idx }))
+        .sort(() => Math.random() - 0.5);
 
-    // Shuffle the options
-    allOptions.sort(() => Math.random() - 0.5);
-
-    // Populate the buttons and completely hide any unused ones!
     for (let i = 0; i < 4; i++) {
         const btn = document.getElementById(`triviaBtn${i}`);
         if (i < allOptions.length) {
             btn.innerHTML = allOptions[i].text;
-            btn.className = 'trivia-option-btn'; 
-            btn.dataset.correct = allOptions[i].isCorrect; 
-            btn.style.display = 'flex'; // Ensure it's visible
+            btn.className = 'trivia-option-btn';
+            btn.dataset.correct = allOptions[i].isCorrect;
+            btn.style.display = 'flex';
             btn.onclick = () => processTriviaAnswer(i, allOptions[i].isCorrect, btn);
         } else {
-            btn.style.display = 'none'; // Hide the empty ones!
+            btn.style.display = 'none';
         }
     }
 }
 
 function processTriviaAnswer(index, isCorrect, btnElement) {
-    if (isTriviaProcessing) return; // Prevent double taps!
+    if (isTriviaProcessing) return;
     isTriviaProcessing = true;
-    
-    let delayTime = 1000; // Default: move fast (1 second) if they get it right!
 
+    let delayTime = 1000;
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
 
     if (isCorrect) {
@@ -2639,56 +2164,44 @@ function processTriviaAnswer(index, isCorrect, btnElement) {
         playSound(988, 'triangle', 0.1, 0.03);
         setTimeout(() => playSound(1319, 'triangle', 0.2, 0.03), 100);
         triviaScoreRight++;
-        
-        // Remove from the master grid!
+
         if (gridState[currentTrivia.subject]) {
             gridState[currentTrivia.subject][currentTrivia.week] = false;
         }
         saveToDevice();
         buildGrid();
-
     } else {
         btnElement.classList.add('wrong');
         playSound(200, 'triangle', 0.1, 0.05);
         triviaScoreWrong++;
-        
-        // Log it as a mistake for the Review Mistake mode!
+
         const idx = mistakesBank.findIndex(m => m.subject === currentTrivia.subject && m.week === currentTrivia.week);
         if (idx === -1) {
             mistakesBank.push({ subject: currentTrivia.subject, week: currentTrivia.week });
             saveToDevice();
             updateFlagUI();
         }
-        
-        // Highlight the correct answer with a thick green border
+
         for (let i = 0; i < 4; i++) {
             const checkBtn = document.getElementById(`triviaBtn${i}`);
-            if (checkBtn.dataset.correct === 'true') { // THE FIX: Look for our hidden data tag!
-                checkBtn.classList.add('correct-reveal');
-            }
+            if (checkBtn.dataset.correct === 'true') checkBtn.classList.add('correct-reveal');
         }
-
-        delayTime = 3000; // They missed it! Wait 3 full seconds so they can read the answer.
+        delayTime = 3000;
     }
-    
-    document.getElementById('triviaScoreDisplay').textContent = `Score: ${triviaScoreRight}`;
 
-    // Wait the calculated amount of time before loading the next question
-    setTimeout(() => {
-        nextTriviaQuestion();
-    }, delayTime);
+    document.getElementById('triviaScoreDisplay').textContent = `Score: ${triviaScoreRight}`;
+    setTimeout(nextTriviaQuestion, delayTime);
 }
 
 function finishTriviaGame() {
     playVictoryChime();
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60,30,60]);
-    
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60, 30, 60]);
+
     const total = triviaScoreRight + triviaScoreWrong;
     const accuracy = total > 0 ? Math.round((triviaScoreRight / total) * 100) : 0;
-    
+
     document.getElementById('triviaFinalScore').textContent = `${triviaScoreRight} / ${total}`;
     document.getElementById('triviaAccuracy').textContent = `Accuracy: ${accuracy}%`;
-    
     document.getElementById('triviaResultsOverlay').style.display = 'flex';
     startConfetti('triviaConfettiCanvas');
 }
@@ -2699,74 +2212,445 @@ function closeTriviaResults() {
     exitTriviaGame();
 }
 
+
 /* ==========================================================================
-   16. CONTACT FORM ENGINE
+   15. CHALLENGE: CC SPINNER RADIO
    ========================================================================== */
-function openContactModal() {
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-    document.getElementById('contactMessage').value = ""; // Clear old text
-    document.getElementById('contactModalOverlay').style.display = 'flex';
+const radioAudio = new Audio();
+let radioPlaylist = [];
+let radioOriginalList = [];
+let currentRadioIndex = 0;
+let isRadioPlaying = false;
+let radioRepeatMode = 0; // 0: Off, 1: All, 2: One
+let radioShuffleOn = false;
+let radioAutoSkipCount = 0;
+
+radioAudio.addEventListener('timeupdate', updateRadioProgress);
+radioAudio.addEventListener('ended', handleRadioEnded);
+radioAudio.addEventListener('error', () => {
+    radioAutoSkipCount++;
+    if (radioAutoSkipCount >= radioPlaylist.length) {
+        pauseRadio();
+        document.getElementById('radioTrackTitle').textContent = "No audio found!";
+    } else {
+        nextRadioTrack(true);
+    }
+});
+
+function openRadio() {
+    stopVoiceover();
+    document.getElementById('challengeContainer').classList.remove('active');
+    document.getElementById('radioContainer').classList.add('active');
+    activeChallengePage = 'radioContainer';
+    buildRadioPlaylist();
 }
 
-function closeContactModal() {
-    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
-    document.getElementById('contactModalOverlay').style.display = 'none';
+function closeRadio() {
+    pauseRadio();
+    document.getElementById('radioContainer').classList.remove('active');
+    document.getElementById('challengeContainer').classList.add('active');
+    activeChallengePage = 'challengeContainer';
 }
 
-function submitContactForm() {
-    const reason = document.getElementById('contactReason').value;
-    const message = document.getElementById('contactMessage').value;
-    
-    if (!message.trim()) {
-        alert("Please enter a message before sending!");
+function buildRadioPlaylist() {
+    radioPlaylist = [];
+    const currentMinWeek = getMinWeek();
+    const currentMaxWeek = getMaxWeek();
+
+    subjects.forEach(subject => {
+        const cleanSub = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
+        for (let w = currentMinWeek; w <= currentMaxWeek; w++) {
+            radioPlaylist.push({
+                subject,
+                week: w,
+                url: `audio/c${currentCycle}/${cleanSub}/c${currentCycle}-${cleanSub}-w${w}.m4a`
+            });
+        }
+    });
+
+    radioOriginalList = [...radioPlaylist];
+    currentRadioIndex = 0;
+    radioAutoSkipCount = 0;
+
+    if (radioShuffleOn) shuffleRadioList();
+    loadRadioTrack(currentRadioIndex);
+}
+
+function loadRadioTrack(index) {
+    if (radioPlaylist.length === 0) return;
+
+    const track = radioPlaylist[index];
+    radioAudio.src = track.url;
+    radioAudio.load();
+
+    document.getElementById('radioTrackTitle').textContent = `${track.subject} - Week ${track.week}`;
+    document.getElementById('radioTrackSub').textContent = `Cycle ${currentCycle}`;
+    document.getElementById('radioSeeker').value = 0;
+    document.getElementById('radioTimeCurrent').textContent = "0:00";
+    document.getElementById('radioTimeTotal').textContent = "-:--";
+}
+
+function toggleRadioPlay() {
+    if (isRadioPlaying) pauseRadio();
+    else playRadio();
+}
+
+function playRadio() {
+    if (radioPlaylist.length === 0) return;
+    if (audioCtx.state !== 'running') audioCtx.resume();
+
+    radioAudio.play().then(() => {
+        isRadioPlaying = true;
+        radioAutoSkipCount = 0;
+        document.getElementById('radioPlayIcon').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z');
+        document.getElementById('radioArt').classList.add('radio-playing-art');
+    }).catch(() => {});
+}
+
+function pauseRadio() {
+    radioAudio.pause();
+    isRadioPlaying = false;
+    const playIcon = document.getElementById('radioPlayIcon');
+    if (playIcon) playIcon.setAttribute('d', 'M8 5v14l11-7z');
+    const radioArt = document.getElementById('radioArt');
+    if (radioArt) radioArt.classList.remove('radio-playing-art');
+}
+
+function handleRadioEnded() {
+    if (radioRepeatMode === 2) {
+        radioAudio.currentTime = 0;
+        playRadio();
+    } else {
+        nextRadioTrack(true);
+    }
+}
+
+function nextRadioTrack(autoSkip = false) {
+    currentRadioIndex++;
+    if (currentRadioIndex >= radioPlaylist.length) {
+        currentRadioIndex = 0;
+        if (radioRepeatMode !== 1 && !autoSkip) {
+            loadRadioTrack(currentRadioIndex);
+            pauseRadio();
+            return;
+        }
+    }
+    loadRadioTrack(currentRadioIndex);
+    if (isRadioPlaying || autoSkip) playRadio();
+}
+
+function prevRadioTrack() {
+    if (radioAudio.currentTime > 3) {
+        radioAudio.currentTime = 0;
         return;
     }
-
-    // PUT YOUR EMAIL ADDRESS HERE:
-    const email = "luke.abram.gibson+ccspinner@gmail.com"; 
-    
-    // Format the subject and body for the email client
-    const subject = encodeURIComponent(`CC Spinner App: ${reason}`);
-    
-    // Grabs their current version and cycle to help you debug!
-    const appVersion = document.getElementById('app-version').innerText;
-    const body = encodeURIComponent(`${message}\n\n---\nDiagnostic Info:\nReason: ${reason}\nApp Version: ${appVersion}\nActive Cycle: ${currentCycle}`);
-    
-    // Trigger the device's native email app
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    
-    closeContactModal();
+    currentRadioIndex = (currentRadioIndex - 1 + radioPlaylist.length) % radioPlaylist.length;
+    loadRadioTrack(currentRadioIndex);
+    if (isRadioPlaying) playRadio();
 }
 
+function toggleRadioShuffle() {
+    radioShuffleOn = !radioShuffleOn;
+    const btn = document.getElementById('radioShuffleBtn');
+
+    if (radioShuffleOn) {
+        btn.classList.add('active');
+        shuffleRadioList();
+    } else {
+        btn.classList.remove('active');
+        const currentTrack = radioPlaylist[currentRadioIndex];
+        radioPlaylist = [...radioOriginalList];
+        currentRadioIndex = radioPlaylist.findIndex(t => t.url === currentTrack.url);
+    }
+}
+
+function shuffleRadioList() {
+    const currentTrack = radioPlaylist[currentRadioIndex];
+    for (let i = radioPlaylist.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [radioPlaylist[i], radioPlaylist[j]] = [radioPlaylist[j], radioPlaylist[i]];
+    }
+    if (currentTrack) {
+        const newIndex = radioPlaylist.findIndex(t => t.url === currentTrack.url);
+        [radioPlaylist[0], radioPlaylist[newIndex]] = [radioPlaylist[newIndex], radioPlaylist[0]];
+        currentRadioIndex = 0;
+    }
+}
+
+function toggleRadioRepeat() {
+    radioRepeatMode = (radioRepeatMode + 1) % 3;
+    const btn = document.getElementById('radioRepeatBtn');
+
+    if (radioRepeatMode === 0) {
+        btn.classList.remove('active');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>`;
+    } else if (radioRepeatMode === 1) {
+        btn.classList.add('active');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>`;
+    } else {
+        btn.classList.add('active');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2.5V15h3v-4H9.5v1.5h1.5v3H13z"></path></svg>`;
+    }
+}
+
+function updateRadioProgress() {
+    if (isNaN(radioAudio.duration)) return;
+    const seeker = document.getElementById('radioSeeker');
+    seeker.max = radioAudio.duration;
+    seeker.value = radioAudio.currentTime;
+    document.getElementById('radioTimeCurrent').textContent = formatTime(radioAudio.currentTime);
+    document.getElementById('radioTimeTotal').textContent = formatTime(radioAudio.duration);
+}
+
+const radioSeeker = document.getElementById('radioSeeker');
+if (radioSeeker) {
+    radioSeeker.addEventListener('input', (e) => {
+        radioAudio.currentTime = e.target.value;
+    });
+}
+
+function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+
 /* ==========================================================================
-   17. SPLASH SCREEN ENGINE
+   16. CELEBRATION & CONFETTI ENGINE
+   ========================================================================== */
+let confettiAnimationId = null;
+let confettiResizeHandler = null;
+let isConfettiStopping = false;
+
+function finishLesson() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate([60, 30, 60]);
+    playVictoryChime();
+    showDoneOverlay();
+}
+
+function showDoneOverlay() {
+    const overlay = document.getElementById('doneOverlay');
+    if (!overlay) return;
+
+    overlay.style.background = 'rgba(0,0,0,0.45)';
+    overlay.style.pointerEvents = 'auto';
+    const box = overlay.querySelector('.doneBox');
+    if (box) box.style.display = 'block';
+
+    overlay.style.display = 'flex';
+    startConfetti();
+}
+
+function hideDoneOverlay() {
+    isConfettiStopping = true;
+    const overlay = document.getElementById('doneOverlay');
+    const box = overlay.querySelector('.doneBox');
+
+    if (box) box.style.display = 'none';
+    overlay.style.background = 'transparent';
+    overlay.style.pointerEvents = 'none';
+}
+
+function startConfetti(canvasId = 'confettiCanvas') {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    isConfettiStopping = false;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+    }
+    resize();
+    confettiResizeHandler = resize;
+    window.addEventListener('resize', confettiResizeHandler);
+
+    const styles = ['confetti', 'fireworks', 'emojis'];
+    const activeStyle = styles[Math.floor(Math.random() * styles.length)];
+    const colors = ['#ef4444', '#f97316', '#f59e0b', '#22c55e', '#06b6d4', '#6366f1', '#ec4899'];
+    const emojiList = ['📜', '📖', '🌍', '⚔️', '🏛️', '🔢', '🧪', '⏳'];
+    const parts = [];
+
+    if (activeStyle === 'confetti' || activeStyle === 'emojis') {
+        for (let i = 0; i < 100; i++) {
+            parts.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * -canvas.height,
+                vx: (Math.random() - 0.5) * 4,
+                vy: Math.random() * 3 + 2,
+                r: Math.random() * 8 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                emoji: emojiList[Math.floor(Math.random() * emojiList.length)],
+                size: Math.random() * 20 + 20,
+                rot: Math.random() * 360,
+                vr: (Math.random() - 0.5) * 10
+            });
+        }
+    }
+
+    function frame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (activeStyle === 'confetti') {
+            for (const p of parts) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.02;
+                p.rot += p.vr;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.6);
+                ctx.restore();
+
+                if (p.y > canvas.height + 20 && !isConfettiStopping) {
+                    p.y = -10;
+                    p.x = Math.random() * canvas.width;
+                    p.vy = Math.random() * 3 + 2;
+                }
+            }
+            if (isConfettiStopping && parts.every(p => p.y > canvas.height + 20)) {
+                stopConfetti(canvasId);
+                return;
+            }
+        } else if (activeStyle === 'emojis') {
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            for (const p of parts) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.02;
+                p.rot += p.vr;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.font = `${p.size}px Arial`;
+                ctx.fillText(p.emoji, 0, 0);
+                ctx.restore();
+
+                if (p.y > canvas.height + 40 && !isConfettiStopping) {
+                    p.y = -40;
+                    p.x = Math.random() * canvas.width;
+                    p.vy = Math.random() * 3 + 2;
+                }
+            }
+            if (isConfettiStopping && parts.every(p => p.y > canvas.height + 40)) {
+                stopConfetti(canvasId);
+                return;
+            }
+        } else if (activeStyle === 'fireworks') {
+            ctx.globalCompositeOperation = 'lighter';
+
+            if (Math.random() < 0.06 && !isConfettiStopping) {
+                const bx = Math.random() * canvas.width;
+                const by = Math.random() * (canvas.height * 0.5);
+                const fColor = colors[Math.floor(Math.random() * colors.length)];
+                for (let i = 0; i < 40; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 5 + 2;
+                    parts.push({
+                        x: bx, y: by,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        color: fColor,
+                        alpha: 1,
+                        decay: Math.random() * 0.015 + 0.015,
+                        r: Math.random() * 3 + 1
+                    });
+                }
+            }
+
+            for (let i = parts.length - 1; i >= 0; i--) {
+                const p = parts[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.05;
+                p.vx *= 0.94;
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    parts.splice(i, 1);
+                    continue;
+                }
+
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.globalAlpha = 1;
+            ctx.globalCompositeOperation = 'source-over';
+
+            if (isConfettiStopping && parts.length === 0) {
+                stopConfetti(canvasId);
+                return;
+            }
+        }
+
+        confettiAnimationId = requestAnimationFrame(frame);
+    }
+    confettiAnimationId = requestAnimationFrame(frame);
+}
+
+function stopConfetti(canvasId = 'confettiCanvas') {
+    if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+    confettiAnimationId = null;
+
+    if (confettiResizeHandler) {
+        window.removeEventListener('resize', confettiResizeHandler);
+        confettiResizeHandler = null;
+    }
+
+    const canvas = document.getElementById(canvasId);
+    if (canvas) {
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    if (canvasId === 'confettiCanvas') {
+        const overlay = document.getElementById('doneOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+            overlay.style.background = 'rgba(0,0,0,0.45)';
+            overlay.style.pointerEvents = 'auto';
+            const box = overlay.querySelector('.doneBox');
+            if (box) box.style.display = 'block';
+        }
+    }
+}
+
+
+/* ==========================================================================
+   17. SPLASH SCREEN & DAILY STREAK
    ========================================================================== */
 function dismissSplashScreen() {
     const splash = document.getElementById('splashScreen');
     if (!splash) return;
 
     if (audioCtx.state === 'suspended') audioCtx.resume();
-    
     if (userSettings.haptics && navigator.vibrate) navigator.vibrate(15);
-    playSound(523.25, 'triangle', 0.1, 0.03); 
-    setTimeout(() => playSound(659.25, 'triangle', 0.15, 0.03), 100); 
+
+    playSound(523.25, 'triangle', 0.1, 0.03);
+    setTimeout(() => playSound(659.25, 'triangle', 0.15, 0.03), 100);
 
     splash.style.opacity = '0';
-    
     setTimeout(() => {
         splash.style.display = 'none';
-        
-        // NEW: Check if they need the tutorial!
-        if (!localStorage.getItem('hasSeenStudioTutorial')) {
-            showTutorial();
-        }
-    }, 400); 
+        if (!localStorage.getItem('hasSeenStudioTutorial')) showTutorial();
+    }, 400);
 }
 
 function updateDailyStreak() {
     const now = new Date();
     const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    
+
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
     const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
@@ -2786,47 +2670,41 @@ function updateDailyStreak() {
     localStorage.setItem('ccCurrentStreak', String(streak));
 
     const streakText = document.getElementById('splashStreakText');
-    if (streakText) {
-        streakText.textContent = String(streak);
-    }
+    if (streakText) streakText.textContent = String(streak);
 }
 
+
 /* ==========================================================================
-   18. INTERACTIVE WALKTHROUGH ENGINE
+   18. INTERACTIVE WALKTHROUGH
    ========================================================================== */
 const walkSteps = [
     { target: null, mode: 'spinner', title: "Welcome!", desc: "Let's take a quick interactive tour to show you how CC Spinner works." },
-    
-    // 1. Spinner
     { target: 'spinBtn', mode: 'spinner', title: "The Spinner", desc: "Tap the SPIN button below to randomly select memory work.", interactive: true },
     { target: 'flagBtn', mode: 'spinner', title: "Flag for Review", desc: "Tap the Flag button here (or in the Review tab) to add a lesson to your Mistake Bank. You can practice them later in the Focus games!" },
     { target: 'answerContainer', mode: 'spinner', title: "Songs & Extras", desc: "When a lesson has an accompanying song or map, an Audio or Info (i) button will appear right here." },
     { target: 'undoBtn', mode: 'spinner', title: "Undo Spin", desc: "Made a mistake or got interrupted? The Undo button reverses your last spin." },
 
-    // 2. Review
     { target: 'nav-review', mode: 'spinner', title: "The Review Tab", desc: "Now, tap the Review tab at the bottom to browse your memory work sequentially.", interactive: true },
     { target: 'reviewSubjectLabel', mode: 'review', title: "Change Subject", desc: "Tap the Subject name here to open the quick-selector menu.", interactive: true },
     { target: 'pickerGrid', mode: 'review', title: "Quick Select", desc: "Tap any subject in this grid to jump straight to it.", interactive: true, tooltipPos: '15%', keepPickerOpen: true },
     { target: 'reviewWeekLabel', mode: 'review', title: "Change Week", desc: "You can also tap the Week number to jump to a specific week, or use the arrows to go one-by-one." },
-    
-    // 3. Lessons Grid
+
     { target: 'nav-grid', mode: 'review', title: "The Lessons Tab", desc: "Next, tap the Lessons tab. This controls the entire app.", interactive: true },
     { target: 'gridContent', mode: 'grid', title: "The Master Grid", desc: "This tracks your progress. White, green (or black in dark mode) squares are active. Grey squares are blocked or finished.", tooltipPos: '80%' },
     { target: 'grid', mode: 'grid', title: "Block a Subject", desc: "Tap a Subject name at the very top to instantly block or allow that entire column.", tooltipPos: '80%' },
     { target: 'grid', mode: 'grid', title: "Block a Week", desc: "Tap a Week number on the left side to instantly block or allow that entire row.", tooltipPos: '80%' },
-    { target: 'gridControlsRow', mode: 'grid', title: "Set Your Pace", desc: "Change your Cycle here, and adjust your Max Week to match where you are in the school year." },
+    { target: 'gridControlsRow', mode: 'grid', title: "Set Your Pace", desc: "Change your Cycle here, and adjust your Min and Max Weeks to match where you are in the school year." },
     { target: 'resetGridBtnTour', mode: 'grid', title: "Start Fresh", desc: "Once you clear the board for the week, you can start over. Tap 'Reset Grid' to see what happens!", interactive: true },
     { target: 'confirmResetBtnTour', mode: 'grid', title: "Confirm Reset", desc: "Tap 'Yes, Reset' to clear the board. Don't worry, we won't lose your custom settings or Mistake Bank!", interactive: true },
-    
-    // 4. Focus
+
     { target: 'nav-challenge', mode: 'grid', title: "The Focus Tab", desc: "Ready for a challenge? Tap the Focus tab to explore the games.", interactive: true },
     { target: 'challengeContainer', mode: 'challenge', title: "Challenge Modes", desc: "Here you can review flagged mistakes, race the clock in Time Attack, sing Scripture songs, or take a Trivia Quiz.", tooltipPos: '85%' },
-    
+
     { target: null, mode: 'spinner', title: "You're All Set!", desc: "You can replay this tutorial anytime from the Settings tab. Have fun mastering your memory work!" }
 ];
 
 let currentWalkStep = 0;
-let walkPulseTimeout = null; 
+let walkPulseTimeout = null;
 
 function showTutorial() {
     currentWalkStep = 0;
@@ -2838,22 +2716,20 @@ function showTutorial() {
 function renderWalkStep() {
     const step = walkSteps[currentWalkStep];
     const maskEl = document.getElementById('walkthroughMask');
-    
-    // 1. INSTANT UI UPDATES & RESET TIMERS
+
     clearTimeout(walkPulseTimeout);
     if (maskEl) maskEl.classList.remove('walkthrough-active-pulse');
-    
+
     const counterEl = document.getElementById('walkCounter');
-    if (counterEl) counterEl.textContent = (currentWalkStep + 1) + '/' + walkSteps.length;
-    
+    if (counterEl) counterEl.textContent = `${currentWalkStep + 1}/${walkSteps.length}`;
+
     document.getElementById('walkTitle').textContent = step.title;
     document.getElementById('walkDesc').textContent = step.desc;
 
     const nextBtn = document.getElementById('walkNextBtn');
-    
     if (step.interactive) {
         nextBtn.textContent = "Tap highlighted area";
-        nextBtn.style.background = "#94a3b8"; 
+        nextBtn.style.background = "#94a3b8";
         nextBtn.style.boxShadow = "none";
         nextBtn.style.pointerEvents = "none";
     } else {
@@ -2862,13 +2738,9 @@ function renderWalkStep() {
         nextBtn.style.boxShadow = "0 4px 15px rgba(255,111,97,0.3)";
         nextBtn.style.pointerEvents = "auto";
     }
-    
-    // 2. STATE CLEANUP
-    if (typeof closePicker === 'function' && !step.keepPickerOpen) closePicker();
-    
-    if (currentMode !== step.mode) {
-        switchMode(step.mode);
-    }
+
+    if (!step.keepPickerOpen) closePicker();
+    if (currentMode !== step.mode) switchMode(step.mode);
 
     if (window.currentWalkListener && window.currentWalkTarget) {
         window.currentWalkTarget.removeEventListener('click', window.currentWalkListener);
@@ -2876,11 +2748,9 @@ function renderWalkStep() {
         window.currentWalkListener = null;
     }
 
-    // 3. SHOW UI
     document.getElementById('walkthroughTooltip').style.display = 'block';
     if (maskEl) maskEl.style.display = 'block';
 
-    // 4. DELAYED SPOTLIGHT CALCULATION
     setTimeout(() => {
         const tooltip = document.getElementById('walkthroughTooltip');
 
@@ -2888,36 +2758,28 @@ function renderWalkStep() {
             const el = document.getElementById(step.target);
             if (el) {
                 const rect = el.getBoundingClientRect();
-                
-                maskEl.style.top = rect.top - 8 + 'px';
-                maskEl.style.left = rect.left - 8 + 'px';
-                maskEl.style.width = rect.width + 16 + 'px';
-                maskEl.style.height = rect.height + 16 + 'px';
-                
-                // NEW: Dynamic Positioning Logic
+                maskEl.style.top = (rect.top - 8) + 'px';
+                maskEl.style.left = (rect.left - 8) + 'px';
+                maskEl.style.width = (rect.width + 16) + 'px';
+                maskEl.style.height = (rect.height + 16) + 'px';
+
                 if (step.tooltipPos) {
-                    // Override with custom positioning
                     tooltip.style.top = step.tooltipPos;
                     tooltip.style.transform = 'translate(-50%, -50%)';
                 } else if (!step.interactive) {
-                    // For non-interactive steps, move the tooltip right next to the highlight!
                     if (rect.top > window.innerHeight / 2) {
-                        // Element is low, put tooltip ABOVE it
                         tooltip.style.top = Math.max(20, rect.top - 20) + 'px';
                         tooltip.style.transform = 'translate(-50%, -100%)';
                     } else {
-                        // Element is high, put tooltip BELOW it
                         tooltip.style.top = Math.min(window.innerHeight - 20, rect.bottom + 20) + 'px';
                         tooltip.style.transform = 'translate(-50%, 0)';
                     }
                 } else {
-                    // For interactive steps, default to keeping it out of the way
                     tooltip.style.top = (rect.bottom + 180 > window.innerHeight) ? '20%' : '75%';
                     tooltip.style.transform = 'translate(-50%, -50%)';
                 }
 
                 if (step.interactive) {
-                    // Trigger the pulse if they wait 4 seconds to click!
                     walkPulseTimeout = setTimeout(() => {
                         if (maskEl && maskEl.style.display !== 'none') {
                             maskEl.classList.add('walkthrough-active-pulse');
@@ -2928,8 +2790,6 @@ function renderWalkStep() {
                     window.currentWalkListener = () => {
                         clearTimeout(walkPulseTimeout);
                         if (maskEl) maskEl.classList.remove('walkthrough-active-pulse');
-                        
-                        // Instantly advance the tutorial instead of hiding it!
                         nextWalkStep();
                     };
                     el.addEventListener('click', window.currentWalkListener, { once: true });
@@ -2964,12 +2824,11 @@ function skipWalkthrough() {
     if (window.currentWalkListener && window.currentWalkTarget) {
         window.currentWalkTarget.removeEventListener('click', window.currentWalkListener);
     }
-    
-    if (typeof closePicker === 'function') closePicker();
-    
+
+    closePicker();
     document.getElementById('walkthroughTooltip').style.display = 'none';
     if (maskEl) maskEl.style.display = 'none';
-    
+
     localStorage.setItem('hasSeenStudioTutorial', 'true');
     switchMode('spinner');
     playVictoryChime();
@@ -2977,40 +2836,90 @@ function skipWalkthrough() {
     setTimeout(stopConfetti, 2500);
 }
 
+
 /* ==========================================================================
-   19. PWA INSTALLATION ENGINE
+   19. CONTACT FORM, INPUT BINDINGS & PWA
    ========================================================================== */
+function openContactModal() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    document.getElementById('contactMessage').value = "";
+    document.getElementById('contactModalOverlay').style.display = 'flex';
+}
+
+function closeContactModal() {
+    if (userSettings.haptics && navigator.vibrate) navigator.vibrate(10);
+    document.getElementById('contactModalOverlay').style.display = 'none';
+}
+
+function submitContactForm() {
+    const reason = document.getElementById('contactReason').value;
+    const message = document.getElementById('contactMessage').value;
+
+    if (!message.trim()) {
+        alert("Please enter a message before sending!");
+        return;
+    }
+
+    const email = "luke.abram.gibson+ccspinner@gmail.com";
+    const subject = encodeURIComponent(`CC Spinner App: ${reason}`);
+    const appVersion = document.getElementById('app-version').innerText;
+    const body = encodeURIComponent(`${message}\n\n---\nDiagnostic Info:\nReason: ${reason}\nApp Version: ${appVersion}\nActive Cycle: ${currentCycle}`);
+
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    closeContactModal();
+}
+
+function bindHoldButton(id, actionFn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    let holdTimeout, holdInterval;
+    const start = (e) => {
+        e.preventDefault();
+        actionFn();
+        holdTimeout = setTimeout(() => holdInterval = setInterval(actionFn, 110), 350);
+    };
+    const stop = () => {
+        clearTimeout(holdTimeout);
+        clearInterval(holdInterval);
+    };
+
+    el.addEventListener('mousedown', start);
+    el.addEventListener('mouseup', stop);
+    el.addEventListener('mouseleave', stop);
+    el.addEventListener('touchstart', start, { passive: false });
+    el.addEventListener('touchend', stop);
+}
+
+bindHoldButton('increaseMaxWeek', increaseMaxWeek);
+bindHoldButton('decreaseMaxWeek', decreaseMaxWeek);
+bindHoldButton('increaseMinWeek', increaseMinWeek);
+bindHoldButton('decreaseMinWeek', decreaseMinWeek);
+
+// PWA Install Handling
 let deferredPrompt;
 
-// 1. Listen for the native Android/Chrome install prompt and catch it
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
 });
 
-// 2. Hide the button if the app is already installed on the home screen!
 function checkStandaloneMode() {
     const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone;
     const installBlock = document.getElementById('installSettingContainer');
-    
-    if (isStandalone && installBlock) {
-        installBlock.style.display = 'none';
-    }
+    if (isStandalone && installBlock) installBlock.style.display = 'none';
 }
 
-// 3. Handle the Install button click
 function promptInstall() {
     if (deferredPrompt) {
-        // Android/Chrome: Trigger the native 1-click install popup
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
+        deferredPrompt.userChoice.then(choiceResult => {
             if (choiceResult.outcome === 'accepted') {
                 document.getElementById('installSettingContainer').style.display = 'none';
             }
-            deferredPrompt = null; // Clean up
+            deferredPrompt = null;
         });
     } else {
-        // iOS/Safari: Apple blocks automatic prompts, so we walk them through it
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         if (isIOS) {
             alert("To install on iPhone/iPad:\n\n1. Tap the Share button at the bottom of Safari (the square with an up arrow).\n2. Scroll down and tap 'Add to Home Screen'.");
@@ -3020,240 +2929,27 @@ function promptInstall() {
     }
 }
 
-// 4. If they install it successfully, hide the button instantly
 window.addEventListener('appinstalled', () => {
     document.getElementById('installSettingContainer').style.display = 'none';
     deferredPrompt = null;
 });
 
-/* ==========================================================================
-   15. CC SPINNER RADIO ENGINE
-   ========================================================================== */
-const radioAudio = new Audio();
-let radioPlaylist = [];
-let radioOriginalList = [];
-let currentRadioIndex = 0;
-let isRadioPlaying = false;
-let radioRepeatMode = 0; // 0: Off, 1: All, 2: One
-let radioShuffleOn = false;
-let radioAutoSkipCount = 0; // Prevents infinite loops if files are missing
-
-// Audio Event Listeners
-radioAudio.addEventListener('timeupdate', updateRadioProgress);
-radioAudio.addEventListener('ended', handleRadioEnded);
-radioAudio.addEventListener('error', () => {
-    // If the file doesn't exist, instantly skip to the next one!
-    radioAutoSkipCount++;
-    if (radioAutoSkipCount >= radioPlaylist.length) {
-        pauseRadio(); // Everything failed
-        document.getElementById('radioTrackTitle').textContent = "No audio found!";
-    } else {
-        nextRadioTrack(true); // force skip
-    }
-});
-
-function openRadio() {
-    stopVoiceover(); // Silence the spinner/robot
-    document.getElementById('challengeContainer').classList.remove('active');
-    document.getElementById('radioContainer').classList.add('active');
-    activeChallengePage = 'radioContainer'; // Remembers you are here!
-    buildRadioPlaylist();
-}
-
-function closeRadio() {
-    pauseRadio();
-    document.getElementById('radioContainer').classList.remove('active');
-    document.getElementById('challengeContainer').classList.add('active');
-    activeChallengePage = 'challengeContainer';
-}
-
-function buildRadioPlaylist() {
-    radioPlaylist = [];
-    
-    // THE FIX: Define BOTH the Min and Max weeks by reading the UI!
-    const currentMinWeek = typeof getMinWeek === 'function' ? getMinWeek() : 1;
-    const currentMaxWeek = getMaxWeek();
-    
-    // Generate the master list (Grouped by Subject, from Min Week to Max Week)
-    subjects.forEach(subject => {
-        const cleanSub = subject.toLowerCase().replace(/[^a-z0-9]/g, '');
-        for (let w = currentMinWeek; w <= currentMaxWeek; w++) {
-            radioPlaylist.push({
-                subject: subject,
-                week: w,
-                url: `audio/c${currentCycle}/${cleanSub}/c${currentCycle}-${cleanSub}-w${w}.m4a`
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').then(reg => {
+            reg.update();
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') reg.update();
             });
-        }
+        });
     });
 
-    radioOriginalList = [...radioPlaylist];
-    currentRadioIndex = 0;
-    radioAutoSkipCount = 0;
-    
-    if (radioShuffleOn) shuffleRadioList();
-    
-    loadRadioTrack(currentRadioIndex);
-}
-
-function loadRadioTrack(index) {
-    if (radioPlaylist.length === 0) return;
-    
-    const track = radioPlaylist[index];
-    radioAudio.src = track.url;
-    radioAudio.load();
-    
-    document.getElementById('radioTrackTitle').textContent = `${track.subject} - Week ${track.week}`;
-    document.getElementById('radioTrackSub').textContent = `Cycle ${currentCycle}`;
-    
-    // UI Reset
-    document.getElementById('radioSeeker').value = 0;
-    document.getElementById('radioTimeCurrent').textContent = "0:00";
-    document.getElementById('radioTimeTotal').textContent = "-:--";
-}
-
-function toggleRadioPlay() {
-    if (isRadioPlaying) {
-        pauseRadio();
-    } else {
-        playRadio();
-    }
-}
-
-function playRadio() {
-    if (radioPlaylist.length === 0) return;
-    
-    // Reclaim hardware audio focus (iOS fix)
-    if (typeof audioCtx !== 'undefined' && audioCtx.state !== 'running') {
-        audioCtx.resume();
-    }
-    
-    radioAudio.play().then(() => {
-        isRadioPlaying = true;
-        radioAutoSkipCount = 0; // Reset error loop counter
-        document.getElementById('radioPlayIcon').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); // Pause Icon
-        document.getElementById('radioArt').classList.add('radio-playing-art');
-    }).catch(err => {
-        // Will be caught by 'error' listener to auto-skip
-    });
-}
-
-function pauseRadio() {
-    radioAudio.pause();
-    isRadioPlaying = false;
-    document.getElementById('radioPlayIcon').setAttribute('d', 'M8 5v14l11-7z'); // Play Icon
-    document.getElementById('radioArt').classList.remove('radio-playing-art');
-}
-
-function handleRadioEnded() {
-    if (radioRepeatMode === 2) {
-        radioAudio.currentTime = 0;
-        playRadio();
-    } else {
-        nextRadioTrack(true);
-    }
-}
-
-function nextRadioTrack(autoSkip = false) {
-    currentRadioIndex++;
-    
-    if (currentRadioIndex >= radioPlaylist.length) {
-        if (radioRepeatMode === 1 || autoSkip) {
-            currentRadioIndex = 0; // Loop to start
-        } else {
-            currentRadioIndex = 0;
-            loadRadioTrack(currentRadioIndex);
-            pauseRadio();
-            return;
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+            window.location.reload();
+            refreshing = true;
         }
-    }
-    
-    loadRadioTrack(currentRadioIndex);
-    if (isRadioPlaying || autoSkip) playRadio();
-}
-
-function prevRadioTrack() {
-    // If we are more than 3 seconds in, just restart the track
-    if (radioAudio.currentTime > 3) {
-        radioAudio.currentTime = 0;
-        return;
-    }
-    
-    currentRadioIndex--;
-    if (currentRadioIndex < 0) {
-        currentRadioIndex = radioPlaylist.length - 1;
-    }
-    
-    loadRadioTrack(currentRadioIndex);
-    if (isRadioPlaying) playRadio();
-}
-
-// Controls Logic
-function toggleRadioShuffle() {
-    radioShuffleOn = !radioShuffleOn;
-    const btn = document.getElementById('radioShuffleBtn');
-    
-    if (radioShuffleOn) {
-        btn.classList.add('active');
-        shuffleRadioList();
-    } else {
-        btn.classList.remove('active');
-        // Unshuffle but keep current track playing
-        const currentTrack = radioPlaylist[currentRadioIndex];
-        radioPlaylist = [...radioOriginalList];
-        currentRadioIndex = radioPlaylist.findIndex(t => t.url === currentTrack.url);
-    }
-}
-
-function shuffleRadioList() {
-    const currentTrack = radioPlaylist[currentRadioIndex];
-    
-    for (let i = radioPlaylist.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [radioPlaylist[i], radioPlaylist[j]] = [radioPlaylist[j], radioPlaylist[i]];
-    }
-    // Force current track to index 0 so playback doesn't jump
-    if (currentTrack) {
-        const newIndex = radioPlaylist.findIndex(t => t.url === currentTrack.url);
-        [radioPlaylist[0], radioPlaylist[newIndex]] = [radioPlaylist[newIndex], radioPlaylist[0]];
-        currentRadioIndex = 0;
-    }
-}
-
-function toggleRadioRepeat() {
-    radioRepeatMode = (radioRepeatMode + 1) % 3;
-    const btn = document.getElementById('radioRepeatBtn');
-    
-    if (radioRepeatMode === 0) {
-        btn.classList.remove('active');
-        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>`;
-    } else if (radioRepeatMode === 1) {
-        btn.classList.add('active');
-        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>`;
-    } else {
-        btn.classList.add('active');
-        // Repeat One Icon
-        btn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2.5V15h3v-4H9.5v1.5h1.5v3H13z"></path></svg>`;
-    }
-}
-
-// Scrubber / Progress Bar Logic
-function updateRadioProgress() {
-    if (isNaN(radioAudio.duration)) return;
-    
-    const seeker = document.getElementById('radioSeeker');
-    seeker.max = radioAudio.duration;
-    seeker.value = radioAudio.currentTime;
-    
-    document.getElementById('radioTimeCurrent').textContent = formatTime(radioAudio.currentTime);
-    document.getElementById('radioTimeTotal').textContent = formatTime(radioAudio.duration);
-}
-
-document.getElementById('radioSeeker').addEventListener('input', (e) => {
-    radioAudio.currentTime = e.target.value;
-});
-
-function formatTime(seconds) {
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
+    });
 }

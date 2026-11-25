@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CC Spinner">
-  
+
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="manifest.json">
 
@@ -14,89 +14,80 @@
   <link rel="stylesheet" href="styles.css">
 
   <script data-goatcounter="https://cc-spinner.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
-        
+          async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
 
-<!-- INTERACTIVE WALKTHROUGH -->
+<!-- ==========================================================================
+     1. SPLASH SCREEN & INTERACTIVE WALKTHROUGH
+     ========================================================================== -->
+
+<!-- Splash Screen -->
+<div id="splashScreen" class="splash-bg" style="position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 5vh;">
+  <div id="splashContentWrapper" style="display: flex; flex-direction: column; align-items: center; opacity: 0; transition: opacity 0.5s ease;">
+    <div class="splash-logo" style="margin-bottom: 25px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 110px; height: 110px;">
+        <circle cx="12" cy="12" r="10"></circle>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </div>
+
+    <h1 style="font-size: 42px; font-weight: 800; margin: 0 0 80px 0; letter-spacing: 2px; color: var(--primary);">CC Spinner</h1>
+
+    <button class="splash-btn" onclick="dismissSplashScreen()" style="background: var(--primary); color: white; border: none; padding: 16px 45px; border-radius: 30px; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">Tap to Start</button>
+
+    <div id="splashStreak" style="margin-top: 24px; display: flex; align-items: center; gap: 5px; font-size: 15px; font-weight: 800; color: var(--text-muted); opacity: 0.7;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;">
+        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+      </svg>
+      <span id="splashStreakText">1</span>
+    </div>
+
+    <div style="margin-top: 60px; opacity: 0.5; transition: opacity 0.2s ease;" ontouchstart="this.style.opacity='1'" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">
+      <select id="splashCyclePicker" onchange="changeCycle(this.value); document.getElementById('cyclePicker').value = this.value;" style="appearance: none; -webkit-appearance: none; background-color: transparent; color: var(--text-main); padding: 8px 30px 8px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; border: 1.5px solid var(--text-muted); cursor: pointer; text-align: center; font-family: inherit; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 12px top 50%; background-size: 10px auto;">
+        <option value="1">Cycle 1</option>
+        <option value="2">Cycle 2</option>
+        <option value="3">Cycle 3</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Interactive Walkthrough -->
 <div id="walkthroughMask" style="display: none; position: fixed; inset: 0; box-shadow: 0 0 0 9999px rgba(0,0,0,0.75), inset 0 0 0 2px var(--primary); border-radius: 16px; z-index: 8000; pointer-events: none; transition: all 0.4s ease;"></div>
 
 <div id="walkthroughTooltip" style="display: none; position: fixed; z-index: 8001; background: var(--card-bg); width: 85%; max-width: 350px; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); text-align: center; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: all 0.4s ease; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-    
-    <!-- Step Counter (Top Left) -->
-    <div id="walkCounter" style="position: absolute; top: 18px; left: 20px; font-weight: 800; color: var(--text-muted); font-size: 14px;">1/19</div>
-    
-    <!-- Skip Button (Top Right) -->
-    <button onclick="skipWalkthrough()" style="position: absolute; top: 16px; right: 20px; background: transparent; color: var(--text-muted); border: none; font-weight: 800; cursor: pointer; font-size: 14px; padding: 0;">Skip</button>
-    
-    <h3 id="walkTitle" style="color: var(--primary); margin-top: 15px; margin-bottom: 10px; font-weight: 800; font-size: 22px;">Title</h3>
-    <p id="walkDesc" style="color: var(--text-main); font-size: 16px; margin-bottom: 25px; line-height: 1.5; font-weight: 600;"></p>
-    
-    <!-- Centered Next Button -->
-    <div style="display: flex; justify-content: center;">
-        <button id="walkNextBtn" onclick="nextWalkStep()" style="width: 100%; max-width: 220px; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3); font-size: 16px;">Next</button>
-    </div>
+  <div id="walkCounter" style="position: absolute; top: 18px; left: 20px; font-weight: 800; color: var(--text-muted); font-size: 14px;">1/19</div>
+  <button onclick="skipWalkthrough()" style="position: absolute; top: 16px; right: 20px; background: transparent; color: var(--text-muted); border: none; font-weight: 800; cursor: pointer; font-size: 14px; padding: 0;">Skip</button>
+  <h3 id="walkTitle" style="color: var(--primary); margin-top: 15px; margin-bottom: 10px; font-weight: 800; font-size: 22px;">Title</h3>
+  <p id="walkDesc" style="color: var(--text-main); font-size: 16px; margin-bottom: 25px; line-height: 1.5; font-weight: 600;"></p>
+  <div style="display: flex; justify-content: center;">
+    <button id="walkNextBtn" onclick="nextWalkStep()" style="width: 100%; max-width: 220px; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3); font-size: 16px;">Next</button>
+  </div>
 </div>
 
-<!-- SPLASH SCREEN -->
-<div id="splashScreen" class="splash-bg" style="position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 5vh;">
-    
-    <div id="splashContentWrapper" style="display: flex; flex-direction: column; align-items: center; opacity: 0; transition: opacity 0.5s ease;">
-        
-        <!-- The Original Spinner Icon -->
-        <div class="splash-logo" style="margin-bottom: 25px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 110px; height: 110px;">
-                <circle cx="12" cy="12" r="10"></circle>
-                <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-        </div>
-        
-        <!-- Original Title -->
-        <h1 style="font-size: 42px; font-weight: 800; margin: 0 0 80px 0; letter-spacing: 2px; color: var(--primary);">CC Spinner</h1>
-        
-<!-- Solid Coral Button -->
-        <button class="splash-btn" onclick="dismissSplashScreen()" style="background: var(--primary); color: white; border: none; padding: 16px 45px; border-radius: 30px; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">Tap to Start</button>
 
-        <!-- Quiet Current Streak -->
-        <div id="splashStreak" style="margin-top: 24px; display: flex; align-items: center; gap: 5px; font-size: 15px; font-weight: 800; color: var(--text-muted); opacity: 0.7;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 17px; height: 17px;">
-                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
-            </svg>
-            <span id="splashStreakText">1</span>
-        </div>
+<!-- ==========================================================================
+     2. MAIN TAB VIEWS (Spinner, Review, Lessons, Focus, Settings)
+     ========================================================================== -->
 
-        <!-- Quiet Splash Cycle Selector -->
-        <div style="margin-top: 60px; opacity: 0.5; transition: opacity 0.2s ease;" ontouchstart="this.style.opacity='1'" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">
-            <select id="splashCyclePicker" onchange="changeCycle(this.value); document.getElementById('cyclePicker').value = this.value;" style="appearance: none; -webkit-appearance: none; background-color: transparent; color: var(--text-main); padding: 8px 30px 8px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; border: 1.5px solid var(--text-muted); cursor: pointer; text-align: center; font-family: inherit; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 12px top 50%; background-size: 10px auto;">
-                <option value="1">Cycle 1</option>
-                <option value="2">Cycle 2</option>
-                <option value="3">Cycle 3</option>
-            </select>
-        </div>
-    </div>
-</div>
-
+<!-- Tab 1: Spinner -->
 <div id="spinnerContainer" class="view-container active">
   <div class="rollerBox">
-    <div class="slot">
-      <div class="reel" id="subjectReel"></div>
-    </div>
-    <div class="slot">
-      <div class="reel" id="weekReel"></div>
-    </div>
+    <div class="slot"><div class="reel" id="subjectReel"></div></div>
+    <div class="slot"><div class="reel" id="weekReel"></div></div>
   </div>
 
-<div id="prompt" onclick="speakText(this.textContent)" style="cursor: pointer;"></div>
+  <div id="prompt" onclick="speakText(this.textContent)" style="cursor: pointer;"></div>
 
   <div id="answerContainer">
     <button id="toggleAnswer" onclick="toggleAnswer()">▼ Show Answer ▼</button>
     <button id="infoBtnMain" class="info-btn" onclick="openInfoModal(event, 'infoBtnMain')">i</button>
-    <button id="audioBtnMain" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnMain')"></button>
+    <button id="audioBtnMain" class="audio-btn"></button>
     <div id="answerContent"></div>
   </div>
 
-<div class="control-row">
+  <div class="control-row">
     <button id="undoBtn" onclick="undoLastSpin()" disabled>
       <svg viewBox="0 0 100 100">
         <path id="undoCurve" d="M 30,30 A 50,50 0 0 1 70,70" fill="transparent" />
@@ -105,10 +96,10 @@
     </button>
 
     <button id="flagBtn" onclick="toggleMistake()" disabled>
-       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-          <line x1="4" y1="22" x2="4" y2="15"></line>
-       </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+        <line x1="4" y1="22" x2="4" y2="15"></line>
+      </svg>
     </button>
 
     <button id="spinBtn" onclick="spinBoth()">
@@ -120,643 +111,672 @@
   </div>
 </div>
 
+<!-- Tab 2: Review -->
 <div id="reviewContainer" class="view-container">
-    <div class="review-layout">
-        <div class="review-controls-new">
-            <div class="review-nav-row">
-                <button class="review-nav-arrow" onclick="changeReviewSubject(-1)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <button class="review-nav-label" onclick="openPicker('subject')" id="reviewSubjectLabel">🌍 Geography</button>
-                <button class="review-nav-arrow" onclick="changeReviewSubject(1)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </button>
-            </div>
-            
-            <div class="review-nav-row">
-                <button class="review-nav-arrow" onclick="changeReviewWeek(-1)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <button class="review-nav-label" onclick="openPicker('week')" id="reviewWeekLabel">Week 1</button>
-                <button class="review-nav-arrow" onclick="changeReviewWeek(1)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </button>
-            </div>
-        </div>
+  <div class="review-layout">
+    <div class="review-controls-new">
+      <div class="review-nav-row">
+        <button class="review-nav-arrow" onclick="changeReviewSubject(-1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button class="review-nav-label" onclick="openPicker('subject')" id="reviewSubjectLabel">🌍 Geography</button>
+        <button class="review-nav-arrow" onclick="changeReviewSubject(1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
+      <div class="review-nav-row">
+        <button class="review-nav-arrow" onclick="changeReviewWeek(-1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button class="review-nav-label" onclick="openPicker('week')" id="reviewWeekLabel">Week 1</button>
+        <button class="review-nav-arrow" onclick="changeReviewWeek(1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+    </div>
 
     <div id="reviewPrompt" class="prompt-card-style" onclick="speakText(this.textContent)" style="cursor: pointer;"></div>
 
-        <div id="reviewAnswerContainer">
-            <div class="answer-header-static">ANSWER</div>
-            <button id="infoBtnReview" class="info-btn" onclick="openInfoModal(event, 'infoBtnReview')">i</button>
-            <button id="audioBtnReview" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnReview')"></button>
-            <div id="reviewAnswerContent"></div>
-        </div>
-        
-        <div style="position: fixed; bottom: calc(83px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: 600; pointer-events: none;">
-            <button id="reviewFlagBtn" onclick="toggleMistakeFromReview()" style="pointer-events: auto;">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                  <line x1="4" y1="22" x2="4" y2="15"></line>
-               </svg>
-            </button>
-        </div>
-    </div>
-</div>
-
-<div id="gridContainer" class="view-container">
-    <div id="gridContent" style="padding-top: 20px; width: 100%; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
-        
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 10px; flex-shrink: 0;">
-            <button id="resetGridBtnTour" class="resetHeaderBtn" onclick="resetGrid()" style="padding: 10px 24px; font-size: 14px;">Reset Grid</button>
-            
-            <div id="gridControlsRow" style="display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; padding: 5px; border-radius: 16px; width: 100%;">
-                <select id="cyclePicker" onchange="changeCycle(this.value)">
-                    <option value="1">Cycle 1</option>
-                    <option value="2">Cycle 2</option>
-                    <option value="3">Cycle 3</option>
-                </select>
-                
-                <!-- Grouped the min/max pickers into their own dedicated row -->
-                <div style="display: flex; gap: 10px; align-items: center; justify-content: center; width: 100%;">
-                    <div class="weekRangeControl">
-                        <span>Min:</span>
-                        <button id="decreaseMinWeek" class="weekBtn">-</button>
-                        <span id="minWeekDisplay">1</span>
-                        <button id="increaseMinWeek" class="weekBtn">+</button>
-                    </div>
-                    <div class="weekRangeControl">
-                        <span>Max:</span>
-                        <button id="decreaseMaxWeek" class="weekBtn">-</button>
-                        <span id="maxWeekDisplay">12</span>
-                        <button id="increaseMaxWeek" class="weekBtn">+</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="grid"></div>
-    </div>
-</div>
-
-<div id="challengeContainer" class="view-container">
-    <h1 class="app-title" style="margin-top: 40px; margin-bottom: 20px;">Focus</h1>
-    <div class="settings-menu">
-        <button class="setting-item" onclick="startMistakeReview()" style="position: relative; overflow: visible;">
-            <span id="menuMistakeBadge" class="notification-badge" style="top: -8px; right: -8px; width: 24px; height: 24px; font-size: 12px;">0</span>
-            <div class="setting-text">
-                <h4>Review Mistakes</h4>
-                <p>Target the lessons that need work</p>
-            </div>
-            <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>
-        </button>
-
-        <button class="setting-item" onclick="openTimeAttackMenu()">
-            <div class="setting-text">
-                <h4>Time Attack</h4>
-                <p>Race the clock to test your speed</p>
-            </div>
-            <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><circle cx="12" cy="13" r="8"></circle><polyline points="12 9 12 13 14 15"></polyline><line x1="12" y1="2" x2="12" y2="4"></line></svg></div>
-        </button>
-
-        <button class="setting-item" onclick="openTriviaMenu()">
-            <div class="setting-text">
-                <h4>Trivia Quiz</h4>
-                <p>Test your knowledge</p>
-            </div>
-            <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
-        </button>
-
-
-        <button class="setting-item" onclick="openRadio()">
-            <div class="setting-text">
-                <h4>CC Spinner Radio</h4>
-                <p>Listen to a playlist of your songs</p>
-            </div>
-            <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg></div>
-        </button>
-
-        <button class="setting-item" onclick="openScriptureMenu()">
-            <div class="setting-text">
-                <h4 id="scriptureBtnTitle">Scripture Song</h4>
-                <p id="scriptureBtnDesc">Sing along and learn the verses</p>
-            </div>
-            <div style="color: var(--secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></div>
-        </button>
-    </div>
-</div>
-
-<div id="mistakeGameContainer" class="view-container">
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitMistakeReview()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
-        <span id="mistakesRemaining" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Remaining: 0</span>
+    <div id="reviewAnswerContainer">
+      <div class="answer-header-static">ANSWER</div>
+      <button id="infoBtnReview" class="info-btn" onclick="openInfoModal(event, 'infoBtnReview')">i</button>
+      <button id="audioBtnReview" class="audio-btn"></button>
+      <div id="reviewAnswerContent"></div>
     </div>
 
-    <div id="mistakeSubjectLabel" style="font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
-
-    <div id="mistakePrompt"></div>
-
-    <div id="mistakeAnswerContainer">
-        <button id="toggleMistakeAnswer" onclick="toggleMistakeAnswerBtn()">▼ Show Answer ▼</button>
-        <button id="infoBtnMistake" class="info-btn" onclick="openInfoModal(event, 'infoBtnMistake')">i</button>
-        <button id="audioBtnMistake" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnMistake')"></button>
-        <div id="mistakeAnswerContent"></div>
-    </div>
-
-    <div style="display: flex; gap: 15px; margin-top: auto; margin-bottom: 20px; width: 90%; max-width: 400px; justify-content: center;">
-        <button id="mistakeNeedsWorkBtn" onclick="processMistake(false)" disabled style="flex: 1; height: 65px; border-radius: 16px; border: none; background: #ef4444; color: white; font-weight: 800; font-size: 16px; opacity: 0.5; transition: 0.2s; cursor: pointer; box-shadow: 0 4px 15px rgba(239,68,68,0.3);">Needs Work</button>
-        <button id="mistakeCorrectBtn" onclick="processMistake(true)" disabled style="flex: 1; height: 65px; border-radius: 16px; border: none; background: #22c55e; color: white; font-weight: 800; font-size: 16px; opacity: 0.5; transition: 0.2s; cursor: pointer; box-shadow: 0 4px 15px rgba(34,197,94,0.3);">Correct</button>
-    </div>
-</div>
-
-<div id="taMenuContainer" class="view-container">
-    <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitTimeAttackMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
-    </div>
-    
-    <h2 style="color: var(--primary); margin-top: 20px;">Set Timer</h2>
-    
-    <div class="rollerBox" style="margin: 30px 0;">
-        <div class="slot review-slot" id="taMinuteScroll" style="width: 80px;" onclick="openPicker('taMinutes')">
-            <div class="reel" id="taMinuteReel"></div>
-        </div>
-        <div style="display: flex; align-items: center; font-size: 20px; font-weight: 800; color: var(--text-main);">MINUTES</div>
-    </div>
-    
-    <button onclick="startTimeAttack()" style="background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">START</button>
-</div>
-
-<div id="taGameContainer" class="view-container">
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="quitTimeAttack()" style="background: none; border: none; color: #ef4444; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">Quit</button>
-        <div style="font-size: 14px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Time Attack</div>
-    </div>
-
-    <div id="taSubjectLabel" style="font-size: 14px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
-    <div id="taPrompt"></div>
-
-    <div id="taAnswerContainer">
-        <button id="toggleTAAnswer" onclick="toggleTAAnswerBtn()">▼ Show Answer ▼</button>
-        <button id="infoBtnTA" class="info-btn" onclick="openInfoModal(event, 'infoBtnTA')">i</button>
-        <button id="audioBtnTA" class="audio-btn" onclick="toggleVoiceover(event, 'audioBtnTA')"></button>
-        <div id="taAnswerContent"></div>
-    </div>
-
-    <div style="display: flex; align-items: center; justify-content: space-between; width: 95%; max-width: 450px; margin: auto 0 20px 0; padding: 0 10px; box-sizing: border-box;">
-        
-        <button id="taNeedsWorkBtn" onclick="processTA(false)" style="width: 70px; height: 70px; border-radius: 20px; border: none; background: #ef4444; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(239,68,68,0.3); transition: transform 0.1s ease;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 36px; height: 36px;">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-        
-        <div id="taScoreWrong" style="font-size: 26px; font-weight: 800; color: #ef4444;">0</div>
-        
-        <div id="taTimerDisplay" style="font-size: 38px; font-weight: 800; color: var(--text-main); font-variant-numeric: tabular-nums; width: 120px; text-align: center;">00:00</div>
-        
-        <div id="taScoreRight" style="font-size: 26px; font-weight: 800; color: #22c55e;">0</div>
-        
-        <button id="taCorrectBtn" onclick="processTA(true)" style="width: 70px; height: 70px; border-radius: 20px; border: none; background: #22c55e; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(34,197,94,0.3); transition: transform 0.1s ease;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 38px; height: 38px;">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-        </button>
-        
-    </div>
-</div>
-
-<div id="mapMenuContainer" class="view-container">
-    <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitMapMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
-    </div>
-    
-    <h2 style="color: var(--primary); margin-top: 20px;">Select a Map</h2>
-    <p style="color: var(--text-muted); font-weight: 800; margin-top: -10px; margin-bottom: 30px;">Cycle <span id="mapMenuCycleDisplay">2</span></p>
-    
-    <div id="mapSelectionList" style="display: flex; flex-direction: column; gap: 15px; width: 90%; max-width: 400px; margin: 0 auto;"></div>
-</div>
-
-<div id="mapGameContainer" class="view-container">
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitMapGame()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
-        
-        <button onclick="nextMapQuestion()" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--text-muted); font-weight: 800; font-size: 14px; border-radius: 8px; padding: 6px 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">Skip ⏭️</button>
-        
-        <span id="mapScoreDisplay" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Score: 0</span>
-    </div>
-
-<h2 id="mapPrompt" style="color: var(--primary); margin: 0 0 10px 0; padding: 0 10px; height: 60px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.2;">Loading Map...</h2>
-
-    <div id="svgMapWrapper" style="touch-action: none; "width: 100%; flex: 1; overflow: hidden; background: #dbeafe; border-top: 2px solid rgba(74, 144, 226, 0.2); box-shadow: inset 0 10px 20px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: flex-start;"></div>
-
-    <div id="twoFingerReminder" style="position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); display: none; align-items: center; justify-content: center; background: var(--primary); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 100; pointer-events: none; transition: opacity 0.3s ease;">
-        <span style="margin-right: 10px; font-size: 24px;"></span> Use two fingers to scroll and zoom
-    </div>
-</div>
-
-<div id="triviaMenuContainer" class="view-container">
-    <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitTriviaMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
-    </div>
-    
-    <h2 style="color: var(--primary); margin-top: 20px;">How Many Questions?</h2>
-    
-    <div class="rollerBox" style="margin: 30px 0;">
-        <div class="slot review-slot" id="triviaCountScroll" style="width: 160px;" onclick="openPicker('triviaCount')">
-            <div class="reel" id="triviaCountReel"></div>
-        </div>
-    </div>
-    
-    <button onclick="startTriviaGame()" style="background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">START</button>
-</div>
-
-<div id="triviaGameContainer" class="view-container">
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
-        <button onclick="exitTriviaGame()" style="background: none; border: none; color: #ef4444; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">Quit</button>
-        <span id="triviaScoreDisplay" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Score: 0</span>
-    </div>
-
-    <div id="triviaSubjectLabel" style="font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
-
-    <div id="triviaPrompt"></div>
-
-    <div class="trivia-grid">
-        <button id="triviaBtn0" class="trivia-option-btn"></button>
-        <button id="triviaBtn1" class="trivia-option-btn"></button>
-        <button id="triviaBtn2" class="trivia-option-btn"></button>
-        <button id="triviaBtn3" class="trivia-option-btn"></button>
-    </div>
-</div>
-
-<div id="taResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
-    <canvas id="taConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
-    
-    <div class="doneBox" style="position: relative; z-index: 5002;">
-        <div class="doneActions">
-            <h3 id="taResultsTitle" style="margin-top:0; color: var(--secondary); font-size: 24px;">Time's Up!</h3>
-            
-            <div style="font-size: 48px; margin: 10px 0;">⏰</div>
-            
-            <p id="taResultsSubtitle" style="font-size: 16px; font-weight: 800; color: #22c55e; margin: -5px 0 15px 0; display: none;">You finished the lesson in only 00:00!</p>
-            
-            <p style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 5px;">Score: <span id="taFinalScore" style="color: var(--secondary);">0 / 0</span></p>
-            <p id="taAccuracy" style="font-size: 16px; font-weight: 700; color: var(--text-muted); margin-bottom: 25px; margin-top: -10px;">Accuracy: 0%</p>
-            
-            <div style="display:flex; justify-content:center;">
-                <button onclick="closeTAResults()" style="background:#22c55e; color:white; border:none; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer; width: 100%; font-size: 16px;">Awesome!</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="triviaResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
-    <canvas id="triviaConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
-    
-    <div class="doneBox" style="position: relative; z-index: 5002;">
-        <div class="doneActions">
-            <h3 style="margin-top:0; color: var(--secondary); font-size: 24px;">Quiz Complete!</h3>
-            
-            <div style="font-size: 48px; margin: 10px 0;">🧠</div>
-            
-            <p style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 5px;">Score: <span id="triviaFinalScore" style="color: var(--secondary);">0 / 0</span></p>
-            <p id="triviaAccuracy" style="font-size: 16px; font-weight: 700; color: var(--text-muted); margin-bottom: 25px; margin-top: -10px;">Accuracy: 0%</p>
-            
-            <div style="display:flex; justify-content:center;">
-                <button onclick="closeTriviaResults()" style="background:#22c55e; color:white; border:none; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer; width: 100%; font-size: 16px;">Awesome!</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="mistakeResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
-    <canvas id="mistakeConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
-    
-    <div class="doneBox" style="position: relative; z-index: 5002;">
-        <div class="doneActions">
-            <h3 style="margin-top:0; color: var(--secondary); font-size: 24px;">Deck Cleared!</h3>
-            <div style="font-size: 48px; margin: 10px 0;">🎯</div>
-            <p style="font-size: 18px; font-weight: 800; color: var(--text-main);">You mastered your mistakes.</p>
-            
-            <div style="display:flex; justify-content:center; margin-top:20px;">
-                <button onclick="closeMistakeResults()" style="background:#22c55e; color:white; border:none; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer; width: 100%; font-size: 16px;">Awesome!</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="mapResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
-    <canvas id="mapConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
-    
-    <div class="doneBox" style="position: relative; z-index: 5002;">
-        <div class="doneActions">
-            <h3 style="margin-top:0; color: var(--secondary); font-size: 24px;">Map Cleared!</h3>
-            
-            <div style="font-size: 48px; margin: 10px 0;">🗺️</div>
-            
-            <p style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 5px;">Score: <span id="mapFinalScore" style="color: var(--secondary);">0 / 0</span></p>
-            <p id="mapAccuracy" style="font-size: 16px; font-weight: 700; color: var(--text-muted); margin-bottom: 25px; margin-top: -10px;">Accuracy: 0%</p>
-            
-            <div style="display:flex; justify-content:center;">
-                <button onclick="closeMapResults()" style="background:#22c55e; color:white; border:none; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer; width: 100%; font-size: 16px;">Awesome!</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="settingsContainer" class="view-container" style="overflow-y: auto; justify-content: flex-start; padding-bottom: 120px;">
-    <h1 class="app-title" style="margin-top: 40px; margin-bottom: 20px;">Settings</h1>
-    
-    <div class="settings-menu">
-        <button class="setting-item" onclick="toggleSound()">
-            <div class="setting-text">
-                <h4>Sound</h4>
-                <p>Play chimes and notes</p>
-            </div>
-            <div class="toggle-switch" id="switch-sound"><div class="toggle-knob"></div></div>
-        </button>
-        
-        <button class="setting-item" id="row-haptics" onclick="toggleHaptics()">
-            <div class="setting-text">
-                <h4>Vibration</h4>
-                <p>Haptic feedback on taps</p>
-            </div>
-            <div class="toggle-switch" id="switch-haptics"><div class="toggle-knob"></div></div>
-        </button>
-        
-        <button class="setting-item" onclick="toggleTurbo()">
-            <div class="setting-text">
-                <h4>Turbo Spin</h4>
-                <p>Faster slot machine animations</p>
-            </div>
-            <div class="toggle-switch" id="switch-turbo"><div class="toggle-knob"></div></div>
-        </button>
-        
-        <button class="setting-item" onclick="toggleAutoReveal()">
-            <div class="setting-text">
-                <h4>Auto-Reveal</h4>
-                <p>Open answer automatically</p>
-            </div>
-            <div class="toggle-switch" id="switch-reveal"><div class="toggle-knob"></div></div>
-        </button>
-        
-        <button class="setting-item" onclick="toggleDarkMode()">
-            <div class="setting-text">
-                <h4>Dark Mode</h4>
-                <p>Easier on the eyes</p>
-            </div>
-            <div class="toggle-switch" id="switch-dark"><div class="toggle-knob"></div></div>
-        </button>
-
-        <div class="setting-item" style="cursor: default;">
-            <div class="setting-text">
-                <h4>Reader Voice</h4>
-                <p>Tap prompts to read aloud</p>
-            </div>
-            <select id="voicePicker" onchange="changeVoice(this.value)" style="max-width: 140px; flex-shrink: 0; padding: 8px 28px 8px 12px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 14px; font-weight: 700; background-color: var(--card-bg); color: var(--secondary); cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234a90e2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 10px auto; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-                <option value="">Auto-Select</option>
-            </select>
-        </div>
-
-        <!-- INSTALL APP BUTTON (Hides automatically if already installed) -->
-        <div id="installSettingContainer" class="setting-item">
-            <div class="setting-text">
-                <h4>Install App</h4>
-                <p>Add CC Spinner to your Home Screen</p>
-            </div>
-            <button class="settings-action-btn" onclick="promptInstall()">Install</button>
-        </div>
-
-        <button class="setting-item" onclick="showTutorial()">
-            <div class="setting-text">
-                <h4>App Tutorial</h4>
-                <p>Replay the welcome tour</p>
-            </div>
-            <div style="color: var(--text-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>
-        </button>
-        
-        <button class="setting-item" onclick="openContactModal()">
-            <div class="setting-text">
-                <h4>Contact Us</h4>
-                <p>Send feedback, suggestions, or bug reports</p>
-            </div>
-            <div style="color: var(--text-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
-        </button>
-
-        <div class="setting-item" style="cursor: default;">
-            <div class="setting-text">
-                <h4>App Version</h4>
-                <p>Current: v<span id="app-version">Loading...</span></p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<nav class="bottom-nav">
-    <button class="nav-item active" id="nav-spinner" onclick="switchMode('spinner')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
-        <span>Spinner</span>
-    </button>
-    <button class="nav-item" id="nav-review" onclick="switchMode('review')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-        <span>Review</span>
-    </button>
-    <button class="nav-item" id="nav-grid" onclick="switchMode('grid')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
-        <span>Lessons</span>
-    </button>
-    <button class="nav-item" id="nav-challenge" onclick="switchMode('challenge')" style="position: relative;">
-        <span id="navMistakeBadge" class="notification-badge" style="top: 0px; right: 0px;">0</span>       
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-        <span>Focus</span>
-    </button> 
-    <button class="nav-item" id="nav-settings" onclick="switchMode('settings')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        <span>Settings</span>
-    </button>
-</nav>
-
-<div id="scriptureContainer" class="view-container">
-    <div class="focus-top-bar" style="padding-bottom: 5px;">
-        <button class="focus-nav-btn back" onclick="exitScriptureMenu()">← Back</button>
-        
-        <!-- The Target Week Dropdown -->
-        <select id="scriptureWeekSelect" onchange="handleScriptureWeekChange()" style="appearance: none; background: var(--secondary); color: white; border: none; padding: 6px 15px; border-radius: 12px; font-weight: 800; font-size: 14px; text-align: center;">
-            <option value="1">Stop after Week 1</option>
-            <option value="2">Stop after Week 2</option>
-            <option value="3">Stop after Week 3</option>
-            <option value="4">Stop after Week 4</option>
-            <option value="5">Stop after Week 5</option>
-            <option value="6">Stop after Week 6</option>
-            <option value="7">Stop after Week 7</option>
-            <option value="8">Stop after Week 8</option>
-            <option value="9">Stop after Week 9</option>
-            <option value="10">Stop after Week 10</option>
-            <option value="11">Stop after Week 11</option>
-            <option value="12">Stop after Week 12</option>
-            <option value="13">Stop after Week 13</option>
-            <option value="14">Stop after Week 14</option>
-            <option value="15">Stop after Week 15</option>
-            <option value="16">Stop after Week 16</option>
-            <option value="17">Stop after Week 17</option>
-            <option value="18">Stop after Week 18</option>
-            <option value="19">Stop after Week 19</option>
-            <option value="20">Stop after Week 20</option>
-            <option value="21">Stop after Week 21</option>
-            <option value="22">Stop after Week 22</option>
-            <option value="23">Stop after Week 23</option>
-            <option value="24" selected>Play Full Song</option>
-        </select>
-    </div>
-
-    <!-- The Scrolling Lyrics Area -->
-    <div id="scriptureLyricsContainer"></div>
-
-    <!-- The Floating Play Button & Progress Ring -->
-    <div style="width: 100%; padding: 10px; box-sizing: border-box; z-index: 10; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-        
-        <!-- Restart Button -->
-        <button onclick="restartScriptureAudio()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px; margin-right: 15px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                <polyline points="3 3 3 8 8 8"></polyline>
-            </svg>
-        </button>
-
-        <div class="scripture-player-wrap" onclick="toggleScriptureAudio()">
-            <svg class="scripture-progress-svg" viewBox="0 0 70 70">
-                <circle class="scripture-progress-bg" cx="35" cy="35" r="31"></circle>
-                <circle id="scriptureProgressBar" class="scripture-progress-bar" cx="35" cy="35" r="31" style="stroke-dasharray: 195; stroke-dashoffset: 195;"></circle>
-            </svg>
-            <div id="scripturePlayBtn" class="audio-btn scripture-play-btn">
-                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-            </div>
-        </div>
-
-        <!-- Invisible spacer to keep the play button dead center! -->
-        <div style="width: 46px; margin-left: 15px;"></div>
-    </div>
-</div>
-
-<div id="resetConfirmOverlay">
-  <div class="confirmBox">
-    <h3 style="margin-top:0">Clear Progress?</h3>
-    <p>This will reset all lessons in the grid.</p>
-    <div style="display:flex; gap:12px; justify-content:center;">
-      <!-- NEW: Added ID so the tutorial spotlight can find it! -->
-      <button id="confirmResetBtnTour" onclick="resetGridConfirmed()" style="background:var(--primary); color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:700; cursor:pointer;">Yes, Reset</button>
-      <button onclick="hideResetConfirm()" style="background:#f1f5f9; color:#64748b; padding:12px 20px; border:none; border-radius:12px; font-weight:700; cursor:pointer;">Cancel</button>
+    <div style="position: fixed; bottom: calc(83px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: 600; pointer-events: none;">
+      <button id="reviewFlagBtn" onclick="toggleMistakeFromReview()" style="pointer-events: auto;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+          <line x1="4" y1="22" x2="4" y2="15"></line>
+        </svg>
+      </button>
     </div>
   </div>
 </div>
 
-<div id="doneOverlay">
-  <canvas id="confettiCanvas"></canvas>
-  <div class="doneBox">
-    <div class="doneActions">
-      <h3 style="margin-top:0; color:var(--secondary)">Lesson Complete!</h3>
-      <p>Great work — you finished all lessons for today.</p>
-      <div style="display:flex; gap:12px; justify-content:center; margin-top:12px;">
-        <button onclick="(function(){ resetGridConfirmed(); hideDoneOverlay(); })()" style="background:#22c55e; color:white; border:none; padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer;">Reset Lesson</button>
+<!-- Tab 3: Lessons Grid -->
+<div id="gridContainer" class="view-container">
+  <div id="gridContent" style="padding-top: 20px; width: 100%; flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 10px; flex-shrink: 0;">
+      <button id="resetGridBtnTour" class="resetHeaderBtn" onclick="resetGrid()" style="padding: 10px 24px; font-size: 14px;">Reset Grid</button>
+
+      <div id="gridControlsRow" style="display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; padding: 5px; border-radius: 16px; width: 100%;">
+        <select id="cyclePicker" onchange="changeCycle(this.value)">
+          <option value="1">Cycle 1</option>
+          <option value="2">Cycle 2</option>
+          <option value="3">Cycle 3</option>
+        </select>
+
+        <div style="display: flex; gap: 10px; align-items: center; justify-content: center; width: 100%;">
+          <div class="weekRangeControl">
+            <span>Min:</span>
+            <button id="decreaseMinWeek" class="weekBtn">-</button>
+            <span id="minWeekDisplay">1</span>
+            <button id="increaseMinWeek" class="weekBtn">+</button>
+          </div>
+          <div class="weekRangeControl">
+            <span>Max:</span>
+            <button id="decreaseMaxWeek" class="weekBtn">-</button>
+            <span id="maxWeekDisplay">12</span>
+            <button id="increaseMaxWeek" class="weekBtn">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="grid"></div>
+  </div>
+</div>
+
+<!-- Tab 4: Focus Menu -->
+<div id="challengeContainer" class="view-container">
+  <h1 class="app-title" style="margin-top: 40px; margin-bottom: 20px;">Focus</h1>
+  <div class="settings-menu">
+    <button class="setting-item" onclick="startMistakeReview()" style="position: relative; overflow: visible;">
+      <span id="menuMistakeBadge" class="notification-badge" style="top: -8px; right: -8px; width: 24px; height: 24px; font-size: 12px;">0</span>
+      <div class="setting-text">
+        <h4>Review Mistakes</h4>
+        <p>Target the lessons that need work</p>
+      </div>
+      <div style="color: var(--secondary);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="6"></circle>
+          <circle cx="12" cy="12" r="2"></circle>
+        </svg>
+      </div>
+    </button>
+
+    <button class="setting-item" onclick="openTimeAttackMenu()">
+      <div class="setting-text">
+        <h4>Time Attack</h4>
+        <p>Race the clock to test your speed</p>
+      </div>
+      <div style="color: var(--secondary);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;">
+          <circle cx="12" cy="13" r="8"></circle>
+          <polyline points="12 9 12 13 14 15"></polyline>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+        </svg>
+      </div>
+    </button>
+
+    <button class="setting-item" onclick="openTriviaMenu()">
+      <div class="setting-text">
+        <h4>Trivia Quiz</h4>
+        <p>Test your knowledge</p>
+      </div>
+      <div style="color: var(--secondary);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+    </button>
+
+    <button class="setting-item" onclick="openRadio()">
+      <div class="setting-text">
+        <h4>CC Spinner Radio</h4>
+        <p>Listen to a playlist of your songs</p>
+      </div>
+      <div style="color: var(--secondary);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;">
+          <circle cx="12" cy="12" r="2"></circle>
+          <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
+        </svg>
+      </div>
+    </button>
+
+    <button class="setting-item" onclick="openScriptureMenu()">
+      <div class="setting-text">
+        <h4 id="scriptureBtnTitle">Scripture Song</h4>
+        <p id="scriptureBtnDesc">Sing along and learn the verses</p>
+      </div>
+      <div style="color: var(--secondary);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- Tab 5: Settings -->
+<div id="settingsContainer" class="view-container" style="overflow-y: auto; justify-content: flex-start; padding-bottom: 120px;">
+  <h1 class="app-title" style="margin-top: 40px; margin-bottom: 20px;">Settings</h1>
+
+  <div class="settings-menu">
+    <button class="setting-item" onclick="toggleSound()">
+      <div class="setting-text">
+        <h4>Sound</h4>
+        <p>Play chimes and notes</p>
+      </div>
+      <div class="toggle-switch" id="switch-sound"><div class="toggle-knob"></div></div>
+    </button>
+
+    <button class="setting-item" id="row-haptics" onclick="toggleHaptics()">
+      <div class="setting-text">
+        <h4>Vibration</h4>
+        <p>Haptic feedback on taps</p>
+      </div>
+      <div class="toggle-switch" id="switch-haptics"><div class="toggle-knob"></div></div>
+    </button>
+
+    <button class="setting-item" onclick="toggleTurbo()">
+      <div class="setting-text">
+        <h4>Turbo Spin</h4>
+        <p>Faster slot machine animations</p>
+      </div>
+      <div class="toggle-switch" id="switch-turbo"><div class="toggle-knob"></div></div>
+    </button>
+
+    <button class="setting-item" onclick="toggleAutoReveal()">
+      <div class="setting-text">
+        <h4>Auto-Reveal</h4>
+        <p>Open answer automatically</p>
+      </div>
+      <div class="toggle-switch" id="switch-reveal"><div class="toggle-knob"></div></div>
+    </button>
+
+    <button class="setting-item" onclick="toggleDarkMode()">
+      <div class="setting-text">
+        <h4>Dark Mode</h4>
+        <p>Easier on the eyes</p>
+      </div>
+      <div class="toggle-switch" id="switch-dark"><div class="toggle-knob"></div></div>
+    </button>
+
+    <div class="setting-item" style="cursor: default;">
+      <div class="setting-text">
+        <h4>Reader Voice</h4>
+        <p>Tap prompts to read aloud</p>
+      </div>
+      <select id="voicePicker" onchange="changeVoice(this.value)" style="max-width: 140px; flex-shrink: 0; padding: 8px 28px 8px 12px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 14px; font-weight: 700; background-color: var(--card-bg); color: var(--secondary); cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234a90e2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 10px auto; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+        <option value="">Auto-Select</option>
+      </select>
+    </div>
+
+    <div id="installSettingContainer" class="setting-item">
+      <div class="setting-text">
+        <h4>Install App</h4>
+        <p>Add CC Spinner to your Home Screen</p>
+      </div>
+      <button class="settings-action-btn" onclick="promptInstall()">Install</button>
+    </div>
+
+    <button class="setting-item" onclick="showTutorial()">
+      <div class="setting-text">
+        <h4>App Tutorial</h4>
+        <p>Replay the welcome tour</p>
+      </div>
+      <div style="color: var(--text-muted);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </div>
+    </button>
+
+    <button class="setting-item" onclick="openContactModal()">
+      <div class="setting-text">
+        <h4>Contact Us</h4>
+        <p>Send feedback, suggestions, or bug reports</p>
+      </div>
+      <div style="color: var(--text-muted);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+      </div>
+    </button>
+
+    <div class="setting-item" style="cursor: default;">
+      <div class="setting-text">
+        <h4>App Version</h4>
+        <p>Current: v<span id="app-version">Loading...</span></p>
       </div>
     </div>
   </div>
 </div>
 
-<div id="reviewPickerOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 5000;">
-    <div style="background: white; width: 90%; max-width: 350px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 80vh; display: flex; flex-direction: column;">
-        <h3 id="pickerTitle" style="margin-top: 0; text-align: center; color: var(--primary);">Select</h3>
-        <div id="pickerGrid" style="display: grid; gap: 10px; overflow-y: auto; padding: 10px 0;"></div>
-        <button onclick="closePicker()" style="margin-top: 15px; width: 100%; padding: 12px; background: #f1f5f9; color: #64748b; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">Cancel</button>
+
+<!-- ==========================================================================
+     3. FOCUS SUB-VIEWS (Mistakes, Time Attack, Map, Trivia, Scripture, Radio)
+     ========================================================================== -->
+
+<!-- Review Mistakes Game -->
+<div id="mistakeGameContainer" class="view-container">
+  <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
+    <button onclick="exitMistakeReview()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+    <span id="mistakesRemaining" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Remaining: 0</span>
+  </div>
+
+  <div id="mistakeSubjectLabel" style="font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
+  <div id="mistakePrompt"></div>
+
+  <div id="mistakeAnswerContainer">
+    <button id="toggleMistakeAnswer" onclick="toggleMistakeAnswerBtn()">▼ Show Answer ▼</button>
+    <button id="infoBtnMistake" class="info-btn" onclick="openInfoModal(event, 'infoBtnMistake')">i</button>
+    <button id="audioBtnMistake" class="audio-btn"></button>
+    <div id="mistakeAnswerContent"></div>
+  </div>
+
+  <div style="display: flex; gap: 15px; margin-top: auto; margin-bottom: 20px; width: 90%; max-width: 400px; justify-content: center;">
+    <button id="mistakeNeedsWorkBtn" onclick="processMistake(false)" disabled style="flex: 1; height: 65px; border-radius: 16px; border: none; background: #ef4444; color: white; font-weight: 800; font-size: 16px; opacity: 0.5; transition: 0.2s; cursor: pointer; box-shadow: 0 4px 15px rgba(239,68,68,0.3);">Needs Work</button>
+    <button id="mistakeCorrectBtn" onclick="processMistake(true)" disabled style="flex: 1; height: 65px; border-radius: 16px; border: none; background: #22c55e; color: white; font-weight: 800; font-size: 16px; opacity: 0.5; transition: 0.2s; cursor: pointer; box-shadow: 0 4px 15px rgba(34,197,94,0.3);">Correct</button>
+  </div>
+</div>
+
+<!-- Time Attack Menu -->
+<div id="taMenuContainer" class="view-container">
+  <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
+    <button onclick="exitTimeAttackMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+  </div>
+
+  <h2 style="color: var(--primary); margin-top: 20px;">Set Timer</h2>
+
+  <div class="rollerBox" style="margin: 30px 0;">
+    <div class="slot review-slot" id="taMinuteScroll" style="width: 80px;" onclick="openPicker('taMinutes')">
+      <div class="reel" id="taMinuteReel"></div>
     </div>
+    <div style="display: flex; align-items: center; font-size: 20px; font-weight: 800; color: var(--text-main);">MINUTES</div>
+  </div>
+
+  <button onclick="startTimeAttack()" style="background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">START</button>
 </div>
 
-<div id="infoModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; touch-action: none; overscroll-behavior: none;">
-    <!-- Glass-morphism X button pushed to the very top right corner (clearing the notch) -->
-    <button onclick="closeInfoModal()" style="position: absolute; top: max(20px, env(safe-area-inset-top)); right: 20px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; font-weight: 800; font-size: 18px; cursor: pointer; color: white; z-index: 6001; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent;">X</button>
-    
-    <!-- A pure, un-scrollable boundary for the physics engine -->
-    <div id="infoModalContent" style="width: 100%; height: 100%; position: relative; overflow: hidden;"></div>
+<!-- Time Attack Game -->
+<div id="taGameContainer" class="view-container">
+  <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
+    <button onclick="quitTimeAttack()" style="background: none; border: none; color: #ef4444; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">Quit</button>
+    <div style="font-size: 14px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Time Attack</div>
+  </div>
+
+  <div id="taSubjectLabel" style="font-size: 14px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
+  <div id="taPrompt"></div>
+
+  <div id="taAnswerContainer">
+    <button id="toggleTAAnswer" onclick="toggleTAAnswerBtn()">▼ Show Answer ▼</button>
+    <button id="infoBtnTA" class="info-btn" onclick="openInfoModal(event, 'infoBtnTA')">i</button>
+    <button id="audioBtnTA" class="audio-btn"></button>
+    <div id="taAnswerContent"></div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 95%; max-width: 450px; margin: auto 0 20px 0; padding: 0 10px; box-sizing: border-box;">
+    <button id="taNeedsWorkBtn" onclick="processTA(false)" style="width: 70px; height: 70px; border-radius: 20px; border: none; background: #ef4444; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(239,68,68,0.3); transition: transform 0.1s ease;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 36px; height: 36px;">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <div id="taScoreWrong" style="font-size: 26px; font-weight: 800; color: #ef4444;">0</div>
+    <div id="taTimerDisplay" style="font-size: 38px; font-weight: 800; color: var(--text-main); font-variant-numeric: tabular-nums; width: 120px; text-align: center;">00:00</div>
+    <div id="taScoreRight" style="font-size: 26px; font-weight: 800; color: #22c55e;">0</div>
+
+    <button id="taCorrectBtn" onclick="processTA(true)" style="width: 70px; height: 70px; border-radius: 20px; border: none; background: #22c55e; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(34,197,94,0.3); transition: transform 0.1s ease;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 38px; height: 38px;">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
 </div>
 
-<div id="contactModalOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 6000;">
-    <div style="background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 90%; max-width: 400px; border-radius: 16px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); position: relative; text-align: left;">
-        <button onclick="closeContactModal()" style="position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 800; cursor: pointer; color: #64748b;">X</button>
-        <h3 style="margin-top: 0; color: var(--primary);">Contact Us</h3>
-        
-        <label style="font-weight: 800; color: var(--secondary); font-size: 14px;">Reason</label>
-        <select id="contactReason" style="width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 15px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 16px; background: white; color: var(--text-main);">
-            <option value="Feedback / Comment">Feedback / Comment</option>
-            <option value="Feature Suggestion">Feature Suggestion</option>
-            <option value="Incorrect Information">Incorrect Information</option>
-            <option value="Bug / Glitch">Report a Bug / Glitch</option>
-            <option value="Question / Other">Question / Other</option>
-        </select>
+<!-- Map Game Menu -->
+<div id="mapMenuContainer" class="view-container">
+  <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
+    <button onclick="exitMapMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+  </div>
 
-        <label style="font-weight: 800; color: var(--secondary); font-size: 14px;">Message</label>
-        <textarea id="contactMessage" rows="5" placeholder="Type your message here..." style="width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 20px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 16px; resize: none; box-sizing: border-box; background: white; color: var(--text-main);"></textarea>
+  <h2 style="color: var(--primary); margin-top: 20px;">Select a Map</h2>
+  <p style="color: var(--text-muted); font-weight: 800; margin-top: -10px; margin-bottom: 30px;">Cycle <span id="mapMenuCycleDisplay">2</span></p>
+  <div id="mapSelectionList" style="display: flex; flex-direction: column; gap: 15px; width: 90%; max-width: 400px; margin: 0 auto;"></div>
+</div>
 
-        <button onclick="submitContactForm()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">Send Email</button>
+<!-- Map Game -->
+<div id="mapGameContainer" class="view-container">
+  <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
+    <button onclick="exitMapGame()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+    <button onclick="nextMapQuestion()" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--text-muted); font-weight: 800; font-size: 14px; border-radius: 8px; padding: 6px 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">Skip ⏭️</button>
+    <span id="mapScoreDisplay" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Score: 0</span>
+  </div>
+
+  <h2 id="mapPrompt" style="color: var(--primary); margin: 0 0 10px 0; padding: 0 10px; height: 60px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.2;">Loading Map...</h2>
+
+  <div id="svgMapWrapper" style="touch-action: none; width: 100%; flex: 1; overflow: hidden; background: #dbeafe; border-top: 2px solid rgba(74, 144, 226, 0.2); box-shadow: inset 0 10px 20px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: flex-start;"></div>
+
+  <div id="twoFingerReminder" style="position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); display: none; align-items: center; justify-content: center; background: var(--primary); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 800; font-size: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 100; pointer-events: none; transition: opacity 0.3s ease;">
+    <span style="margin-right: 10px; font-size: 24px;"></span> Use two fingers to scroll and zoom
+  </div>
+</div>
+
+<!-- Trivia Menu -->
+<div id="triviaMenuContainer" class="view-container">
+  <div style="width: 100%; display: flex; align-items: center; padding: 15px 25px; box-sizing: border-box;">
+    <button onclick="exitTriviaMenu()" style="background: none; border: none; color: var(--secondary); font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">← Back</button>
+  </div>
+
+  <h2 style="color: var(--primary); margin-top: 20px;">How Many Questions?</h2>
+
+  <div class="rollerBox" style="margin: 30px 0;">
+    <div class="slot review-slot" id="triviaCountScroll" style="width: 160px;" onclick="openPicker('triviaCount')">
+      <div class="reel" id="triviaCountReel"></div>
     </div>
+  </div>
+
+  <button onclick="startTriviaGame()" style="background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">START</button>
 </div>
 
-<!-- CC SPINNER RADIO UI -->
+<!-- Trivia Game -->
+<div id="triviaGameContainer" class="view-container">
+  <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; box-sizing: border-box;">
+    <button onclick="exitTriviaGame()" style="background: none; border: none; color: #ef4444; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;">Quit</button>
+    <span id="triviaScoreDisplay" style="color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;">Score: 0</span>
+  </div>
+
+  <div id="triviaSubjectLabel" style="font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px;">Subject - Week</div>
+  <div id="triviaPrompt"></div>
+
+  <div class="trivia-grid">
+    <button id="triviaBtn0" class="trivia-option-btn"></button>
+    <button id="triviaBtn1" class="trivia-option-btn"></button>
+    <button id="triviaBtn2" class="trivia-option-btn"></button>
+    <button id="triviaBtn3" class="trivia-option-btn"></button>
+  </div>
+</div>
+
+<!-- Scripture Karaoke -->
+<div id="scriptureContainer" class="view-container">
+  <div class="focus-top-bar" style="padding-bottom: 5px;">
+    <button class="focus-nav-btn back" onclick="exitScriptureMenu()">← Back</button>
+    <select id="scriptureWeekSelect" onchange="handleScriptureWeekChange()" style="appearance: none; background: var(--secondary); color: white; border: none; padding: 6px 15px; border-radius: 12px; font-weight: 800; font-size: 14px; text-align: center;">
+      <option value="1">Stop after Week 1</option>
+      <option value="2">Stop after Week 2</option>
+      <option value="3">Stop after Week 3</option>
+      <option value="4">Stop after Week 4</option>
+      <option value="5">Stop after Week 5</option>
+      <option value="6">Stop after Week 6</option>
+      <option value="7">Stop after Week 7</option>
+      <option value="8">Stop after Week 8</option>
+      <option value="9">Stop after Week 9</option>
+      <option value="10">Stop after Week 10</option>
+      <option value="11">Stop after Week 11</option>
+      <option value="12">Stop after Week 12</option>
+      <option value="13">Stop after Week 13</option>
+      <option value="14">Stop after Week 14</option>
+      <option value="15">Stop after Week 15</option>
+      <option value="16">Stop after Week 16</option>
+      <option value="17">Stop after Week 17</option>
+      <option value="18">Stop after Week 18</option>
+      <option value="19">Stop after Week 19</option>
+      <option value="20">Stop after Week 20</option>
+      <option value="21">Stop after Week 21</option>
+      <option value="22">Stop after Week 22</option>
+      <option value="23">Stop after Week 23</option>
+      <option value="24" selected>Play Full Song</option>
+    </select>
+  </div>
+
+  <div id="scriptureLyricsContainer"></div>
+
+  <div style="width: 100%; padding: 10px; box-sizing: border-box; z-index: 10; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+    <button onclick="restartScriptureAudio()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px; margin-right: 15px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+        <polyline points="3 3 3 8 8 8"></polyline>
+      </svg>
+    </button>
+
+    <div class="scripture-player-wrap" onclick="toggleScriptureAudio()">
+      <svg class="scripture-progress-svg" viewBox="0 0 70 70">
+        <circle class="scripture-progress-bg" cx="35" cy="35" r="31"></circle>
+        <circle id="scriptureProgressBar" class="scripture-progress-bar" cx="35" cy="35" r="31" style="stroke-dasharray: 195; stroke-dashoffset: 195;"></circle>
+      </svg>
+      <div id="scripturePlayBtn" class="audio-btn scripture-play-btn">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      </div>
+    </div>
+
+    <div style="width: 46px; margin-left: 15px;"></div>
+  </div>
+</div>
+
+<!-- CC Spinner Radio -->
 <div id="radioContainer" class="view-container" style="align-items: center; padding-top: 40px;">
-    
-    <!-- Top Nav -->
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding: 0 20px;">
-        <button onclick="closeRadio()" style="background: transparent; border: none; color: var(--text-muted); font-weight: 800; font-size: 16px; cursor: pointer;">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
-        </button>
-        <span style="font-weight: 800; color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Now Playing</span>
-        <div style="width: 24px;"></div> <!-- Spacer for center alignment -->
-    </div>
+  <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding: 0 20px;">
+    <button onclick="closeRadio()" style="background: transparent; border: none; color: var(--text-muted); font-weight: 800; font-size: 16px; cursor: pointer;">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+    </button>
+    <span style="font-weight: 800; color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Now Playing</span>
+    <div style="width: 24px;"></div>
+  </div>
 
-    <!-- Album Art Placeholder -->
-    <div id="radioArt" style="width: 250px; height: 250px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; margin-bottom: 40px; transition: transform 0.3s ease;">
-        <svg viewBox="0 0 24 24" width="100" height="100" fill="white" opacity="0.8"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg>
-    </div>
+  <div id="radioArt" style="width: 250px; height: 250px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; margin-bottom: 40px; transition: transform 0.3s ease;">
+    <svg viewBox="0 0 24 24" width="100" height="100" fill="white" opacity="0.8"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg>
+  </div>
 
-    <!-- Track Info -->
-    <div style="text-align: center; margin-bottom: 30px; width: 80%;">
-        <h2 id="radioTrackTitle" style="font-size: 28px; font-weight: 900; color: var(--text-main); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Loading...</h2>
-        <p id="radioTrackSub" style="font-size: 18px; color: var(--primary); font-weight: 700;">Preparing Playlist</p>
-    </div>
+  <div style="text-align: center; margin-bottom: 30px; width: 80%;">
+    <h2 id="radioTrackTitle" style="font-size: 28px; font-weight: 900; color: var(--text-main); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Loading...</h2>
+    <p id="radioTrackSub" style="font-size: 18px; color: var(--primary); font-weight: 700;">Preparing Playlist</p>
+  </div>
 
-    <!-- Scrubber / Progress Bar -->
-    <div style="width: 85%; max-width: 400px; margin-bottom: 40px;">
-        <input type="range" id="radioSeeker" value="0" max="100" style="width: 100%; margin-bottom: 10px;">
-        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 700;">
-            <span id="radioTimeCurrent">0:00</span>
-            <span id="radioTimeTotal">-:--</span>
-        </div>
+  <div style="width: 85%; max-width: 400px; margin-bottom: 40px;">
+    <input type="range" id="radioSeeker" value="0" max="100" style="width: 100%; margin-bottom: 10px;">
+    <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 700;">
+      <span id="radioTimeCurrent">0:00</span>
+      <span id="radioTimeTotal">-:--</span>
     </div>
+  </div>
 
-    <!-- Playback Controls -->
-    <div style="display: flex; align-items: center; justify-content: space-between; width: 85%; max-width: 350px;">
-        <!-- Shuffle -->
-        <button id="radioShuffleBtn" onclick="toggleRadioShuffle()" class="radio-ctrl-btn">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"></path></svg>
-        </button>
-        <!-- Prev -->
-        <button onclick="prevRadioTrack()" class="radio-ctrl-btn" style="transform: scale(1.2);">
-            <svg viewBox="0 0 24 24" width="32" height="32"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg>
-        </button>
-        <!-- Play/Pause -->
-        <button id="radioPlayPauseBtn" onclick="toggleRadioPlay()" class="radio-ctrl-btn" style="transform: scale(1.8); color: var(--primary);">
-            <svg viewBox="0 0 24 24" width="40" height="40"><path id="radioPlayIcon" d="M8 5v14l11-7z"></path></svg>
-        </button>
-        <!-- Next -->
-        <button onclick="nextRadioTrack()" class="radio-ctrl-btn" style="transform: scale(1.2);">
-            <svg viewBox="0 0 24 24" width="32" height="32"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
-        </button>
-        <!-- Repeat -->
-        <button id="radioRepeatBtn" onclick="toggleRadioRepeat()" class="radio-ctrl-btn">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>
-        </button>
-    </div>
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 85%; max-width: 350px;">
+    <button id="radioShuffleBtn" onclick="toggleRadioShuffle()" class="radio-ctrl-btn">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"></path></svg>
+    </button>
+    <button onclick="prevRadioTrack()" class="radio-ctrl-btn" style="transform: scale(1.2);">
+      <svg viewBox="0 0 24 24" width="32" height="32"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path></svg>
+    </button>
+    <button id="radioPlayPauseBtn" onclick="toggleRadioPlay()" class="radio-ctrl-btn" style="transform: scale(1.8); color: var(--primary);">
+      <svg viewBox="0 0 24 24" width="40" height="40"><path id="radioPlayIcon" d="M8 5v14l11-7z"></path></svg>
+    </button>
+    <button onclick="nextRadioTrack()" class="radio-ctrl-btn" style="transform: scale(1.2);">
+      <svg viewBox="0 0 24 24" width="32" height="32"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path></svg>
+    </button>
+    <button id="radioRepeatBtn" onclick="toggleRadioRepeat()" class="radio-ctrl-btn">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"></path></svg>
+    </button>
+  </div>
 </div>
 
+
+<!-- ==========================================================================
+     4. BOTTOM NAVIGATION BAR
+     ========================================================================== -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="nav-spinner" onclick="switchMode('spinner')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+    <span>Spinner</span>
+  </button>
+  <button class="nav-item" id="nav-review" onclick="switchMode('review')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+    <span>Review</span>
+  </button>
+  <button class="nav-item" id="nav-grid" onclick="switchMode('grid')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+    <span>Lessons</span>
+  </button>
+  <button class="nav-item" id="nav-challenge" onclick="switchMode('challenge')" style="position: relative;">
+    <span id="navMistakeBadge" class="notification-badge" style="top: 0px; right: 0px;">0</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+    <span>Focus</span>
+  </button>
+  <button class="nav-item" id="nav-settings" onclick="switchMode('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    <span>Settings</span>
+  </button>
+</nav>
+
+
+<!-- ==========================================================================
+     5. MODALS & OVERLAYS
+     ========================================================================== -->
+
+<!-- Reset Grid Confirmation -->
+<div id="resetConfirmOverlay">
+  <div class="confirmBox">
+    <h3 style="margin-top: 0;">Clear Progress?</h3>
+    <p>This will reset all lessons in the grid.</p>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <button id="confirmResetBtnTour" onclick="resetGridConfirmed()" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer;">Yes, Reset</button>
+      <button onclick="hideResetConfirm()" style="background: #f1f5f9; color: #64748b; padding: 12px 20px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lesson Complete Overlay -->
+<div id="doneOverlay">
+  <canvas id="confettiCanvas"></canvas>
+  <div class="doneBox">
+    <div class="doneActions">
+      <h3 style="margin-top: 0; color: var(--secondary);">Lesson Complete!</h3>
+      <p>Great work — you finished all lessons for today.</p>
+      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 12px;">
+        <button onclick="(function(){ resetGridConfirmed(); hideDoneOverlay(); })()" style="background: #22c55e; color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer;">Reset Lesson</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Picker Modal -->
+<div id="reviewPickerOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 5000;">
+  <div style="background: white; width: 90%; max-width: 350px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 80vh; display: flex; flex-direction: column;">
+    <h3 id="pickerTitle" style="margin-top: 0; text-align: center; color: var(--primary);">Select</h3>
+    <div id="pickerGrid" style="display: grid; gap: 10px; overflow-y: auto; padding: 10px 0;"></div>
+    <button onclick="closePicker()" style="margin-top: 15px; width: 100%; padding: 12px; background: #f1f5f9; color: #64748b; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">Cancel</button>
+  </div>
+</div>
+
+<!-- Extra Info Full-Screen Viewer -->
+<div id="infoModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 6000; touch-action: none; overscroll-behavior: none;">
+  <button onclick="closeInfoModal()" style="position: absolute; top: max(20px, env(safe-area-inset-top)); right: 20px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; width: 40px; height: 40px; font-weight: 800; font-size: 18px; cursor: pointer; color: white; z-index: 6001; display: flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent;">X</button>
+  <div id="infoModalContent" style="width: 100%; height: 100%; position: relative; overflow: hidden;"></div>
+</div>
+
+<!-- Contact Us Modal -->
+<div id="contactModalOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 6000;">
+  <div style="background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 90%; max-width: 400px; border-radius: 16px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); position: relative; text-align: left;">
+    <button onclick="closeContactModal()" style="position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 800; cursor: pointer; color: #64748b;">X</button>
+    <h3 style="margin-top: 0; color: var(--primary);">Contact Us</h3>
+
+    <label style="font-weight: 800; color: var(--secondary); font-size: 14px;">Reason</label>
+    <select id="contactReason" style="width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 15px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 16px; background: white; color: var(--text-main);">
+      <option value="Feedback / Comment">Feedback / Comment</option>
+      <option value="Feature Suggestion">Feature Suggestion</option>
+      <option value="Incorrect Information">Incorrect Information</option>
+      <option value="Bug / Glitch">Report a Bug / Glitch</option>
+      <option value="Question / Other">Question / Other</option>
+    </select>
+
+    <label style="font-weight: 800; color: var(--secondary); font-size: 14px;">Message</label>
+    <textarea id="contactMessage" rows="5" placeholder="Type your message here..." style="width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 20px; border-radius: 12px; border: 2px solid rgba(74, 144, 226, 0.2); font-family: inherit; font-size: 16px; resize: none; box-sizing: border-box; background: white; color: var(--text-main);"></textarea>
+
+    <button onclick="submitContactForm()" style="width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255,111,97,0.3);">Send Email</button>
+  </div>
+</div>
+
+<!-- Results: Time Attack -->
+<div id="taResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
+  <canvas id="taConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
+  <div class="doneBox" style="position: relative; z-index: 5002;">
+    <div class="doneActions">
+      <h3 id="taResultsTitle" style="margin-top: 0; color: var(--secondary); font-size: 24px;">Time's Up!</h3>
+      <div style="font-size: 48px; margin: 10px 0;">⏰</div>
+      <p id="taResultsSubtitle" style="font-size: 16px; font-weight: 800; color: #22c55e; margin: -5px 0 15px 0; display: none;">You finished the lesson in only 00:00!</p>
+      <p style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 5px;">Score: <span id="taFinalScore" style="color: var(--secondary);">0 / 0</span></p>
+      <p id="taAccuracy" style="font-size: 16px; font-weight: 700; color: var(--text-muted); margin-bottom: 25px; margin-top: -10px;">Accuracy: 0%</p>
+      <div style="display: flex; justify-content: center;">
+        <button onclick="closeTAResults()" style="background: #22c55e; color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 16px;">Awesome!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results: Trivia -->
+<div id="triviaResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
+  <canvas id="triviaConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
+  <div class="doneBox" style="position: relative; z-index: 5002;">
+    <div class="doneActions">
+      <h3 style="margin-top: 0; color: var(--secondary); font-size: 24px;">Quiz Complete!</h3>
+      <div style="font-size: 48px; margin: 10px 0;">🧠</div>
+      <p style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 5px;">Score: <span id="triviaFinalScore" style="color: var(--secondary);">0 / 0</span></p>
+      <p id="triviaAccuracy" style="font-size: 16px; font-weight: 700; color: var(--text-muted); margin-bottom: 25px; margin-top: -10px;">Accuracy: 0%</p>
+      <div style="display: flex; justify-content: center;">
+        <button onclick="closeTriviaResults()" style="background: #22c55e; color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 16px;">Awesome!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results: Review Mistakes -->
+<div id="mistakeResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
+  <canvas id="mistakeConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
+  <div class="doneBox" style="position: relative; z-index: 5002;">
+    <div class="doneActions">
+      <h3 style="margin-top: 0; color: var(--secondary); font-size: 24px;">Deck Cleared!</h3>
+      <div style="font-size: 48px; margin: 10px 0;">🎯</div>
+      <p style="font-size: 18px; font-weight: 800; color: var(--text-main);">You mastered your mistakes.</p>
+      <div style="display: flex; justify-content: center; margin-top: 20px;">
+        <button onclick="closeMistakeResults()" style="background: #22c55e; color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 16px;">Awesome!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results: Map Game -->
+<div id="mapResultsOverlay" style="display: none; position: fixed; inset: 0; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 5000;">
+  <canvas id="mapConfettiCanvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 5001;"></canvas>
+  <div class="doneBox" style="position: relative; z-index: 5002;">
+    <div class="doneActions">
+      <h3 style="margin-top: 0; color: var(--secondary); font-size: 24px;">Map Cleared!</h3>
+      <div style="font-size: 48px; margin: 10px 0;">🗺️</div>
+      <p style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 5px;">Score: <span id="mapFinalScore" style="color: var(--secondary);">0 / 0</span></p>
+      <p id="mapAccuracy" style="font-size: 16px; font-weight: 700; color: var(--text-muted); margin-bottom: 25px; margin-top: -10px;">Accuracy: 0%</p>
+      <div style="display: flex; justify-content: center;">
+        <button onclick="closeMapResults()" style="background: #22c55e; color: white; border: none; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 16px;">Awesome!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ==========================================================================
+     6. SCRIPTS
+     ========================================================================== -->
 <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
 <script src="data.js"></script>
 <script src="map-c2-europe.js"></script>

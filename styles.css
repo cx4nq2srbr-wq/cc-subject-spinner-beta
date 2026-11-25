@@ -1,4 +1,24 @@
 /* ==========================================================================
+   CC SPINNER — MASTER STYLESHEET (styles.css)
+   ==========================================================================
+   1.  Foundation & Variables
+   2.  Global Layout & View Management
+   3.  Prompt & Answer Cards
+   4.  Slot Machine
+   5.  Action Buttons, Audio & Info Controls
+   6.  Bottom Navigation Bar
+   7.  Lessons Grid & Week Range Controls
+   8.  Review Mode Controls
+   9.  Settings Menu & Toggles
+   10. Focus Modes (Shared, Time Attack, Map, Trivia)
+   11. Scripture Karaoke
+   12. CC Spinner Radio
+   13. Modals, Dialogs & Contact Form
+   14. Splash Screen & Walkthrough Animations
+   15. Dark Mode Overrides
+   ========================================================================== */
+
+/* ==========================================================================
    1. FOUNDATION & VARIABLES
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap');
@@ -18,23 +38,24 @@
   --undo-size: 50px;
 }
 
+
 /* ==========================================================================
-   2. GLOBAL LAYOUT & BODY
+   2. GLOBAL LAYOUT & VIEW MANAGEMENT
    ========================================================================== */
 html {
   height: 100%;
-  background-color: #e2e8f0; 
+  background-color: #e2e8f0;
 }
 
 body {
   margin: 0;
   height: 100%;
-  height: 100vh; 
+  height: 100vh;
   padding: env(safe-area-inset-top, 20px) 15px calc(65px + env(safe-area-inset-bottom, 0px)) 15px;
-  overflow: hidden; 
+  overflow: hidden;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior: none;
-  
+
   font-family: 'Quicksand', sans-serif;
   background: radial-gradient(circle at top, #f0f7ff, #e2e8f0);
   background-attachment: fixed;
@@ -46,12 +67,26 @@ body {
 }
 
 input, button, select, textarea {
-  font-family: inherit; /* NEW: Forces all buttons to use the Quicksand font */
-  font-size: 16px !important; 
+  font-family: inherit;
+  font-size: 16px !important;
 }
 
+.view-container {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.view-container.active {
+  display: flex;
+}
+
+
 /* ==========================================================================
-   3. UI COMPONENTS (Prompt & Answer Boxes)
+   3. PROMPT & ANSWER CARDS
    ========================================================================== */
 #prompt, #reviewPrompt, #mistakePrompt, .slot {
   background: var(--card-bg);
@@ -61,31 +96,39 @@ input, button, select, textarea {
   border: 2px solid rgba(74, 144, 226, 0.2);
   box-shadow: var(--shadow);
   overflow: hidden;
-  flex-shrink: 0;      
+  flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#prompt, #reviewPrompt, #mistakePrompt {
-  display: flex; 
+#prompt, #reviewPrompt, #mistakePrompt, #taPrompt {
+  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  width: 95%;          
-  max-width: 600px !important; 
-  height: 120px; 
+  width: 95%;
+  max-width: 600px !important;
+  height: 120px;
   overflow-y: auto;
-  margin: 12px auto; 
+  margin: 12px auto;
   padding: 18px;
   box-sizing: border-box;
-  font-size: 19px; 
-  font-weight: 600; 
+  font-size: 19px;
+  font-weight: 600;
   background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius);
   border: 2px solid rgba(74, 144, 226, 0.2);
+  box-shadow: var(--shadow);
   transition: border-color 0.3s ease;
 }
 
 @media (max-width: 480px) {
-    #prompt, #reviewPrompt { font-size: 16px; padding: 12px; height: 110px; }
+  #prompt, #reviewPrompt {
+    font-size: 16px;
+    padding: 12px;
+    height: 110px;
+  }
 }
 
 #answerContainer, #reviewAnswerContainer, #mistakeAnswerContainer, #taAnswerContainer {
@@ -105,112 +148,118 @@ input, button, select, textarea {
   transition: all 0.3s ease;
 }
 
-#answerContainer.open, #mistakeAnswerContainer.open {
+#answerContainer.open, #mistakeAnswerContainer.open, #taAnswerContainer.open {
   border: 2px solid rgba(74, 144, 226, 0.4);
   transform: scale(1.01);
 }
 
-#toggleAnswer, #toggleMistakeAnswer {
-    width: 100%;
-    padding: 18px;
-    background-color: var(--secondary);
-    color: white;
-    border: none;
-    font-family: inherit;
-    font-size: 16px;
-    font-weight: 800;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+#toggleAnswer, #toggleMistakeAnswer, #toggleTAAnswer {
+  width: 100%;
+  padding: 18px;
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 #toggleAnswer:hover, #toggleMistakeAnswer:hover {
-    background-color: #357abd;
+  background-color: #357abd;
 }
 
-#answerContent, #reviewAnswerContent, #mistakeAnswerContent {
+#answerContent, #reviewAnswerContent, #mistakeAnswerContent, #taAnswerContent {
   padding: 0 20px;
-  max-height: 0px;   
+  max-height: 0px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* NEW: Smooth iOS scrolling */
-  overscroll-behavior: contain; /* NEW: Prevents page bounce */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   transition: all 0.3s ease;
   color: var(--text-muted);
   font-size: 17px;
   white-space: pre-wrap;
   text-align: center;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
-#answerContainer.open #answerContent, 
+#answerContainer.open #answerContent,
 #reviewAnswerContainer.open #reviewAnswerContent,
-#mistakeAnswerContainer.open #mistakeAnswerContent {
-    max-height: 38vh; /* NEW: Dynamic height forces scrollbar before pushing off screen */
-    padding: 20px;
-    border-top: 1px solid rgba(0,0,0,0.05);
+#mistakeAnswerContainer.open #mistakeAnswerContent,
+#taAnswerContainer.open #taAnswerContent {
+  max-height: 38vh;
+  padding: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
+
 
 /* ==========================================================================
-   4. THE SLOT MACHINE
+   4. SLOT MACHINE
    ========================================================================== */
-.rollerBox { 
-  display: flex; 
-  justify-content: center; 
-  gap: 15px; 
-  margin: 20px 0; 
+.rollerBox {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
 }
 
-.slot { 
-  width: 150px; 
-  height: 80px; 
-  border: 3px solid rgba(74, 144, 226, 0.3); 
-  position: relative; 
+.slot {
+  width: 150px;
+  height: 80px;
+  border: 3px solid rgba(74, 144, 226, 0.3);
+  position: relative;
 }
 
 .slot::after {
-  content: ""; 
-  position: absolute; 
-  top: 0; left: 0; right: 0; height: 100%;
-  background: linear-gradient(rgba(0,0,0,0.05) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.05) 100%); 
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.05) 0%, transparent 15%, transparent 85%, rgba(0, 0, 0, 0.05) 100%);
   pointer-events: none;
-}
-
-.reel div { 
-  height: 80px; 
-  flex-shrink:  0;
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-size: 20px; 
-  font-weight: 700; 
-  color: var(--text-main);
-  background: linear-gradient(to bottom, #fff, #f0f7ff, #fff);
 }
 
 .reel {
   display: flex;
   flex-direction: column;
-  transition: transform 2.5s cubic-bezier(0.45, 0.05, 0.55, 0.95); 
+  transition: transform 2.5s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 }
 
+.reel div {
+  height: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  background: linear-gradient(to bottom, #fff, #f0f7ff, #fff);
+}
+
+
 /* ==========================================================================
-   5. BUTTONS (Actions)
+   5. ACTION BUTTONS, AUDIO & INFO CONTROLS
    ========================================================================== */
 .control-row {
   position: fixed;
-  bottom: calc(65px + env(safe-area-inset-bottom, 0px)); 
+  bottom: calc(65px + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
-  height: 0; 
+  height: 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  pointer-events: none; 
+  pointer-events: none;
   z-index: 600;
 }
 
 #spinBtn, #undoBtn {
-  width: 90px; 
+  width: 90px;
   height: 90px;
   border: none;
   cursor: pointer;
@@ -218,7 +267,7 @@ input, button, select, textarea {
   -webkit-tap-highlight-color: transparent;
   display: flex;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
-  padding: 0; 
+  padding: 0;
   overflow: visible;
 }
 
@@ -230,7 +279,7 @@ input, button, select, textarea {
 #spinBtn text, #undoBtn text {
   fill: white;
   font-family: 'Quicksand', sans-serif;
-  font-size: 18px; 
+  font-size: 18px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -254,230 +303,296 @@ input, button, select, textarea {
 }
 
 #undoBtn:disabled {
-    background-color: #94b8e2;
-    color: rgba(255, 255, 255, 0.6);
-    cursor: not-allowed;
-    transform: scale(0.98);
-    opacity: 0.7;
-    box-shadow: none;
+  background-color: #94b8e2;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: not-allowed;
+  transform: scale(0.98);
+  opacity: 0.7;
+  box-shadow: none;
 }
 
 #spinBtn:disabled {
-    background-color: #ff9d94; 
-    color: rgba(255, 255, 255, 0.6);
-    cursor: not-allowed;
-    transform: scale(0.98);
-    opacity: 0.7;
-    box-shadow: none;
+  background-color: #ff9d94;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: not-allowed;
+  transform: scale(0.98);
+  opacity: 0.7;
+  box-shadow: none;
 }
 
 button:disabled svg text {
-    fill: rgba(255, 255, 255, 0.5);
-    transition: fill 0.3s ease;
+  fill: rgba(255, 255, 255, 0.5);
+  transition: fill 0.3s ease;
 }
 
+/* Flag Buttons */
 #flagBtn, #reviewFlagBtn {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    border: 2px solid var(--secondary);
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--secondary);
-    cursor: pointer;
-    pointer-events: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: 2px solid var(--secondary);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--secondary);
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-#flagBtn { margin-bottom: 18px; } /* Lifts it between the corner buttons */
-#reviewFlagBtn { flex-shrink: 0; } /* Keeps its shape in the review row */
-
+#flagBtn { margin-bottom: 18px; }
+#reviewFlagBtn { flex-shrink: 0; }
 #flagBtn svg, #reviewFlagBtn svg { width: 24px; height: 24px; }
 
 #flagBtn.flagged, #reviewFlagBtn.flagged {
-    background: #ef4444; 
-    border-color: #ef4444;
-    color: white;
-    transform: scale(1.05);
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+  transform: scale(1.05);
 }
 
 #flagBtn:disabled, #reviewFlagBtn:disabled {
-    opacity: 0; 
-    pointer-events: none;
-    transform: scale(0.8);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8);
 }
 
-/* NEW: Notification Badges */
+/* Notification Badges */
 .notification-badge {
-    position: absolute;
-    background: #ef4444;
-    color: white;
-    font-size: 11px;
-    font-weight: 800;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: none; /* Hidden until the app detects mistakes! */
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
-    z-index: 10;
-    border: 2px solid white;
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none; /* Let touches pass through to the button beneath */
+  position: absolute;
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
+  z-index: 10;
+  border: 2px solid white;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
 }
 
-/* NEW: Voiceover Audio Button (Circular UI) */
+/* Voiceover Audio Button */
 .audio-btn {
-    position: absolute;
-    top: 29px;
-    right: 10px;
-    transform: translateY(-50%); 
-    height: 42px;
-    width: 42px;
-    background: rgba(255, 255, 255, 0.25); 
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    border-radius: 50%; 
-    color: white;
-    display: none; 
-    flex-direction: column; 
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    -webkit-tap-highlight-color: transparent;
+  position: absolute;
+  top: 29px;
+  right: 10px;
+  transform: translateY(-50%);
+  height: 42px;
+  width: 42px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  color: white;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .audio-btn:hover { background: rgba(255, 255, 255, 0.4); }
 .audio-btn:active { transform: translateY(-50%) scale(0.85); }
 
-.audio-btn svg { 
-    width: 18px; 
-    height: 18px; 
-    fill: currentColor; 
-    margin-left: 3px; 
-    transition: margin 0.2s ease;
+.audio-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  margin-left: 3px;
+  transition: margin 0.2s ease;
 }
 
-/* Shape-shifts into a straight-sided pill when a full song is found! */
+/* Shape-shift into pill when a full song exists */
 .audio-btn.has-full {
-    height: 56px; 
-    border-radius: 21px; /* Standard pill shape, extends straight down */
+  height: 56px;
+  border-radius: 21px;
 }
 
-/* Pull the play triangle up so it stays perfectly centered in the circular top half */
 .audio-btn.has-full svg {
-    margin-top: -10px;
+  margin-top: -10px;
 }
 
 .audio-btn.has-full::after {
-    content: "";
-    position: absolute;
-    bottom: 2px;
-    left: 0;
-    width: 100%;
-    height: 24px;
-    /* Lowered the arc path to Y=7 and the arrow to Y=9/12 to hug the bottom edge */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 7 A 16 16 0 0 0 37 7' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3Cpolyline points='18 9 21 12 24 9' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 0.9;
-    transition: opacity 0.2s; 
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 7 A 16 16 0 0 0 37 7' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3Cpolyline points='18 9 21 12 24 9' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.9;
+  transition: opacity 0.2s;
 }
 
-/* Base playing state (Turns red) */
 .audio-btn.playing {
-    background: #ef4444 !important; 
-    border-color: #ef4444 !important;
-    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4) !important;
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4) !important;
 }
+
 .audio-btn.playing svg { margin-left: 0; }
 
-/* When playing the REGULAR song, instantly shrink back to a perfect circle! */
 .audio-btn.playing-regular {
-    height: 42px !important;
-    border-radius: 50% !important;
-}
-.audio-btn.playing-regular svg {
-    margin-top: 0; /* Drop the stop square back to true center */
-}
-.audio-btn.playing-regular::after {
-    opacity: 0; 
+  height: 42px !important;
+  border-radius: 50% !important;
 }
 
-/* When playing the FULL song, keep the pill shape but drop the arrow from the SVG */
+.audio-btn.playing-regular svg { margin-top: 0; }
+.audio-btn.playing-regular::after { opacity: 0; }
+
 .audio-btn.playing-full::after {
-    /* Matches the lowered Y=7 arc path of the normal state */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 7 A 16 16 0 0 0 37 7' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 24'%3E%3Cpath id='p' d='M 5 7 A 16 16 0 0 0 37 7' fill='none'/%3E%3Ctext font-family='sans-serif' font-size='7' font-weight='800' fill='white' letter-spacing='1.5'%3E%3CtextPath href='%23p' startOffset='50%25' text-anchor='middle'%3EFULL%3C/textPath%3E%3C/text%3E%3C/svg%3E");
 }
+
+/* Extra Info Button */
+.info-btn {
+  position: absolute;
+  top: 29px;
+  left: 10px;
+  transform: translateY(-50%);
+  height: 42px;
+  width: 42px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 24px;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.info-btn:hover { background: rgba(255, 255, 255, 0.4); }
+.info-btn:active { transform: translateY(-50%) scale(0.85); }
+
 
 /* ==========================================================================
-   6. LESSONS GRID VIEW & CONTROLS
+   6. BOTTOM NAVIGATION BAR
+   ========================================================================== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: content-box;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(74, 144, 226, 0.2);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 2000;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: all 0.2s ease;
+}
+
+.nav-item svg { width: 24px; height: 24px; }
+.nav-item.active { color: var(--secondary); transform: translateY(-2px); }
+.nav-item:active { transform: scale(0.95); }
+
+
+/* ==========================================================================
+   7. LESSONS GRID & WEEK RANGE CONTROLS
    ========================================================================== */
 #gridContainer {
-    width: 100%; 
-    flex: 1;
-    min-height: 0;
-    display: none; 
-    flex-direction: column; 
-    overflow: hidden;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-#gridContainer.active {
-    display: flex;
-}
+#gridContainer.active { display: flex; }
 
 #gridContent {
-    width: 100%; 
-    flex: 1 1 0; 
-    min-height: 0; 
-    display: flex; 
-    flex-direction: column; 
-    overflow: hidden;
+  width: 100%;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
-  
+
 #grid {
-  padding: 0 6px 20px 6px; 
-  overflow: auto; 
-  -webkit-overflow-scrolling: touch; 
-  touch-action: pan-y; 
-  width: 100%; 
-  box-sizing: border-box; 
+  padding: 0 6px 20px 6px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  width: 100%;
+  box-sizing: border-box;
   flex: 1 1 0;
   height: 100%;
 }
 
-#grid table { 
-    table-layout: fixed; 
-    width: 100%; 
-    border-collapse: separate; 
-    border-spacing: 0; 
-    background: white; 
-    border-top: 1px solid #aaa;
-    border-left: 1px solid #aaa;
+#grid table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-top: 1px solid #aaa;
+  border-left: 1px solid #aaa;
 }
+
 #grid th, #grid td {
-  border-right: 1px solid #aaa; 
-  border-bottom: 1px solid #aaa; 
-  padding: 0; 
-  height: 40px; 
+  border-right: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  padding: 0;
+  height: 40px;
   text-align: center;
-  white-space: nowrap; 
+  white-space: nowrap;
   font-size: 14px;
 }
 
 #grid th.top-header {
   position: -webkit-sticky;
   position: sticky;
-  top: -1px; 
+  top: -1px;
   z-index: 10;
-  background: #fff; 
+  background: #fff;
 }
 
 #grid th.subjectHeader {
@@ -487,16 +602,14 @@ button:disabled svg text {
   z-index: 11;
 }
 
-#grid th.subjectHeader.blocked-header {
-  background: #fdecea; 
-}
+#grid th.subjectHeader.blocked-header { background: #fdecea; }
 
 #grid th.subjectHeader span {
   display: inline-block;
-  transform: rotate(-90deg) translateX(-30px); 
+  transform: rotate(-90deg) translateX(-30px);
   white-space: nowrap;
   line-height: 1;
-  width: 20px; 
+  width: 20px;
   font-weight: 700;
   font-size: 13px;
   color: #000;
@@ -504,44 +617,57 @@ button:disabled svg text {
 }
 
 .week-header { background: #cce7ff; width: 56px; }
+
 .weekNumber {
-  display: flex; align-items: center; justify-content: center;
-  width: 100%; height: 100%; border: none; background: #fff;
-  font-weight: 700; font-size: 16px; color: #0b2540; cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  color: #0b2540;
+  cursor: pointer;
 }
+
 .weekNumber.active { background: #22c55e; color: #fff; }
 .completed { background: #ccc !important; color: #666; }
 .override { background: #d4f0d8; }
 .blocked { background: #fdecea; color: #5a2a28; }
 
 .grid-controls-row {
-    display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    padding: 15px 20px;
-    background: #fdfdfd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #fdfdfd;
 }
 
-/* NEW: Shared styling for both Min and Max selectors */
 .weekRangeControl {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #fff8d6;
-    padding: 6px 12px;
-    border-radius: 10px;
-    border: 1px solid #f3d08a;
-    font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff8d6;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid #f3d08a;
+  font-weight: 600;
 }
 
 .weekBtn {
-    width: 34px; height: 34px; background: #ffd37a; border: 1px solid #e6a83a;
-    border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: #ffd37a;
+  border: 1px solid #e6a83a;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-/* Dark Mode Overrides for the new classes */
-body.dark-mode .weekRangeControl { background: #334155; border-color: #475569; color: #f8fafc; }
-body.dark-mode .weekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
 
 .resetHeaderBtn {
   background: none;
@@ -559,32 +685,518 @@ body.dark-mode .weekBtn { background: #475569; border-color: #64748b; color: #f8
 .resetHeaderBtn:active { background: #dc3545; color: white; }
 
 #cyclePicker {
-    appearance: none; 
-    -webkit-appearance: none;
-    background-color: var(--secondary);
-    color: white;
-    padding: 10px 35px 10px 20px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    transition: transform 0.2s, background 0.2s;
-    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-    font-family: inherit;
-    margin: 0;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px top 50%;
-    background-size: 12px auto;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--secondary);
+  color: white;
+  padding: 10px 35px 10px 20px;
+  border-radius: 25px;
+  font-weight: 800;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+  font-family: inherit;
+  margin: 0;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px top 50%;
+  background-size: 12px auto;
 }
 
 #cyclePicker:hover { transform: translateY(-2px); background-color: #357abd; }
 #cyclePicker:active { transform: translateY(0); }
-  
+
+
 /* ==========================================================================
-   7. MODALS & DIALOGS
+   8. REVIEW MODE CONTROLS
+   ========================================================================== */
+#reviewContainer {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#reviewContainer.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: hidden;
+}
+
+.review-layout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 0;
+  margin: 0 auto;
+}
+
+.review-controls-new {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 95%;
+  max-width: 450px;
+  margin: 20px 0;
+}
+
+.review-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-bg);
+  border: 2px solid rgba(74, 144, 226, 0.2);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 4px;
+}
+
+.review-nav-arrow {
+  background: transparent;
+  border: none;
+  color: var(--secondary);
+  padding: 12px 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.review-nav-arrow svg { width: 24px; height: 24px; }
+.review-nav-arrow:active { background: rgba(74, 144, 226, 0.1); transform: scale(0.95); }
+
+.review-nav-label {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 10px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.prompt-text { min-height: 100px; margin-bottom: 15px; }
+
+.review-always-open #reviewAnswerContent,
+#reviewAnswerContent {
+  max-height: calc(100vh - 400px) !important;
+  padding: 20px !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+#reviewAnswerContainer.review-always-open {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow);
+}
+
+.answer-header-static {
+  width: 100%;
+  padding: 18px;
+  background-color: var(--secondary);
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   9. SETTINGS MENU & TOGGLES
+   ========================================================================== */
+.settings-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 95%;
+  max-width: 400px;
+  margin: 0 auto 100px;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(74, 144, 226, 0.2);
+  border-radius: 16px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  box-shadow: var(--shadow);
+}
+
+.setting-item:hover { border-color: var(--secondary); transform: translateY(-2px); }
+.setting-item:active { transform: scale(0.98); }
+
+.setting-text { flex: 1; margin-right: 15px; }
+.setting-text h4 { margin: 0 0 2px 0; color: var(--secondary); font-size: 16px; font-weight: 800; }
+.setting-text p { margin: 0; font-size: 13px; color: var(--text-muted); }
+
+.toggle-switch {
+  width: 50px;
+  height: 30px;
+  background-color: #cbd5e1;
+  border-radius: 30px;
+  position: relative;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch.on { background-color: #34c759; }
+
+.toggle-knob {
+  width: 26px;
+  height: 26px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.on .toggle-knob { transform: translateX(20px); }
+
+
+/* ==========================================================================
+   10. FOCUS MODES (Shared, Time Attack, Map, Trivia)
+   ========================================================================== */
+
+/* Shared Focus Layout */
+.focus-top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  box-sizing: border-box;
+}
+
+.focus-nav-btn { background: none; border: none; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0; }
+.focus-nav-btn.back { color: var(--secondary); }
+.focus-nav-btn.quit { color: #ef4444; }
+.focus-status-text { color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase; }
+.focus-subject-label { font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px; text-align: center; }
+
+.focus-start-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 111, 97, 0.3);
+}
+
+.focus-action-btn {
+  height: 70px;
+  border-radius: 20px;
+  border: none;
+  color: white;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, opacity 0.2s;
+}
+
+.focus-action-btn.red { background: #ef4444; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
+.focus-action-btn.green { background: #22c55e; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
+
+.focus-mistake-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: auto;
+  margin-bottom: 20px;
+  width: 90%;
+  max-width: 400px;
+  justify-content: center;
+  margin-inline: auto;
+}
+.focus-mistake-actions .focus-action-btn { flex: 1; }
+
+.focus-ta-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 95%;
+  max-width: 450px;
+  margin: auto auto 20px auto;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+.focus-ta-actions .focus-action-btn { width: 70px; }
+
+/* Scroll Wheel Picker (Time Attack & Trivia) */
+.review-slot {
+  position: relative;
+  cursor: pointer;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.review-slot::after { display: none; }
+
+.review-slot::before {
+  content: "";
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(rgba(0, 0, 0, 0.05) 0%, transparent 15%, transparent 85%, rgba(0, 0, 0, 0.05) 100%);
+  pointer-events: none;
+  z-index: 5;
+  display: block;
+  margin-bottom: -80px;
+}
+
+.review-slot::-webkit-scrollbar { display: none; }
+.review-slot .reel { transition: none !important; transform: none !important; }
+.review-slot .reel div { height: 80px; scroll-snap-align: start; }
+
+/* Map Game */
+#svgMapWrapper {
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+  background: #dbeafe;
+  border-top: 2px solid rgba(74, 144, 226, 0.2);
+  box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.05);
+  touch-action: none;
+}
+
+#svgMapWrapper svg {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.flash-correct { animation: correctFlash 1s ease-out forwards !important; }
+.flash-correct, .flash-correct * { fill: #22c55e !important; stroke: #22c55e !important; }
+
+@keyframes correctFlash {
+  0% { opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+/* Trivia Game */
+.trivia-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 95%;
+  max-width: 600px;
+  margin: 15px auto 30px auto;
+}
+
+.trivia-option-btn {
+  background: var(--card-bg);
+  border: 2px solid rgba(74, 144, 226, 0.2);
+  border-radius: 16px;
+  padding: 15px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.trivia-option-btn:active { transform: scale(0.96); }
+.trivia-option-btn.correct { background: #22c55e !important; border-color: #22c55e !important; color: white !important; }
+.trivia-option-btn.wrong { background: #ef4444 !important; border-color: #ef4444 !important; color: white !important; }
+.trivia-option-btn.correct-reveal {
+  border-color: #22c55e !important;
+  box-shadow: inset 0 0 0 2px #22c55e, 0 0 0 2px #22c55e !important;
+  background-color: rgba(34, 197, 94, 0.1) !important;
+}
+
+
+/* ==========================================================================
+   11. SCRIPTURE KARAOKE
+   ========================================================================== */
+#scriptureLyricsContainer {
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 25px;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+#scriptureLyricsContainer::-webkit-scrollbar { display: none; }
+
+.lyric-line {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-muted);
+  opacity: 0.3;
+  margin-bottom: 25px;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1.3);
+  cursor: pointer;
+  transform-origin: left center;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.4;
+  max-width: 85%;
+}
+
+.lyric-line.active {
+  opacity: 1;
+  color: var(--primary);
+  transform: scale(1.15);
+  text-shadow: 0 4px 15px rgba(255, 111, 97, 0.2);
+}
+
+.scripture-player-wrap {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.scripture-player-wrap:active .scripture-play-btn { transform: scale(0.85); }
+
+.scripture-progress-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 70px;
+  height: 70px;
+  transform: rotate(-90deg);
+}
+
+.scripture-progress-bg {
+  fill: none;
+  stroke: rgba(74, 144, 226, 0.2);
+  stroke-width: 4;
+}
+
+.scripture-progress-bar {
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.scripture-play-btn {
+  position: relative;
+  transform: none;
+  top: auto;
+  right: auto;
+  left: auto;
+  width: 52px;
+  height: 52px;
+  display: flex !important;
+  pointer-events: none;
+  margin: 0;
+  background: var(--primary) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(255, 111, 97, 0.3);
+}
+
+
+/* ==========================================================================
+   12. CC SPINNER RADIO
+   ========================================================================== */
+.radio-ctrl-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+  padding: 10px;
+}
+
+.radio-ctrl-btn svg { fill: currentColor; }
+.radio-ctrl-btn.active { color: var(--primary); }
+
+#radioSeeker {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(0, 0, 0, 0.1);
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+}
+
+#radioSeeker::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes radioPulse {
+  0% { transform: scale(1); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); }
+  50% { transform: scale(1.03); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3); }
+  100% { transform: scale(1); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); }
+}
+
+.radio-playing-art { animation: radioPulse 4s infinite ease-in-out; }
+
+
+/* ==========================================================================
+   13. MODALS, DIALOGS & CONTACT FORM
    ========================================================================== */
 #resetConfirmOverlay {
   position: fixed;
@@ -592,7 +1204,7 @@ body.dark-mode .weekBtn { background: #475569; border-color: #64748b; color: #f8
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 3000;
 }
 
@@ -602,17 +1214,16 @@ body.dark-mode .weekBtn { background: #475569; border-color: #64748b; color: #f8
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   z-index: 4000;
 }
 
-/* Make ALL confirmBox and doneBox popups solid white cards with a shadow */
 .confirmBox, .doneBox {
   position: relative;
   background: #fff;
   padding: 24px;
   border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
   width: 88%;
   max-width: 360px;
   text-align: center;
@@ -626,808 +1237,217 @@ body.dark-mode .weekBtn { background: #475569; border-color: #64748b; color: #f8
   margin: 10px 0 20px 0;
 }
 
-/* Make sure confetti canvases span the entire screen behind the popup */
 canvas[id$="ConfettiCanvas"], #confettiCanvas {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 1;
 }
 
-.doneActions { 
-    position: relative; 
-    z-index: 2; 
-}
+.doneActions { position: relative; z-index: 2; }
 
 .picker-btn {
-    padding: 12px; 
-    border-radius: 12px; 
-    font-weight: 700; 
-    font-size: 14px; 
-    cursor: pointer; 
-    border: 2px solid #cce7ff; 
-    background: #f0f7ff; 
-    color: var(--secondary);
-    transition: all 0.2s ease;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border: 2px solid #cce7ff;
+  background: #f0f7ff;
+  color: var(--secondary);
+  transition: all 0.2s ease;
 }
 
 .picker-btn.selected {
-    background: var(--secondary);
-    border-color: var(--secondary);
-    color: white;
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: white;
 }
 
-/* ========================================================================== 
-   8. VIEW MANAGEMENT
-   ========================================================================== */
-.view-container {
-    display: none; 
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    flex: 1;
-    min-height: 0;
+#contactReason, #contactMessage {
+  color: #1e293b !important;
+  background: #ffffff !important;
 }
 
-.view-container.active { display: flex; }
-
-/* ========================================================================== 
-   9. REVIEW MODE CONTROLS 
-   ========================================================================== */
-.review-layout {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 0;
-    margin: 0 auto;
+#contactMessage::placeholder {
+  color: #64748b !important;
+  opacity: 1;
 }
 
-.review-controls-new {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 95%;
-    max-width: 450px;
-    margin: 20px 0;
-}
-
-.review-nav-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--card-bg);
-    border: 2px solid rgba(74, 144, 226, 0.2);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 4px;
-}
-
-.review-nav-arrow {
-    background: transparent;
-    border: none;
-    color: var(--secondary);
-    padding: 12px 24px;
-    flex-shrink: 0;
-    cursor: pointer;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.review-nav-arrow svg { width: 24px; height: 24px; }
-.review-nav-arrow:active { background: rgba(74, 144, 226, 0.1); transform: scale(0.95); }
-
-.review-nav-label {
-    flex: 1;
-    background: transparent;
-    border: none;
-    font-family: inherit;
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--text-main);
-    cursor: pointer;
-    padding: 10px;
-    -webkit-tap-highlight-color: transparent;
-}
-
-#reviewContainer {
-    width: 100%; height: 100%; padding: 0; margin: 0; box-sizing: border-box; overflow: hidden;
-}
-
-#reviewContainer.active {
-    display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden;
-}
-
-#reviewContainer {
-    width: 100%; height: 100%; padding: 0; margin: 0; box-sizing: border-box; overflow: hidden;
-}
-
-#reviewContainer.active {
-    display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden;
-}
-
-.prompt-text { min-height: 100px; margin-bottom: 15px; }
-
-.review-always-open #reviewAnswerContent { max-height: calc(100vh - 400px) !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
-#reviewAnswerContent { max-height: calc(100vh - 400px) !important; padding: 20px !important; opacity: 1 !important; display: block !important; }
-
-#reviewAnswerContainer.review-always-open {
-    background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-radius: var(--radius); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: var(--shadow);
-}
-
-.answer-header-static {
-    width: 100%; 
-    padding: 18px; 
-    background-color: var(--secondary); 
-    color: white; 
-    font-size: 16px; 
-    font-weight: 800; 
-    text-align: center; 
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    box-sizing: border-box; 
-}
 
 /* ==========================================================================
-   10. DARK MODE OVERRIDES
+   14. SPLASH SCREEN & WALKTHROUGH ANIMATIONS
+   ========================================================================== */
+.splash-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  transition: opacity 0.4s ease;
+}
+
+.splash-text { color: #334155; }
+
+@keyframes splashFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
+  50% { transform: scale(1.05); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); }
+}
+
+.splash-logo { animation: splashFloat 3s ease-in-out infinite; }
+.splash-btn { animation: splashPulse 2s infinite; }
+
+@keyframes walkthroughPulse {
+  0% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75), inset 0 0 0 2px var(--primary), inset 0 0 0px rgba(255, 111, 97, 0); }
+  50% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75), inset 0 0 0 4px var(--primary), inset 0 0 25px rgba(255, 111, 97, 0.8); }
+  100% { box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75), inset 0 0 0 2px var(--primary), inset 0 0 0px rgba(255, 111, 97, 0); }
+}
+
+.walkthrough-active-pulse { animation: walkthroughPulse 1.5s infinite ease-in-out !important; }
+
+
+/* ==========================================================================
+   15. DARK MODE OVERRIDES
    ========================================================================== */
 html.dark-mode { background-color: #0f172a; }
 
 body.dark-mode {
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --card-bg: rgba(30, 41, 59, 0.9);
-    
-    background: radial-gradient(circle at top, #1e293b, #0f172a);
-    color: var(--text-main);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --card-bg: rgba(30, 41, 59, 0.9);
+  background: radial-gradient(circle at top, #1e293b, #0f172a);
+  color: var(--text-main);
 }
 
-body.dark-mode #prompt, body.dark-mode #reviewPrompt, body.dark-mode #mistakePrompt,
-body.dark-mode .slot, body.dark-mode #answerContainer, 
-body.dark-mode #reviewAnswerContainer, body.dark-mode #mistakeAnswerContainer, body.dark-mode .review-slot {
-    background: rgba(30, 41, 59, 0.9);
-    border-color: rgba(255, 255, 255, 0.1);
+/* Cards, Prompts & Slots */
+body.dark-mode #prompt,
+body.dark-mode #reviewPrompt,
+body.dark-mode #mistakePrompt,
+body.dark-mode #taPrompt,
+body.dark-mode #triviaPrompt,
+body.dark-mode .slot,
+body.dark-mode .review-slot,
+body.dark-mode #answerContainer,
+body.dark-mode #reviewAnswerContainer,
+body.dark-mode #mistakeAnswerContainer,
+body.dark-mode #taAnswerContainer,
+body.dark-mode .review-nav-row,
+body.dark-mode .setting-item,
+body.dark-mode .trivia-option-btn {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
-body.dark-mode .slot::after { background: linear-gradient(rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%); }
+body.dark-mode .slot::after,
+body.dark-mode .review-slot::before {
+  background: linear-gradient(rgba(0, 0, 0, 0.5) 0%, transparent 15%, transparent 85%, rgba(0, 0, 0, 0.5) 100%);
+}
+
 body.dark-mode .reel div { background: linear-gradient(to bottom, #1e293b, #334155, #1e293b); color: #f8fafc; }
-body.dark-mode .review-nav-row { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }
-body.dark-mode .review-nav-label { color: #f8fafc; }
+body.dark-mode .review-nav-label,
+body.dark-mode .trivia-option-btn,
+body.dark-mode .setting-text h4,
+body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
+body.dark-mode .setting-text p,
+body.dark-mode #taAccuracy { color: #94a3b8 !important; }
 
-body.dark-mode #answerContent, body.dark-mode #reviewAnswerContent, body.dark-mode #mistakeAnswerContent { color: #cbd5e1; }
-body.dark-mode #answerContent b, body.dark-mode #reviewAnswerContent b, body.dark-mode #mistakeAnswerContent b,
-body.dark-mode #answerContent strong, body.dark-mode #reviewAnswerContent strong, body.dark-mode #mistakeAnswerContent strong { color: #ffffff; font-weight: 800; }
+body.dark-mode #answerContent,
+body.dark-mode #reviewAnswerContent,
+body.dark-mode #mistakeAnswerContent,
+body.dark-mode #taAnswerContent { color: #cbd5e1; }
 
+body.dark-mode #answerContent b, body.dark-mode #answerContent strong,
+body.dark-mode #reviewAnswerContent b, body.dark-mode #reviewAnswerContent strong,
+body.dark-mode #mistakeAnswerContent b, body.dark-mode #mistakeAnswerContent strong,
+body.dark-mode #taAnswerContent b, body.dark-mode #taAnswerContent strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+/* Grid & Week Range Controls */
 body.dark-mode #gridContent, body.dark-mode .grid-controls-row { background: transparent; }
 body.dark-mode #grid table { background: #020617; border-top-color: #64748b; border-left-color: #64748b; }
 body.dark-mode #grid th, body.dark-mode #grid td { border-right-color: #64748b; border-bottom-color: #64748b; }
-
 body.dark-mode #grid td { background: #020617; }
 body.dark-mode .completed { background: #1e293b !important; color: #64748b; }
-body.dark-mode #grid th.top-header { background: #1e293b; } 
-body.dark-mode #grid th.subjectHeader { background: #b45309; } 
-body.dark-mode #grid th.subjectHeader.blocked-header { background: #7f1d1d; } 
+body.dark-mode #grid th.top-header { background: #1e293b; }
+body.dark-mode #grid th.subjectHeader { background: #b45309; }
+body.dark-mode #grid th.subjectHeader.blocked-header { background: #7f1d1d; }
 body.dark-mode #grid th.subjectHeader span { color: #f8fafc; }
 
 body.dark-mode .weekNumber { background: #334155; color: #f8fafc; }
 body.dark-mode .weekNumber.active { background: #22c55e; color: #fff; }
 body.dark-mode .override { background: #064e3b; }
 body.dark-mode .blocked { background: #7f1d1d; color: #fecaca; }
-body.dark-mode .maxWeekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
+body.dark-mode .weekRangeControl { background: #334155; border-color: #475569; color: #f8fafc; }
+body.dark-mode .weekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
 
-body.dark-mode #reviewPickerOverlay > div, body.dark-mode .confirmBox, body.dark-mode .doneBox {
-  background: #1e293b !important;
-  color: #f8fafc !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-body.dark-mode .confirmBox p, body.dark-mode .doneBox p {
-  color: #cbd5e1 !important;
-}
-body.dark-mode #taAccuracy { color: #94a3b8 !important; }
-body.dark-mode #pickerTitle { color: #f8fafc !important; }
-body.dark-mode #reviewPickerOverlay button[onclick="closePicker()"],
-body.dark-mode #resetConfirmOverlay button[onclick="hideResetConfirm()"] { 
-    background: #0f172a !important; 
-    color: #cbd5e1 !important; 
-}
-body.dark-mode .picker-btn { background: #334155; border-color: #475569; color: #cbd5e1; }
-
-body.dark-mode .picker-btn.selected { background: #cbd5e1; border-color: #cbd5e1; color: #0f172a; }
+/* Navigation, Flags & Toggles */
 body.dark-mode .bottom-nav { background: rgba(15, 23, 42, 0.95); border-top-color: rgba(255, 255, 255, 0.1); }
 body.dark-mode .nav-item { color: #64748b; }
 body.dark-mode .nav-item.active { color: var(--secondary); }
-
-body.dark-mode .setting-item { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }
-body.dark-mode .setting-text h4 { color: #f8fafc; }
-body.dark-mode .setting-text p { color: #94a3b8; }
 body.dark-mode .toggle-switch { background-color: #475569; }
 body.dark-mode .toggle-switch.on { background-color: #34c759; }
-
 body.dark-mode #flagBtn, body.dark-mode #reviewFlagBtn { background: #1e293b; border-color: #475569; color: #cbd5e1; }
 body.dark-mode #flagBtn.flagged, body.dark-mode #reviewFlagBtn.flagged { background: #7f1d1d; border-color: #ef4444; color: #f8fafc; }
 body.dark-mode .notification-badge { border-color: rgba(15, 23, 42, 0.95); }
 
-body.dark-mode .review-slot::before { background: linear-gradient(rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%); }
-body.dark-mode #taPrompt, body.dark-mode #taAnswerContainer { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }
-body.dark-mode #taAnswerContent { color: #cbd5e1; }
-body.dark-mode #taAnswerContent b, body.dark-mode #taAnswerContent strong { color: #ffffff; font-weight: 800; }
-body.dark-mode #taTimerDisplay { color: #f8fafc !important; }
+/* Scripture & Radio */
+body.dark-mode .lyric-line { color: #94a3b8; }
+body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); }
+body.dark-mode #radioSeeker { background: rgba(255, 255, 255, 0.2); }
 
-/* Contact Form Base (Light Mode) */
-#contactReason, 
-#contactMessage {
-    color: #1e293b !important; /* Forces dark text in the box */
-    background: #ffffff !important; /* Keeps the box white */
+/* Modals, Pickers & Contact Form */
+body.dark-mode #reviewPickerOverlay > div,
+body.dark-mode .confirmBox,
+body.dark-mode .doneBox {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Darkens the "Type your message here..." placeholder text */
-#contactMessage::placeholder {
-    color: #64748b !important; 
-    opacity: 1; 
+body.dark-mode .confirmBox p, body.dark-mode .doneBox p { color: #cbd5e1 !important; }
+body.dark-mode #pickerTitle { color: #f8fafc !important; }
+body.dark-mode #reviewPickerOverlay button[onclick="closePicker()"],
+body.dark-mode #resetConfirmOverlay button[onclick="hideResetConfirm()"] {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
 }
 
-/* Contact Form Dark Mode */
-body.dark-mode #contactReason, 
+body.dark-mode .picker-btn { background: #334155; border-color: #475569; color: #cbd5e1; }
+body.dark-mode .picker-btn.selected { background: #cbd5e1; border-color: #cbd5e1; color: #0f172a; }
+
+body.dark-mode #contactReason,
 body.dark-mode #contactMessage {
-    background: #1e293b !important;
-    color: #f8fafc !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
+body.dark-mode #contactMessage::placeholder { color: #94a3b8 !important; }
 
-body.dark-mode #contactMessage::placeholder {
-    color: #94a3b8 !important;
+/* Splash & Walkthrough */
+body.dark-mode .splash-bg { background: #0f172a !important; }
+body.dark-mode .splash-text { color: #cbd5e1; }
+body.dark-mode .tutorial-card,
+body.dark-mode #walkthroughTooltip {
+  background: rgba(30, 41, 59, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
-body.dark-mode .tutorial-card { background: rgba(30, 41, 59, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.1); }
-
-body.dark-mode #walkthroughTooltip { background: rgba(30, 41, 59, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.1); }
 body.dark-mode #walkTitle { color: #f8fafc !important; }
 body.dark-mode #walkDesc { color: #cbd5e1 !important; }
-
-/* ==========================================================================
-   11. BOTTOM NAVIGATION BAR
-   ========================================================================== */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 65px;
-    padding-bottom: env(safe-area-inset-bottom);
-    box-sizing: content-box; 
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid rgba(74, 144, 226, 0.2);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 2000;
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
-}
-
-.nav-item {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    cursor: pointer;
-    padding: 5px 10px;
-    transition: all 0.2s ease;
-}
-
-.nav-item svg { width: 24px; height: 24px; }
-.nav-item.active { color: var(--secondary); transform: translateY(-2px); }
-.nav-item:active { transform: scale(0.95); }
-
-/* ==========================================================================
-   12. SETTINGS MENU & TOGGLES
-   ========================================================================== */
-.settings-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 95%;
-    max-width: 400px;
-    margin: 0 auto 100px;
-}
-
-.setting-item {
-    display: flex;
-    align-items: center;
-    background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 2px solid rgba(74, 144, 226, 0.2);
-    border-radius: 16px;
-    padding: 15px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    box-shadow: var(--shadow);
-}
-
-.setting-item:hover { border-color: var(--secondary); transform: translateY(-2px); }
-.setting-item:active { transform: scale(0.98); }
-
-.setting-text { flex: 1; margin-right: 15px; }
-.setting-text h4 { margin: 0 0 2px 0; color: var(--secondary); font-size: 16px; font-weight: 800; }
-.setting-text p { margin: 0; font-size: 13px; color: var(--text-muted); }
-
-.toggle-switch {
-    width: 50px;
-    height: 30px;
-    background-color: #cbd5e1; 
-    border-radius: 30px;
-    position: relative;
-    transition: background-color 0.3s ease;
-    flex-shrink: 0;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.toggle-switch.on { background-color: #34c759; }
-
-.toggle-knob {
-    width: 26px;
-    height: 26px;
-    background-color: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.3); 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.toggle-switch.on .toggle-knob { transform: translateX(20px); }
-
-/* ==========================================================================
-   13. TIME ATTACK STYLES
-   ========================================================================== */
-#taPrompt {
-    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-radius: var(--radius); border: 2px solid rgba(74, 144, 226, 0.2); box-shadow: var(--shadow);
-    display: flex; align-items: center; justify-content: center; text-align: center;
-    width: 95%; max-width: 600px !important; height: 120px; overflow-y: auto; margin: 12px auto; padding: 18px;
-    box-sizing: border-box; font-size: 19px; font-weight: 600; transition: border-color 0.3s ease;
-}
-
-#taAnswerContainer {
-    width: 95%; max-width: 600px !important; margin: 12px auto; box-sizing: border-box;
-    background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-radius: var(--radius); border: 2px solid rgba(74, 144, 226, 0.2); box-shadow: var(--shadow);
-    overflow: hidden; transition: all 0.3s ease;
-}
-
-#taAnswerContainer.open { border: 2px solid rgba(74, 144, 226, 0.4); transform: scale(1.01); }
-#taAnswerContainer.open #taAnswerContent { max-height: 38vh; padding: 20px; border-top: 1px solid rgba(0,0,0,0.05); }
-
-#toggleTAAnswer {
-    width: 100%; padding: 18px; background-color: var(--secondary); color: white; border: none;
-    font-family: inherit; font-size: 16px; font-weight: 800; text-transform: uppercase; cursor: pointer;
-}
-
-#taAnswerContent {
-    padding: 0 20px; max-height: 0px; overflow-y: auto; transition: all 0.3s ease;
-    -webkit-overflow-scrolling: touch; /* NEW */
-    overscroll-behavior: contain; /* NEW */
-    color: var(--text-muted); font-size: 17px; white-space: pre-wrap; text-align: center; box-sizing: border-box;
-}
-
-/* THE FIX: Restored wheel physics for the Time Attack minute selector */
-.review-slot {
-    position: relative; 
-    cursor: pointer;
-    overflow-y: auto;
-    scroll-snap-type: y mandatory;
-    scrollbar-width: none; 
-    -ms-overflow-style: none; 
-}
-
-.review-slot::after { 
-    display: none; 
-}
-
-.review-slot::before {
-    content: "";
-    position: -webkit-sticky;
-    position: sticky;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 80px;
-    background: linear-gradient(rgba(0,0,0,0.05) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.05) 100%);
-    pointer-events: none;
-    z-index: 5;
-    display: block;
-    margin-bottom: -80px;
-}
-
-.review-slot::-webkit-scrollbar { display: none; }
-.review-slot .reel { transition: none !important; transform: none !important; }
-.review-slot .reel div { height: 80px; scroll-snap-align: start; }
-
-/* ==========================================================================
-   14. MAP GAME STYLES
-   ========================================================================== */
-#svgMapWrapper {
-    width: 100%;
-    flex: 1;
-    overflow: hidden;
-    background: #dbeafe;
-    border-top: 2px solid rgba(74, 144, 226, 0.2);
-    box-shadow: inset 0 10px 20px rgba(0,0,0,0.05);
-    touch-action: none; /* Tells the browser: "Let the JS handle the touch math" */
-}
-
-#svgMapWrapper svg {
-    width: 100%;
-    height: 100%;
-    user-select: none; 
-    -webkit-user-select: none;
-}
-
-/* 1. The class applied to the map shape when tapped */
-.flash-correct {
-    /* Trigger the clean animation */
-    animation: correctFlash 1s ease-out forwards !important;
-}
-
-/* 2. Force the shape AND any inner lines grouped inside it to be green! */
-.flash-correct, .flash-correct * {
-    fill: #22c55e !important;
-    stroke: #22c55e !important;
-}
-
-/* 3. The clean animation (NO !important tags here, Safari hates them!) */
-@keyframes correctFlash {
-    0% { opacity: 0; }
-    50% { opacity: 0.8; }
-    100% { opacity: 0; }
-}
-
-/* ==========================================================================
-   15. TRIVIA GAME STYLES
-   ========================================================================== */
-.trivia-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 95%;
-    max-width: 600px;
-    margin: 15px auto 30px auto;
-}
-
-.trivia-option-btn {
-    background: var(--card-bg);
-    border: 2px solid rgba(74, 144, 226, 0.2);
-    border-radius: 16px;
-    padding: 15px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text-main);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow);
-    min-height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.trivia-option-btn:active {
-    transform: scale(0.96);
-}
-
-/* Color states for answers */
-.trivia-option-btn.correct { background: #22c55e !important; border-color: #22c55e !important; color: white !important; }
-.trivia-option-btn.wrong { background: #ef4444 !important; border-color: #ef4444 !important; color: white !important; }
-.trivia-option-btn.correct-reveal { border-color: #22c55e !important; box-shadow: inset 0 0 0 2px #22c55e, 0 0 0 2px #22c55e !important; background-color: rgba(34, 197, 94, 0.1) !important; }
-/* Dark Mode Overrides */
-body.dark-mode .trivia-option-btn { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); color: #f8fafc; }
-body.dark-mode #triviaPrompt { background: rgba(30, 41, 59, 0.9); border-color: rgba(255, 255, 255, 0.1); }
-
-/* ==========================================================================
-   FOCUS MODE SHARED STYLES
-   ========================================================================== */
-.focus-top-bar {
-    width: 100%; display: flex; justify-content: space-between; align-items: center; 
-    padding: 15px 25px; box-sizing: border-box;
-}
-
-.focus-nav-btn {
-    background: none; border: none; font-weight: 800; font-size: 16px; cursor: pointer; padding: 0;
-}
-.focus-nav-btn.back { color: var(--secondary); }
-.focus-nav-btn.quit { color: #ef4444; }
-
-.focus-status-text {
-    color: var(--text-muted); font-weight: 800; font-size: 14px; text-transform: uppercase;
-}
-
-.focus-subject-label {
-    font-size: 16px; font-weight: 800; color: var(--secondary); margin-bottom: -5px; margin-top: 10px; text-align: center;
-}
-
-.focus-start-btn {
-    background: var(--primary); color: white; border: none; padding: 15px 40px; 
-    border-radius: 20px; font-size: 18px; font-weight: 800; cursor: pointer; 
-    box-shadow: 0 4px 15px rgba(255,111,97,0.3);
-}
-
-/* Shared Action Buttons (Standardized to 70px tall, 20px radius) */
-.focus-action-btn {
-    height: 70px; border-radius: 20px; border: none; color: white; 
-    font-weight: 800; font-size: 16px; cursor: pointer; 
-    display: flex; align-items: center; justify-content: center; 
-    transition: transform 0.1s ease, opacity 0.2s;
-}
-.focus-action-btn.red { background: #ef4444; box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
-.focus-action-btn.green { background: #22c55e; box-shadow: 0 4px 15px rgba(34,197,94,0.3); }
-
-/* Specific Button Layouts */
-.focus-mistake-actions {
-    display: flex; gap: 15px; margin-top: auto; margin-bottom: 20px; 
-    width: 90%; max-width: 400px; justify-content: center; margin-inline: auto;
-}
-.focus-mistake-actions .focus-action-btn { flex: 1; }
-
-.focus-ta-actions {
-    display: flex; align-items: center; justify-content: space-between; 
-    width: 95%; max-width: 450px; margin: auto auto 20px auto; padding: 0 10px; box-sizing: border-box;
-}
-.focus-ta-actions .focus-action-btn { width: 70px; }
-
-/* ==========================================================================
-   EXTRA INFO BUTTON & MODAL
-   ========================================================================== */
-.info-btn {
-    position: absolute;
-    top: 29px;
-    left: 10px; /* Sits exactly opposite of the right-aligned audio button */
-    transform: translateY(-50%);
-    height: 42px;
-    width: 42px;
-    background: rgba(255, 255, 255, 0.25);
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    border-radius: 50%;
-    color: white;
-    display: none; /* Hidden until the app verifies the file exists */
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 24px;
-    font-weight: 700;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    -webkit-tap-highlight-color: transparent;
-}
-
-.info-btn:hover { background: rgba(255, 255, 255, 0.4); }
-.info-btn:active { transform: translateY(-50%) scale(0.85); }
-
-/* ==========================================================================
-   SCRIPTURE KARAOKE STYLES
-   ========================================================================== */
-#scriptureLyricsContainer {
-    width: 100%;
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden; /* THE FIX: Completely disables side-to-side scrolling */
-    padding: 20px 25px;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
-}
-
-/* Hide scrollbar for a clean Apple Music look */
-#scriptureLyricsContainer::-webkit-scrollbar { display: none; }
-
-.lyric-line {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text-muted);
-    opacity: 0.3;
-    margin-bottom: 25px;
-    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1.3);
-    cursor: pointer;
-    transform-origin: left center;
-    white-space: normal;
-    word-wrap: break-word;
-    line-height: 1.4;
-    max-width: 85%; 
-}
-
-.lyric-line.active {
-    opacity: 1;
-    color: var(--primary);
-    transform: scale(1.15);
-    text-shadow: 0 4px 15px rgba(255,111,97,0.2);
-}
-
-/* Dark Mode Overrides */
-body.dark-mode .lyric-line { color: #94a3b8; }
-body.dark-mode .lyric-line.active { color: #f8fafc; text-shadow: 0 4px 15px rgba(255,255,255,0.2); }
-
-/* Progress Ring Play Button Wrapper */
-.scripture-player-wrap {
-    position: relative;
-    width: 70px;
-    height: 70px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    -webkit-tap-highlight-color: transparent;
-}
-.scripture-player-wrap:active .scripture-play-btn {
-    transform: scale(0.85); /* Triggers the squish effect on tap */
-}
-
-/* The SVG Ring Graphics */
-.scripture-progress-svg {
-    position: absolute;
-    top: 0; left: 0;
-    width: 70px; height: 70px;
-    transform: rotate(-90deg); /* Starts the ring at 12 o'clock */
-}
-.scripture-progress-bg {
-    fill: none;
-    stroke: rgba(74, 144, 226, 0.2);
-    stroke-width: 4;
-}
-.scripture-progress-bar {
-    fill: none;
-    stroke: #ef4444; /* Turns red to match the audio button! */
-    stroke-width: 4;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.1s linear;
-}
-
-/* Overriding the standard audio-btn for this specific central placement */
-.scripture-play-btn {
-    position: relative;
-    transform: none;
-    top: auto; right: auto; left: auto;
-    width: 52px; height: 52px;
-    display: flex !important;
-    pointer-events: none; 
-    margin: 0;
-    background: var(--primary) !important;
-    border: none !important;
-    color: white !important;
-    box-shadow: 0 4px 10px rgba(255,111,97,0.3);
-}
-
-/* ==========================================================================
-   SPLASH SCREEN ANIMATIONS
-   ========================================================================== */
-   @keyframes splashFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-}
-
-@keyframes splashPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
-    50% { transform: scale(1.05); box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
-}
-
-.splash-logo {
-    animation: splashFloat 3s ease-in-out infinite;
-}
-
-.splash-btn {
-    animation: splashPulse 2s infinite;
-}
-
-/* Splash Screen Solid Backgrounds & Layout */
-.splash-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #f8fafc; /* Crisp, clean off-white for light mode */
-    transition: opacity 0.4s ease;
-}
-.splash-text {
-    color: #334155;
-}
-
-/* Dark Mode Overrides */
-body.dark-mode .splash-bg {
-    background: #0f172a !important; /* The !important tag is required to override the inline HTML */
-}
-body.dark-mode .splash-text {
-    color: #cbd5e1;
-}
-
-/* Tutorial Mask Inactivity Pulse Effect */
-@keyframes walkthroughPulse {
-    0% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.75), inset 0 0 0 2px var(--primary), inset 0 0 0px rgba(255,111,97,0); }
-    50% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.75), inset 0 0 0 4px var(--primary), inset 0 0 25px rgba(255,111,97,0.8); }
-    100% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.75), inset 0 0 0 2px var(--primary), inset 0 0 0px rgba(255,111,97,0); }
-}
-.walkthrough-active-pulse {
-    animation: walkthroughPulse 1.5s infinite ease-in-out !important;
-}
-
-/* Prevent text highlighting and context menus during long-press */
-#audioBtnMain, #audioBtnReview, #audioBtnMistake, #audioBtnTA {
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-}
-
-/* ===================== CC SPINNER RADIO ===================== */
-.radio-ctrl-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.2s ease;
-    padding: 10px;
-}
-.radio-ctrl-btn svg {
-    fill: currentColor;
-}
-.radio-ctrl-btn.active {
-    color: var(--primary);
-}
-
-/* Apple Music style range slider */
-#radioSeeker {
-    -webkit-appearance: none;
-    appearance: none; /* NEW: Standard property for cross-browser support */
-    background: rgba(0,0,0,0.1);
-    height: 6px;
-    border-radius: 3px;
-    outline: none;
-}
-.dark-mode #radioSeeker { background: rgba(255,255,255,0.2); }
-
-#radioSeeker::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none; /* NEW: Standard property */
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--primary);
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-
-/* Breathing animation when playing */
-@keyframes radioPulse {
-    0% { transform: scale(1); box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-    50% { transform: scale(1.03); box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
-    100% { transform: scale(1); box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-}
-.radio-playing-art {
-    animation: radioPulse 4s infinite ease-in-out;
-}
