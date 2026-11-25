@@ -2787,7 +2787,7 @@ function updateDailyStreak() {
 
     const streakText = document.getElementById('splashStreakText');
     if (streakText) {
-        streakText.textContent = `${streak}-day streak`;
+        streakText.textContent = String(streak);
     }
 }
 
