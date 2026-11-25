@@ -606,18 +606,24 @@ body.dark-mode .weekBtn { background: #475569; border-color: #64748b; color: #f8
   z-index: 4000;
 }
 
-/* Make ALL doneBox popups solid white with a shadow */
-.doneBox {
+/* Make ALL confirmBox and doneBox popups solid white cards with a shadow */
+.confirmBox, .doneBox {
   position: relative;
   background: #fff;
-  padding: 18px;
-  border-radius: 14px;
+  padding: 24px;
+  border-radius: 16px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.25);
   width: 88%;
-  max-width: 420px;
+  max-width: 360px;
   text-align: center;
+  box-sizing: border-box;
   overflow: hidden;
   z-index: 2;
+}
+
+.confirmBox p {
+  color: var(--text-muted);
+  margin: 10px 0 20px 0;
 }
 
 /* Make sure confetti canvases span the entire screen behind the popup */
@@ -815,8 +821,14 @@ body.dark-mode .override { background: #064e3b; }
 body.dark-mode .blocked { background: #7f1d1d; color: #fecaca; }
 body.dark-mode .maxWeekBtn { background: #475569; border-color: #64748b; color: #f8fafc; }
 
-body.dark-mode #reviewPickerOverlay > div, body.dark-mode .confirmBox, body.dark-mode .doneBox { background: #1e293b !important; color: #f8fafc !important; }
-body.dark-mode .doneBox p { color: #f8fafc !important; }
+body.dark-mode #reviewPickerOverlay > div, body.dark-mode .confirmBox, body.dark-mode .doneBox {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+body.dark-mode .confirmBox p, body.dark-mode .doneBox p {
+  color: #cbd5e1 !important;
+}
 body.dark-mode #taAccuracy { color: #94a3b8 !important; }
 body.dark-mode #pickerTitle { color: #f8fafc !important; }
 body.dark-mode #reviewPickerOverlay button[onclick="closePicker()"],
